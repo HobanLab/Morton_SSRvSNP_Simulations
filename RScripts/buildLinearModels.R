@@ -38,6 +38,9 @@ results$MSSE <- c(unlist(MSAT_N1200_min95Values), unlist(DNA_N1200_min95Values))
 # %%% Run linear model
 n1200_model <- lm(MSSE ~ (n.pop+mig.Rate+marker), data=results)
 summary(n1200_model)
+# Call ANOVA, to assess whether MSSEs are different for different explanatory variables
+anova(n1200_model)
+# Note that only the p values for marker type are less than 5%
 
 # %%% NIND = 4800 %%% ----
 # %%% Read in resampling arrays and calculate 95% minimum sampling size estimates (MSSEs)
@@ -61,6 +64,9 @@ results$MSSE <- c(unlist(MSAT_N4800_min95Values), unlist(DNA_N4800_min95Values))
 # %%% Run linear model
 n4800_model <- lm(MSSE ~ (n.pop+mig.Rate+marker), data=results)
 summary(n4800_model)
+# Call ANOVA, to assess whether MSSEs are different for different explanatory variables
+anova(n4800_model)
+# In N4800 model, p values are lower for both marker type and migration rate
 
 # %%% ACROSS TOTAL POPULATION SIZES %%% ----
 # %%% Build parameters data.frame, from which linear models will be built
@@ -75,3 +81,6 @@ results$MSSE <- c(unlist(MSAT_N1200_min95Values), unlist(MSAT_N4800_min95Values)
 # %%% Run linear model
 bothPopSizes_model <- lm(MSSE ~ (n.pop+mig.Rate+t.pop.size+marker), data=results)
 summary(bothPopSizes_model)
+# Call ANOVA, to assess whether MSSEs are different for different explanatory variables
+anova(bothPopSizes_model)
+# In model including both population sizes, p values are lower for both marker type and population size

@@ -30,10 +30,15 @@ DNA_N1200_min95Values <- rapply(DNA_N1200_resamplingArrays, resample_min95_mean,
 
 # %%% Build parameters data.frame, from which linear models will be built
 params <- data.frame(expand.grid(n.pop=c(1,4,16), mig.Rate=c(0.001,0.01), marker=c("MSAT", "DNA")))
+# Need to encode variables as text, versus integers, because we need R
+# to recognize our explanatory variables as class factor (not numeric)
+params <- data.frame(expand.grid(n.pop=c("one","four","sixteen"), mig.Rate=c("low","high"), marker=c("MSAT", "DNA")))
 # Replicate each parameter combination 5 times, for each simulation replicate
 results <- params[rep(1:nrow(params), each=5),]
 # Append MSSE values to results data.frame
 results$MSSE <- c(unlist(MSAT_N1200_min95Values), unlist(DNA_N1200_min95Values))
+
+# %%% Checking Q Q plots (check links that Bela sent)
 
 # %%% Run linear model
 n1200_model <- lm(MSSE ~ (n.pop+mig.Rate+marker), data=results)
@@ -41,6 +46,9 @@ summary(n1200_model)
 # Call ANOVA, to assess whether MSSEs are different for different explanatory variables
 anova(n1200_model)
 # Note that only the p values for marker type are less than 5%
+
+# %%% Plotting this data
+plot(MSSE ~ (n.pop+mig.Rate+marker), data=results)
 
 # %%% NIND = 4800 %%% ----
 # %%% Read in resampling arrays and calculate 95% minimum sampling size estimates (MSSEs)

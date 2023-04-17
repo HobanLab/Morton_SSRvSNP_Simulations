@@ -29,26 +29,30 @@ DNA_N1200_resamplingArrays <-readRDS(DNA_N1200_resampArr_filepath)
 DNA_N1200_min95Values <- rapply(DNA_N1200_resamplingArrays, resample_min95_mean, how = "list")
 
 # %%% Build parameters data.frame, from which linear models will be built
-params <- data.frame(expand.grid(n.pop=c(1,4,16), mig.Rate=c(0.001,0.01), marker=c("MSAT", "DNA")))
-# Need to encode variables as text, versus integers, because we need R
-# to recognize our explanatory variables as class factor (not numeric)
-params <- data.frame(expand.grid(n.pop=c("one","four","sixteen"), mig.Rate=c("low","high"), marker=c("MSAT", "DNA")))
+# Specify numeric explanatory variables as categorical, using as.factor 
+params <- data.frame(expand.grid(n.pop=as.factor(c(1,4,16)), mig.Rate=as.factor(c(0.001,0.01)), marker=c("MSAT", "DNA")))
 # Replicate each parameter combination 5 times, for each simulation replicate
-results <- params[rep(1:nrow(params), each=5),]
+results.N1200 <- params[rep(1:nrow(params), each=5),]
 # Append MSSE values to results data.frame
-results$MSSE <- c(unlist(MSAT_N1200_min95Values), unlist(DNA_N1200_min95Values))
-
-# %%% Checking Q Q plots (check links that Bela sent)
+results.N1200$MSSE <- c(unlist(MSAT_N1200_min95Values), unlist(DNA_N1200_min95Values))
 
 # %%% Run linear model
-n1200_model <- lm(MSSE ~ (n.pop+mig.Rate+marker), data=results)
+n1200_model <- lm(MSSE ~ (n.pop+mig.Rate+marker), data=results.N1200)
 summary(n1200_model)
+confint(n1200_model)
 # Call ANOVA, to assess whether MSSEs are different for different explanatory variables
 anova(n1200_model)
 # Note that only the p values for marker type are less than 5%
 
-# %%% Plotting this data
-plot(MSSE ~ (n.pop+mig.Rate+marker), data=results)
+# %%% Plotting model results
+plot(MSSE ~ (n.pop+mig.Rate+marker), data=results.N1200, ylab="95% minimum sample size estimates", 
+     main="MSSE values across explanatory variables (nInd = 1200)")
+# Diagnostic model plots: used to assess whether the model meets our assumptions 
+# (particularly, that model residuals are Normally distributed). Change mfrow (to allow multiple plots per window)
+par(mfrow=c(2,2))
+plot(n1200_model)
+# Set mfrow back to default value (1 plot per window)
+par(mfrow=c(1,1))
 
 # %%% NIND = 4800 %%% ----
 # %%% Read in resampling arrays and calculate 95% minimum sampling size estimates (MSSEs)
@@ -63,32 +67,56 @@ DNA_N4800_resamplingArrays <-readRDS(DNA_N4800_resampArr_filepath)
 DNA_N4800_min95Values <- rapply(DNA_N4800_resamplingArrays, resample_min95_mean, how = "list")
 
 # %%% Build parameters data.frame, from which linear models will be built
-params <- data.frame(expand.grid(n.pop=c(1,4,16), mig.Rate=c(0.001,0.01), marker=c("MSAT", "DNA")))
+# Specify numeric explanatory variables as categorical, using as.factor 
+params <- data.frame(expand.grid(n.pop=as.factor(c(1,4,16)), mig.Rate=as.factor(c(0.001,0.01)), marker=c("MSAT", "DNA")))
 # Replicate each parameter combination 5 times, for each simulation replicate
-results <- params[rep(1:nrow(params), each=5),]
+results.N4800 <- params[rep(1:nrow(params), each=5),]
 # Append MSSE values to results data.frame
-results$MSSE <- c(unlist(MSAT_N4800_min95Values), unlist(DNA_N4800_min95Values))
+results.N4800$MSSE <- c(unlist(MSAT_N4800_min95Values), unlist(DNA_N4800_min95Values))
 
 # %%% Run linear model
-n4800_model <- lm(MSSE ~ (n.pop+mig.Rate+marker), data=results)
+n4800_model <- lm(MSSE ~ (n.pop+mig.Rate+marker), data=results.N4800)
 summary(n4800_model)
 # Call ANOVA, to assess whether MSSEs are different for different explanatory variables
 anova(n4800_model)
+confint(n4800_model)
 # In N4800 model, p values are lower for both marker type and migration rate
+
+# %%% Plotting model results
+plot(MSSE ~ (n.pop+mig.Rate+marker), data=results.N4800, ylab="95% minimum sample size estimates", 
+     main="MSSE values across explanatory variables (nInd = 4800)")
+# Diagnostic model plots: used to assess whether the model meets our assumptions 
+# (particularly, that model residuals are Normally distributed). Change mfrow (to allow multiple plots per window)
+par(mfrow=c(2,2))
+plot(n4800_model)
+# Set mfrow back to default value (1 plot per window)
+par(mfrow=c(1,1))
 
 # %%% ACROSS TOTAL POPULATION SIZES %%% ----
 # %%% Build parameters data.frame, from which linear models will be built
-params <- data.frame(expand.grid(n.pop=c(1,4,16), mig.Rate=c(0.001,0.01), 
-                                 t.pop.size=c(1200,4800), marker=c("MSAT", "DNA")))
+# Specify numeric explanatory variables as categorical, using as.factor 
+params <- data.frame(expand.grid(n.pop=as.factor(c(1,4,16)), mig.Rate=as.factor(c(0.001,0.01)), 
+                                 t.pop.size=as.factor(c(1200,4800)), marker=c("MSAT", "DNA")))
 # Replicate each parameter combination 5 times, for each simulation replicate
-results <- params[rep(1:nrow(params), each=5),]
+results.total <- params[rep(1:nrow(params), each=5),]
 # Append MSSE values (from both N1200 and N4800 scenarios) to results data.frame
-results$MSSE <- c(unlist(MSAT_N1200_min95Values), unlist(MSAT_N4800_min95Values),
+results.total$MSSE <- c(unlist(MSAT_N1200_min95Values), unlist(MSAT_N4800_min95Values),
                   unlist(DNA_N1200_min95Values), unlist(DNA_N4800_min95Values))
 
 # %%% Run linear model
-bothPopSizes_model <- lm(MSSE ~ (n.pop+mig.Rate+t.pop.size+marker), data=results)
+bothPopSizes_model <- lm(MSSE ~ (n.pop+mig.Rate+t.pop.size+marker), data=results.total)
 summary(bothPopSizes_model)
 # Call ANOVA, to assess whether MSSEs are different for different explanatory variables
 anova(bothPopSizes_model)
+confint(bothPopSizes_model)
 # In model including both population sizes, p values are lower for both marker type and population size
+
+# %%% Plotting model results
+plot(MSSE ~ (n.pop+mig.Rate+marker), data=results.total, ylab="95% minimum sample size estimates", 
+     main="MSSE values across explanatory variables (both population sizes)")
+# Diagnostic model plots: used to assess whether the model meets our assumptions 
+# (particularly, that model residuals are Normally distributed). Change mfrow (to allow multiple plots per window)
+par(mfrow=c(2,2))
+plot(bothPopSizes_model)
+# Set mfrow back to default value (1 plot per window)
+par(mfrow=c(1,1))

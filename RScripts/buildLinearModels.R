@@ -45,14 +45,21 @@ anova(n1200_model)
 # Note that only the p values for marker type are less than 5%
 
 # %%% Plotting model results
+# Use layout to fit all results into a window
+layout( matrix(c(1,2,3,3), nrow=2, byrow=TRUE) )
 plot(MSSE ~ (n.pop+mig.Rate+marker), data=results.N1200, ylab="95% minimum sample size estimates", 
-     main="MSSE values across explanatory variables (nInd = 1200)")
+     main="MSSEs across sim parameters (nInd = 1200)")
 # Diagnostic model plots: used to assess whether the model meets our assumptions 
 # (particularly, that model residuals are Normally distributed). Change mfrow (to allow multiple plots per window)
 par(mfrow=c(2,2))
 plot(n1200_model)
 # Set mfrow back to default value (1 plot per window)
 par(mfrow=c(1,1))
+# Add title
+mtext("Model Diagnostics: N1200", line=2)
+
+# TO DO: build a model including marker type and not including marker type, then run ANOVA on the 2 models
+# to quantify the variance that is explained by including marker type. Look at BIOL6750 Notes
 
 # %%% NIND = 4800 %%% ----
 # %%% Read in resampling arrays and calculate 95% minimum sampling size estimates (MSSEs)
@@ -83,14 +90,18 @@ confint(n4800_model)
 # In N4800 model, p values are lower for both marker type and migration rate
 
 # %%% Plotting model results
+# Use layout to fit all results into a window
+layout( matrix(c(1,2,3,3), nrow=2, byrow=TRUE) )
 plot(MSSE ~ (n.pop+mig.Rate+marker), data=results.N4800, ylab="95% minimum sample size estimates", 
-     main="MSSE values across explanatory variables (nInd = 4800)")
+     main="MSSEs across sim parameters (nInd = 4800)")
 # Diagnostic model plots: used to assess whether the model meets our assumptions 
 # (particularly, that model residuals are Normally distributed). Change mfrow (to allow multiple plots per window)
 par(mfrow=c(2,2))
 plot(n4800_model)
 # Set mfrow back to default value (1 plot per window)
 par(mfrow=c(1,1))
+# Add title
+mtext("Model Diagnostics: N4800", line=2)
 
 # %%% ACROSS TOTAL POPULATION SIZES %%% ----
 # %%% Build parameters data.frame, from which linear models will be built
@@ -112,11 +123,23 @@ confint(bothPopSizes_model)
 # In model including both population sizes, p values are lower for both marker type and population size
 
 # %%% Plotting model results
-plot(MSSE ~ (n.pop+mig.Rate+marker), data=results.total, ylab="95% minimum sample size estimates", 
-     main="MSSE values across explanatory variables (both population sizes)")
+par(mfrow=c(2,2))
+plot(MSSE ~ (n.pop+mig.Rate+t.pop.size+marker), data=results.total, ylab="95% minimum sample size estimates", 
+     main="MSSEs across sim parameters (all pop sizes)")
 # Diagnostic model plots: used to assess whether the model meets our assumptions 
 # (particularly, that model residuals are Normally distributed). Change mfrow (to allow multiple plots per window)
-par(mfrow=c(2,2))
 plot(bothPopSizes_model)
 # Set mfrow back to default value (1 plot per window)
 par(mfrow=c(1,1))
+# Add title
+mtext("Model Diagnostics: N1200 and N4800", line=2)
+
+# TO DO: build a model including marker type and not including marker type, then run ANOVA on the 2 models
+# to quantify the variance that is explained by including marker type. Look at BIOL6750 Notes
+
+# For the above scenario, do this for total population size: a model not including this as a variable, and another
+# model which does include it. 
+
+# TO DO: build a model that only looks at DNA data in both total population sizes, and then assess 
+# model diagnostic plots. Maybe the loss of Normality in model residuals is purely the result of greater
+# MSSE variance in higher population size MSAT datasets?

@@ -153,6 +153,7 @@ mtext("Model Diagnostics: N1200 and N4800", line=2)
 results.MSAT.total <- results.total[which(results.total$marker == "MSAT"),]
 # Model call
 bothPopSizes_MSAT_model <- lm(MSSE ~ (n.pop+mig.Rate+t.pop.size), data=results.MSAT.total)
+summary.lm(bothPopSizes_MSAT_model)
 # Use layout to fit all results into a window
 layout( matrix(c(1,2,3,3), nrow=2, byrow=TRUE) )
 plot(MSSE ~ (n.pop+mig.Rate+t.pop.size), data=results.MSAT.total, ylab="95% minimum sample size estimates", 
@@ -170,6 +171,7 @@ mtext("Model Diagnostics: N1200 and N4800, only MSAT samples", line=2)
 results.DNA.total <- results.total[which(results.total$marker == "DNA"),]
 # Model call
 bothPopSizes_DNA_model <- lm(MSSE ~ (n.pop+mig.Rate+t.pop.size), data=results.DNA.total)
+summary.lm(bothPopSizes_DNA_model)
 # Use layout to fit all results into a window
 layout( matrix(c(1,2,3,3), nrow=2, byrow=TRUE) )
 plot(MSSE ~ (n.pop+mig.Rate+t.pop.size), data=results.DNA.total, ylab="95% minimum sample size estimates", 

@@ -37,12 +37,16 @@ results.N1200 <- params[rep(1:nrow(params), each=5),]
 results.N1200$MSSE <- c(unlist(MSAT_N1200_min95Values), unlist(DNA_N1200_min95Values))
 
 # %%% Run linear model
+# Complete model
 n1200_model <- lm(MSSE ~ (n.pop+mig.Rate+marker), data=results.N1200)
-summary(n1200_model)
+# Model without markers
+n1200_noMarker_model <- lm(MSSE ~ (n.pop+mig.Rate), data=results.N1200)
+# ANOVA demonstrating the value of introducing markers (note p value and large F statistic value)
+anova(n1200_noMarker_model, n1200_model)
+# Model summaries
+summary.lm(n1200_model)
+summary.aov(n1200_model)
 confint(n1200_model)
-# Call ANOVA, to assess whether MSSEs are different for different explanatory variables
-anova(n1200_model)
-# Note that only the p values for marker type are less than 5%
 
 # %%% Plotting model results
 # Use layout to fit all results into a window
@@ -57,9 +61,6 @@ plot(n1200_model)
 par(mfrow=c(1,1))
 # Add title
 mtext("Model Diagnostics: N1200", line=2)
-
-# TO DO: build a model including marker type and not including marker type, then run ANOVA on the 2 models
-# to quantify the variance that is explained by including marker type. Look at BIOL6750 Notes
 
 # %%% NIND = 4800 %%% ----
 # %%% Read in resampling arrays and calculate 95% minimum sampling size estimates (MSSEs)
@@ -82,12 +83,16 @@ results.N4800 <- params[rep(1:nrow(params), each=5),]
 results.N4800$MSSE <- c(unlist(MSAT_N4800_min95Values), unlist(DNA_N4800_min95Values))
 
 # %%% Run linear model
+# Complete model
 n4800_model <- lm(MSSE ~ (n.pop+mig.Rate+marker), data=results.N4800)
-summary(n4800_model)
-# Call ANOVA, to assess whether MSSEs are different for different explanatory variables
-anova(n4800_model)
+# Model without markers
+n4800_noMarker_model <- lm(MSSE ~ (n.pop+mig.Rate), data=results.N4800)
+# ANOVA demonstrating the value of introducing markers (note p value and large F statistic value)
+anova(n4800_noMarker_model, n4800_model)
+# Model summaries
+summary.lm(n4800_model)
+summary.aov(n4800_model)
 confint(n4800_model)
-# In N4800 model, p values are lower for both marker type and migration rate
 
 # %%% Plotting model results
 # Use layout to fit all results into a window
@@ -115,12 +120,20 @@ results.total$MSSE <- c(unlist(MSAT_N1200_min95Values), unlist(MSAT_N4800_min95V
                   unlist(DNA_N1200_min95Values), unlist(DNA_N4800_min95Values))
 
 # %%% Run linear model
+# Complete model
 bothPopSizes_model <- lm(MSSE ~ (n.pop+mig.Rate+t.pop.size+marker), data=results.total)
-summary(bothPopSizes_model)
-# Call ANOVA, to assess whether MSSEs are different for different explanatory variables
-anova(bothPopSizes_model)
+# Model without markers
+bothPopSizes_noMarker_model <- lm(MSSE ~ (n.pop+mig.Rate+t.pop.size), data=results.total)
+# Model without pop sizes
+bothPopSizes_noPopSizes_model <- lm(MSSE ~ (n.pop+mig.Rate+marker), data=results.total)
+# ANOVA demonstrating variance explained by markers (note p value and large F statistic value)
+anova(bothPopSizes_noMarker_model, bothPopSizes_model)
+# ANOVA demonstrating variance explained by total population sizes (note p value and large F statistic value)
+anova(bothPopSizes_noPopSizes_model, bothPopSizes_model)
+# Model summaries
+summary.lm(bothPopSizes_model)
+summary.aov(bothPopSizes_model)
 confint(bothPopSizes_model)
-# In model including both population sizes, p values are lower for both marker type and population size
 
 # %%% Plotting model results
 par(mfrow=c(2,2))
@@ -134,12 +147,29 @@ par(mfrow=c(1,1))
 # Add title
 mtext("Model Diagnostics: N1200 and N4800", line=2)
 
-# TO DO: build a model including marker type and not including marker type, then run ANOVA on the 2 models
-# to quantify the variance that is explained by including marker type. Look at BIOL6750 Notes
+# Analyzing both population sizes for each individual marker
+# MSAT results (both population sizes)
+results.MSAT.total <- results.total[which(results.total$marker == "MSAT"),]
+# Model call
+bothPopSizes_MSAT_model <- lm(MSSE ~ (n.pop+mig.Rate+t.pop.size), data=results.MSAT.total)
+# Diagnostic model plots: used to assess whether the model meets our assumptions 
+# (particularly, that model residuals are Normally distributed). Change mfrow (to allow multiple plots per window)
+par(mfrow=c(2,2))
+plot(bothPopSizes_MSAT_model)
+# Set mfrow back to default value (1 plot per window)
+par(mfrow=c(1,1))
+# Add title
+mtext("Model Diagnostics: N1200 and N4800, only MSAT samples", line=2)
 
-# For the above scenario, do this for total population size: a model not including this as a variable, and another
-# model which does include it. 
-
-# TO DO: build a model that only looks at DNA data in both total population sizes, and then assess 
-# model diagnostic plots. Maybe the loss of Normality in model residuals is purely the result of greater
-# MSSE variance in higher population size MSAT datasets?
+# DNA results (both population sizes)
+results.DNA.total <- results.total[which(results.total$marker == "DNA"),]
+# Model call
+bothPopSizes_DNA_model <- lm(MSSE ~ (n.pop+mig.Rate+t.pop.size), data=results.DNA.total)
+# Diagnostic model plots: used to assess whether the model meets our assumptions 
+# (particularly, that model residuals are Normally distributed). Change mfrow (to allow multiple plots per window)
+par(mfrow=c(2,2))
+plot(bothPopSizes_DNA_model)
+# Set mfrow back to default value (1 plot per window)
+par(mfrow=c(1,1))
+# Add title
+mtext("Model Diagnostics: N1200 and N4800, only DNA samples", line=2)

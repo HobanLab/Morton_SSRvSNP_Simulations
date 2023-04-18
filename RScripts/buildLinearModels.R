@@ -147,11 +147,16 @@ par(mfrow=c(1,1))
 # Add title
 mtext("Model Diagnostics: N1200 and N4800", line=2)
 
+# %%% ACROSS MARKER TYPES %%% ----
 # Analyzing both population sizes for each individual marker
-# MSAT results (both population sizes)
+# %%% MSAT
 results.MSAT.total <- results.total[which(results.total$marker == "MSAT"),]
 # Model call
 bothPopSizes_MSAT_model <- lm(MSSE ~ (n.pop+mig.Rate+t.pop.size), data=results.MSAT.total)
+# Use layout to fit all results into a window
+layout( matrix(c(1,2,3,3), nrow=2, byrow=TRUE) )
+plot(MSSE ~ (n.pop+mig.Rate+t.pop.size), data=results.MSAT.total, ylab="95% minimum sample size estimates", 
+     main="MSSEs across MSATs")
 # Diagnostic model plots: used to assess whether the model meets our assumptions 
 # (particularly, that model residuals are Normally distributed). Change mfrow (to allow multiple plots per window)
 par(mfrow=c(2,2))
@@ -161,10 +166,14 @@ par(mfrow=c(1,1))
 # Add title
 mtext("Model Diagnostics: N1200 and N4800, only MSAT samples", line=2)
 
-# DNA results (both population sizes)
+# %%% DNA
 results.DNA.total <- results.total[which(results.total$marker == "DNA"),]
 # Model call
 bothPopSizes_DNA_model <- lm(MSSE ~ (n.pop+mig.Rate+t.pop.size), data=results.DNA.total)
+# Use layout to fit all results into a window
+layout( matrix(c(1,2,3,3), nrow=2, byrow=TRUE) )
+plot(MSSE ~ (n.pop+mig.Rate+t.pop.size), data=results.DNA.total, ylab="95% minimum sample size estimates", 
+     main="MSSEs across DNA markers")
 # Diagnostic model plots: used to assess whether the model meets our assumptions 
 # (particularly, that model residuals are Normally distributed). Change mfrow (to allow multiple plots per window)
 par(mfrow=c(2,2))

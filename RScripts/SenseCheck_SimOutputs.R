@@ -10,7 +10,8 @@
 # according to population genetics theory:
 # 1. Simulations with more populations should have higher numbers of total alleles
 # 2. Simulations with higher migration rates should have lower Fst values
-# 3. Analysis of the allele frequency spectra. 
+# 3. Heterozygosity values for each simulation replicates (these are just compared to empirical values)
+# 4. Analysis of the allele frequency spectra. 
 
 # These checks are made for simulations using both microsatellite ("MSAT") and SNP ("DNA") marker types,
 # for 2 different sets of simulation runs: nInd=1200, and nInd=4800
@@ -79,7 +80,33 @@ sapply(DNA_04pop_migHigh.genList, function(x) mean(c(pairwise.neifst(genind2hier
 sapply(DNA_16pop_migLow.genList, function(x) mean(c(pairwise.neifst(genind2hierfstat(x))), na.rm=TRUE)) 
 sapply(DNA_16pop_migHigh.genList, function(x) mean(c(pairwise.neifst(genind2hierfstat(x))), na.rm=TRUE))
 
-# 3. ALLELE FREQUENCY SPECTRA ----
+# 3. HETEROZYGOSITY ----
+print("%%% HETEROZYGOSITY")
+# MSAT ----
+print("MSAT")
+
+sapply(MSAT_01pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+sapply(MSAT_01pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+
+sapply(MSAT_04pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+sapply(MSAT_04pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+
+sapply(MSAT_16pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+sapply(MSAT_16pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+
+# DNA ----
+print("DNA")
+
+sapply(DNA_01pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+sapply(DNA_01pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+
+sapply(DNA_04pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+sapply(DNA_04pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+
+sapply(DNA_16pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+sapply(DNA_16pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+
+# 4. ALLELE FREQUENCY SPECTRA ----
 print("%%% ALLELE FREQUENCIES")
 # QUESTION: when we calculate allele frequencies, do we divide by the number of individuals in the
 # population? Or, in the entire species? Currently, doing the entire species...
@@ -224,7 +251,33 @@ sapply(DNA_04pop_migHigh.genList, function(x) mean(c(pairwise.neifst(genind2hier
 sapply(DNA_16pop_migLow.genList, function(x) mean(c(pairwise.neifst(genind2hierfstat(x))), na.rm=TRUE)) 
 sapply(DNA_16pop_migHigh.genList, function(x) mean(c(pairwise.neifst(genind2hierfstat(x))), na.rm=TRUE))
 
-# 3. ALLELE FREQUENCY SPECTRA ----
+# 3. HETEROZYGOSITY ----
+print("%%% HETEROZYGOSITY")
+# MSAT ----
+print("MSAT")
+
+sapply(MSAT_01pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+sapply(MSAT_01pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+
+sapply(MSAT_04pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+sapply(MSAT_04pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+
+sapply(MSAT_16pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+sapply(MSAT_16pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+
+# DNA ----
+print("DNA")
+
+sapply(DNA_01pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+sapply(DNA_01pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+
+sapply(DNA_04pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+sapply(DNA_04pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+
+sapply(DNA_16pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+sapply(DNA_16pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+
+# 4. ALLELE FREQUENCY SPECTRA ----
 print("%%% ALLELE FREQUENCIES")
 # QUESTION: when we calculate allele frequencies, do we divide by the number of individuals in the
 # population? Or, in the entire species? Currently, doing the entire species...

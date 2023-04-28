@@ -60,9 +60,6 @@ if(nInd_1200_Flag==1){
   summarize_simulations(MSAT_geninds)
   # # DNA
   summarize_simulations(DNA_geninds)
-  # Plot a histogram of allele frequencies for one of the DNA smiulations
-  makeAlleleFreqHist(DNA_geninds[[4]][[3]],
-                     title="Simulated DNA: 1,000 loci, mutation.rate=5e-6 (4 pops, high migration)")
   
   # %%% Resampling ----
   # Specify number of resampling replicates, to use for both marker types

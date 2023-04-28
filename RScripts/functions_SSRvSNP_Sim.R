@@ -43,18 +43,18 @@ convertAllArp <- function(arp.path, params){
   setwd(arp.path)
   # Create an empty list object to receive list of genind.
   # The length of this list is the number of replicates, which is specified as a numeric vector
-  genind.list <- vector("list",length=length(dir()[str_detect(dir(), pattern = ".arp")]))
-  fscReps <- seq(1, length(genind.list))
+  gen.List <- vector("list",length=length(dir()[str_detect(dir(), pattern = ".arp")]))
+  fscReps <- seq(1, length(gen.List))
   # Move up one directory, in order for the fscReadArp command (within strataG_arp2gen) to work
   setwd("..")
   # Convert all Arlequin files to a list of genind objects
-  for(i in 1:length(genind.list)){
+  for(i in 1:length(gen.List)){
     genind.obj <- strataG_arp2gen(params, rep=i)
-    genind.list[[i]] <- genind.obj
+    gen.List[[i]] <- genind.obj
   }
   # Reset to original working directory, and return a list of genind objects
   setwd(original.wd)
-  return(genind.list)
+  return(gen.List)
 }
 
 # Function for reading in MSAT strataG params files, in specified directory. Prefix specifies how to name the params variables
@@ -295,8 +295,10 @@ getAlleleCategories <- function(freqVector, sampleMat){
 # (containing both garden and wild samples to analyze). It processes that genind object to extract the
 # objects it needs to calculate ex situ representation: a vector of wild allele frequencies, and a 
 # sample matrix of garden samples. Although simulations don't generate missing data, absent alleles
-# (those with frequencies or colSums of 0) are removed from the the frequency vector and sample matrix
-exSitu_Rep <- function(gen.obj){
+# (those with frequencies or colSums of 0) are removed from the the frequency vector and sample matrix.
+# Depending on the returnMat argument, the function returns either a vector (of just proportions)
+# or a matrix (of raw allele counts and proportions)
+exSitu_Rep <- function(gen.obj, returnMat = 0){
   # Generate numerical vectors corresponding to garden and wild rows
   garden.Rows <- which(gen.obj@pop == "garden")
   wild.Rows <- which(gen.obj@pop == "wild")
@@ -311,8 +313,13 @@ exSitu_Rep <- function(gen.obj){
   gardenMat <- gardenMat[,which(colSums(gardenMat, na.rm = TRUE) != 0)]
   # Calculate how many alleles (of each category) the garden samples represent
   repValues <- getAlleleCategories(freqVector=wildFreqs, sampleMat = gardenMat)
-  # Subset matrix returned by getAlleleCategories to just ex situ representation proportions, and return
-  repValues <- repValues[,3]
+  if(returnMat==1){
+    # If returnMat==1, return a matrix of absolute values (garden alleles, wild alleles, and proportion)
+    return(repValues)
+  } else {
+    # Otherwise, subset matrix returned by getAlleleCategories to just ex situ representation proportions
+    repValues <- repValues[,3]
+  }
   return(repValues)
 }
 
@@ -330,23 +337,23 @@ summarize_exSituRepresentation <- function(repRates){
 
 # Wrapper function, which generates both allele frequency proportions and ex situ representation rates,
 # for a list of genind objects
-summarize_simulations <- function(genind.list){
+summarize_simulations <- function(gen.List){
   # Build array to capture allele frequency proportions
-  alleleFreqSummaries <- array(dim = c(3, 2, length(genind.list)))
+  alleleFreqSummaries <- array(dim = c(3, 2, length(gen.List)))
   rownames(alleleFreqSummaries) <- c("Very common (>10%)","Low frequency (1% -- 10%)","Rare (<1%)")
   # Build array to capture ex situ representation rates
-  repRateSummaries <- array(dim = c(5, 2, length(genind.list)))
+  repRateSummaries <- array(dim = c(5, 2, length(gen.List)))
   rownames(repRateSummaries) <- 
     c("Total","Very common (>10%)","Common (>5%)","Low frequency (1% -- 10%)","Rare (<1%)")
   colnames(alleleFreqSummaries) <- colnames(repRateSummaries) <-c("mean", "sd")
   
   # Loop through list of genind objects, calculating metrics for each item
-  for (i in 1:length(genind.list)){
+  for (i in 1:length(gen.List)){
     # Calculate and summarize allele frequency scenarios. Each array slot is a different scenario
-    alleleFrequencies <- sapply(genind.list[[i]], getWildAlleleFreqProportions)
+    alleleFrequencies <- sapply(gen.List[[i]], getWildAlleleFreqProportions)
     alleleFreqSummaries[,,i] <- summarize_alleleFreqProportions(alleleFrequencies)
     # Calculate and summarize ex situ representation rates. Each array slot is a different scenario
-    representationRates <- sapply(genind.list[[i]], exSitu_Rep)
+    representationRates <- sapply(gen.List[[i]], exSitu_Rep)
     repRateSummaries[,,i] <- summarize_exSituRepresentation(representationRates)
   }
   # Round results to 2 digits
@@ -357,32 +364,23 @@ summarize_simulations <- function(genind.list){
 }
 
 # Exploratory function, which creates a histogram of allele frequencies from a genind object
-makeAlleleFreqHist <- function(gen.obj, title="Allele frequency histogram"){
-  # browser()
+makeAlleleFreqHist <- function(gen.obj){
   # Make a vector of allele frequency values, from the genind object
   wildAlleleFreqs <- getWildFreqs(gen.obj, wholeValues = FALSE)
-  # Set the break values according to the maximum and minimum allele
-  max.freq <- max(wildAlleleFreqs)
-  # Specify the break values to use for the histogram conditionally, 
-  # based on min/max frequencies
-  if(max(wildAlleleFreqs == 1)){
-    if(min(wildAlleleFreqs == 0)){
-      b.vector <- seq(0, 1.0, 0.01)
-    } else{
-      # b.vector <- seq(0.01, 1.0, 0.01)
-      b.vector <- seq(0, 1.0, 0.01)
-    }
-  } else{
-    if(min(wildAlleleFreqs == 0)){
-      b.vector <- seq(0, 1.0, 0.01)
-    } else{
-      # b.vector <- seq(0.01, 1.0, 0.01)
-      b.vector <- seq(0, 1.0, 0.01)
-    }
-  }
   # Generate histogram
-  # hist(wildAlleleFreqs, breaks=b.vector, main=title, freq=FALSE)
-  hist(wildAlleleFreqs, main=title, freq=FALSE)
+  hist(wildAlleleFreqs, main=gen.obj@other, freq=FALSE, breaks=seq(0, 1.0, 0.01))
+}
+
+# Exploratory function, which creates a histogram of allele frequencies from a list of genind objects
+makeAlleleFreqHist_genList <- function(gen.List, outDir="~/Shared/SSRvSNP_Sim/Code/"){
+  # Use a loop to process each genind item in the list
+  for(i in 1:length(gen.List)){
+    # Call the png command, to save histogram outputs. Save to specified directory
+    png(filename = paste0(outDir, gen.List[[i]]@other, "_", i, ".png"))
+    # Call makeAlleleFreqHist function, nested within invisible to avoid code printing to standard output
+    invisible(makeAlleleFreqHist(gen.List[[i]]))
+    dev.off()
+  }
 }
 
 # RESAMPLING FUNCTIONS ----
@@ -475,20 +473,33 @@ resample_min95_sd <- function(resamplingArray){
   return(sdValue)
 }
 
-# From resampling array, calculate the mean values (across replicates) for each allele frequency category
+# From resampling array, calculate the mean values (across resampling replicates) for each allele frequency category
 resample_meanValues <- function(resamplingArray){
   # Declare a matrix to receive average values
   meanValue_mat <- matrix(nrow=nrow(resamplingArray), ncol=ncol(resamplingArray))
-  # For each column in the array, average results across replicates (3rd array dimension)
-  meanValue_mat[,1] <- apply(resamplingArray[,1,], 1, mean, na.rm=TRUE)
-  meanValue_mat[,2] <- apply(resamplingArray[,2,], 1, mean, na.rm=TRUE)
-  meanValue_mat[,3] <- apply(resamplingArray[,3,], 1, mean, na.rm=TRUE)
-  meanValue_mat[,4] <- apply(resamplingArray[,4,], 1, mean, na.rm=TRUE)
-  meanValue_mat[,5] <- apply(resamplingArray[,5,], 1, mean, na.rm=TRUE)
+  # For each column in the array, average results across resampling replicates (3rd array dimension)
+  for(i in 1:ncol(resamplingArray)){
+    meanValue_mat[,i] <- apply(resamplingArray[,i,], 1, mean, na.rm=TRUE)
+  }
   # Give names to meanValue_mat columns, and return
   colnames(meanValue_mat) <- c("Total","Very common","Common","Low frequency","Rare")
   return(meanValue_mat)
 }
+
+# # From resampling array, calculate the mean values (across resampling replicates) for each allele frequency category
+# resample_meanValues_OLD <- function(resamplingArray){
+#   # Declare a matrix to receive average values
+#   meanValue_mat <- matrix(nrow=nrow(resamplingArray), ncol=ncol(resamplingArray))
+#   # For each column in the array, average results across resampling replicates (3rd array dimension)
+#   meanValue_mat[,1] <- apply(resamplingArray[,1,], 1, mean, na.rm=TRUE)
+#   meanValue_mat[,2] <- apply(resamplingArray[,2,], 1, mean, na.rm=TRUE)
+#   meanValue_mat[,3] <- apply(resamplingArray[,3,], 1, mean, na.rm=TRUE)
+#   meanValue_mat[,4] <- apply(resamplingArray[,4,], 1, mean, na.rm=TRUE)
+#   meanValue_mat[,5] <- apply(resamplingArray[,5,], 1, mean, na.rm=TRUE)
+#   # Give names to meanValue_mat columns, and return
+#   colnames(meanValue_mat) <- c("Total","Very common","Common","Low frequency","Rare")
+#   return(meanValue_mat)
+# }
 
 # Summary plotting function, from array
 resample_Plot <- function(resamplingArray, colors, largePopFlag=FALSE){
@@ -532,7 +543,7 @@ resample_Plot_PNG <- function(resamplingArray, colors, largePopFlag=FALSE, data.
   scenName <- unique(dimnames(resamplingArray)[[3]])
   # Call png command, to save resampling plot to disk. To determine a unique file name to save plot, 
   # find out how many PNG files already exist in specified folder.
-  png(file = paste0(data.dir, scenName, "_", length(list.files(path=data.dir, pattern = ".png"))+1, ".png"), 
+  png(filename = paste0(data.dir, scenName, "_", length(list.files(path=data.dir, pattern = ".png"))+1, ".png"), 
       width = 1262, height = 734)
   # Create two vectors for colors. This is to show points on the graph and in the legend clearly
   fullColors <- colors

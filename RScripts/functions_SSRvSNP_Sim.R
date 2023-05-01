@@ -376,7 +376,7 @@ makeAlleleFreqHist_genList <- function(gen.List, outDir="~/Shared/SSRvSNP_Sim/Co
   # Use a loop to process each genind item in the list
   for(i in 1:length(gen.List)){
     # Call the png command, to save histogram outputs. Save to specified directory
-    png(filename = paste0(outDir, gen.List[[i]]@other, "_", i, ".png"))
+    png(filename = paste0(outDir, gen.List[[i]]@other, "_", i, ".png", width = 1262, height = 734))
     # Call makeAlleleFreqHist function, nested within invisible to avoid code printing to standard output
     invisible(makeAlleleFreqHist(gen.List[[i]]))
     dev.off()

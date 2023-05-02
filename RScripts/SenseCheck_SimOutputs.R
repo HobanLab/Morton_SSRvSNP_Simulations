@@ -146,7 +146,7 @@ print("%%% ALLELE FREQUENCIES")
 # population? Or, in the entire species? Currently, doing the entire species...
 # MSAT ----
 # Specify the directory to save histograms to
-histDir <- "~/Documents/SSRvSNP/Simulations/Documentation/Images/SimulationSummaries_20230428/N1200/MSAT/"
+histDir <- "~/Documents/SSRvSNP/Simulations/Documentation/Images/SimulationSummaries_20230501/N1200/MSAT/"
 # Generate histograms of each simulation replicate in each genind list, and save to a png file in the directory
 makeAlleleFreqHist_genList(MSAT_01pop_migLow.genList, outDir = histDir)
 makeAlleleFreqHist_genList(MSAT_01pop_migHigh.genList, outDir = histDir)
@@ -157,7 +157,7 @@ makeAlleleFreqHist_genList(MSAT_16pop_migHigh.genList, outDir = histDir)
 
 # DNA ----
 # Specify the directory to save histograms to
-histDir <- "~/Documents/SSRvSNP/Simulations/Documentation/Images/SimulationSummaries_20230428/N1200/DNA/"
+histDir <- "~/Documents/SSRvSNP/Simulations/Documentation/Images/SimulationSummaries_20230501/N1200/DNA/"
 # Generate histograms of each simulation replicate in each genind list, and save to a png file in the directory
 makeAlleleFreqHist_genList(DNA_01pop_migLow.genList, outDir = histDir)
 makeAlleleFreqHist_genList(DNA_01pop_migHigh.genList, outDir = histDir)
@@ -282,7 +282,7 @@ print("%%% ALLELE FREQUENCIES")
 # population? Or, in the entire species? Currently, doing the entire species...
 # MSAT ----
 # Specify the directory to save histograms to
-histDir <- "~/Documents/SSRvSNP/Simulations/Documentation/Images/SimulationSummaries_20230428/N4800/MSAT/"
+histDir <- "~/Documents/SSRvSNP/Simulations/Documentation/Images/SimulationSummaries_20230501/N4800/MSAT/"
 # Generate histograms of each simulation replicate in each genind list, and save to a png file in the directory
 makeAlleleFreqHist_genList(MSAT_01pop_migLow.genList, outDir = histDir)
 makeAlleleFreqHist_genList(MSAT_01pop_migHigh.genList, outDir = histDir)
@@ -293,7 +293,7 @@ makeAlleleFreqHist_genList(MSAT_16pop_migHigh.genList, outDir = histDir)
 
 # DNA ----
 # Specify the directory to save histograms to
-histDir <- "~/Documents/SSRvSNP/Simulations/Documentation/Images/SimulationSummaries_20230428/N4800/DNA/"
+histDir <- "~/Documents/SSRvSNP/Simulations/Documentation/Images/SimulationSummaries_20230501/N4800/DNA/"
 # Generate histograms of each simulation replicate in each genind list, and save to a png file in the directory
 makeAlleleFreqHist_genList(DNA_01pop_migLow.genList, outDir = histDir)
 makeAlleleFreqHist_genList(DNA_01pop_migHigh.genList, outDir = histDir)

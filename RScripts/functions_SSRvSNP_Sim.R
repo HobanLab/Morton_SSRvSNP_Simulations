@@ -257,8 +257,49 @@ summarize_alleleFreqProportions <- function(freqProportions){
 # Function for reporting representation rates, using a vector of allele frequencies and a sample matrix.
 # This function assumes that the freqVector represents the absolute allele frequencies
 # for the population of interest (typically, the entire wild population). Allele names 
-# between the frequency vector and the sample matrix must correspond in order for values to be comparable. 
-getAlleleCategories <- function(freqVector, sampleMat){
+# between the frequency vector and the sample matrix must correspond, for values to be comparable. 
+# n_to_drop flag allows for removal of singleton and/or doubleton alleles
+getAlleleCategories <- function(freqVector, sampleMat, n_to_drop=0){
+  # Check n_to_drop flag: make sure it equals 0, 1 (singletons), or 2 (doubletons)
+  stopifnot(n_to_drop %in% c(0, 1, 2))
+  # Based on values of n_to_drop, remove singletons/doubletons
+  if(n_to_drop > 0){
+    sampleMat <- sampleMat[,-which(colSums(sampleMat, na.rm = TRUE) <= n_to_drop)]
+  }
+  # Determine how many total alleles in the sample matrix are found in the frequency vector 
+  garden.total_Alleles <- length(which(names(freqVector) %in% colnames(sampleMat)))
+  wild.total_Alleles <- length(freqVector)
+  total_Percentage <- (garden.total_Alleles/wild.total_Alleles)*100
+  # Very common alleles (greater than 10%)
+  garden.vCom_Alleles <- length(which(names(which(freqVector > 10)) %in% colnames(sampleMat)))
+  wild.vCom_Alleles <- length(which(freqVector > 10))
+  vCom_Percentage <- (garden.vCom_Alleles/wild.vCom_Alleles)*100
+  # Common alleles (greater than 5%)
+  garden.com_Alleles <- length(which(names(which(freqVector > 5)) %in% colnames(sampleMat)))
+  wild.com_Alleles <- length(which(freqVector > 5))
+  com_Percentage <- (garden.com_Alleles/wild.com_Alleles)*100
+  # Low frequency alleles (between 1% and 10%)
+  garden.lowFr_Alleles <- length(which(names(which(freqVector < 10 & freqVector > 1)) %in% colnames(sampleMat)))
+  wild.lowFr_Alleles <- length(which(freqVector < 10 & freqVector > 1))
+  lowFr_Percentage <- (garden.lowFr_Alleles/wild.lowFr_Alleles)*100
+  # Rare alleles (less than 1%)
+  garden.rare_Alleles <- length(which(names(which(freqVector < 1)) %in% colnames(sampleMat)))
+  wild.rare_Alleles <- length(which(freqVector < 1))
+  rare_Percentage <- (garden.rare_Alleles/wild.rare_Alleles)*100
+  # Concatenate values to vectors
+  gardenAlleles <- c(garden.total_Alleles, garden.vCom_Alleles, garden.com_Alleles, garden.lowFr_Alleles, garden.rare_Alleles)
+  wildAlleles <- c(wild.total_Alleles, wild.vCom_Alleles, wild.com_Alleles, wild.lowFr_Alleles, wild.rare_Alleles)
+  repRates <- c(total_Percentage,vCom_Percentage,com_Percentage,lowFr_Percentage,rare_Percentage) 
+  # Bind vectors to a matrix, name dimensions, and return
+  exSituValues <- cbind(gardenAlleles, wildAlleles, repRates)
+  rownames(exSituValues) <- c("Total","Very common (>10%)","Common (>5%)",
+                              "Low frequency (1% -- 10%)","Rare (<1%)")
+  colnames(exSituValues) <- c("Garden", "Wild", "Rate (%)")
+  return(exSituValues)
+}
+
+# Old version of getAlleleCategories function: without n_to_drop flag
+getAlleleCategories_OLD <- function(freqVector, sampleMat){
   # Determine how many total alleles in the sample matrix are found in the frequency vector 
   garden.total_Alleles <- length(which(names(freqVector) %in% colnames(sampleMat)))
   wild.total_Alleles <- length(freqVector)

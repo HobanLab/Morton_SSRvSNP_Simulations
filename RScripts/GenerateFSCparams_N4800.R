@@ -31,7 +31,12 @@ setwd(sim.wd)
 source("RScripts/functions_SSRvSNP_Sim.R")
 
 # ---- VARIABLES ----
+# This section specifies fsc simulation parameters as variables, for running simulations using strataG (below)
+
+# Specify the number of simulation replicates, per fsc simulation scenario
+# For each simulation replicate, a corresponding Arlequin (and, ultimately, genind) object will be created
 num_reps <- 5
+# Generate a string, indicating the version of fsc being utilized
 fscVersion <- "fsc2709"
 # DEMES
 # Specify number of total individuals, for all simulations

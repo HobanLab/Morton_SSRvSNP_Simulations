@@ -36,9 +36,9 @@ print("%%% ANALYZING N1200 SCENARIOS %%%")
 # source("RScripts/GenerateFSCparams.R")
 # Alternatively, source the genind objects from previously run simulations, using readGeninds functions
 # Microsatellites
-readGeninds_MSAT(paste0(sim.wd,"SimulationOutputs/MSAT_marker/data.MSAT/"))
+readGeninds_MSAT(paste0(sim.wd,"SimulationOutputs/MSAT_N1200_marker/data.MSAT/"))
 # DNA
-readGeninds_DNA(paste0(sim.wd,"SimulationOutputs/DNA_marker/data.DNA/"))
+readGeninds_DNA(paste0(sim.wd,"SimulationOutputs/DNA_N1200_marker/data.DNA/"))
 
 # ---- SENSE CHECK ----
 # 1. MORE ALLELES IN SCENARIOS WITH MORE POPULATIONS ----

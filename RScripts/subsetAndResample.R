@@ -77,7 +77,7 @@ if(nInd_1200_Flag==TRUE){
       paste0(sim.wd, "SimulationOutputs/MSAT_N1200_marker/data.MSAT/N0/MSAT_N1200_resampArr.Rdata")
     # Run resampling in parallel, and save the resampling array result to specified location
     N1200_MSAT_N0_resamplingArrays <- mclapply(MSAT_geninds, Resample_genList, mc.cores = num_cores)
-    saveRDS(N1200_MSAT_N0_resamplingArrays, file=N1200_MSAT_resampArr_N0_filepath)
+    saveRDS(N1200_MSAT_N0_resamplingArrays, file=N1200_MSAT_N0_resampArr_filepath)
     # DNA
     # Declare filepath to save resampling array to
     N1200_DNA_N0_resampArr_filepath <- 
@@ -119,7 +119,7 @@ if(nInd_1200_Flag==TRUE){
       paste0(sim.wd, "SimulationOutputs/MSAT_N1200_marker/data.MSAT/N1/MSAT_N1200_resampArr.Rdata")
     # Run resampling in parallel, and save the resampling array result to specified location
     N1200_MSAT_N1_resamplingArrays <- mclapply(MSAT_geninds, Resample_genList, mc.cores = num_cores, n_to_drop=1)
-    saveRDS(N1200_MSAT_N1_resamplingArrays, file=N1200_MSAT_resampArr_N1_filepath)
+    saveRDS(N1200_MSAT_N1_resamplingArrays, file=N1200_MSAT_N1_resampArr_filepath)
     # DNA
     # Declare filepath to save resampling array to
     N1200_DNA_N1_resampArr_filepath <- 
@@ -161,7 +161,7 @@ if(nInd_1200_Flag==TRUE){
       paste0(sim.wd, "SimulationOutputs/MSAT_N1200_marker/data.MSAT/N1/MSAT_N1200_resampArr.Rdata")
     # Run resampling in parallel, and save the resampling array result to specified location
     N1200_MSAT_N2_resamplingArrays <- mclapply(MSAT_geninds, Resample_genList, mc.cores = num_cores, n_to_drop=2)
-    saveRDS(N1200_MSAT_N2_resamplingArrays, file=N1200_MSAT_resampArr_N2_filepath)
+    saveRDS(N1200_MSAT_N2_resamplingArrays, file=N1200_MSAT_N2_resampArr_filepath)
     # DNA
     # Declare filepath to save resampling array to
     N1200_DNA_N2_resampArr_filepath <- 
@@ -230,7 +230,7 @@ if(nInd_4800_Flag==TRUE){
       paste0(sim.wd, "SimulationOutputs/MSAT_N4800_marker/data.MSAT/N0/MSAT_N4800_resampArr.Rdata")
     # Run resampling in parallel, and save the resampling array result to specified location
     N4800_MSAT_N0_resamplingArrays <- mclapply(MSAT_geninds, Resample_genList, mc.cores = num_cores)
-    saveRDS(N4800_MSAT_N0_resamplingArrays, file=N4800_MSAT_resampArr_N0_filepath)
+    saveRDS(N4800_MSAT_N0_resamplingArrays, file=N4800_MSAT_N0_resampArr_filepath)
     # DNA
     # Declare filepath to save resampling array to
     N4800_DNA_N0_resampArr_filepath <- 
@@ -272,7 +272,7 @@ if(nInd_4800_Flag==TRUE){
       paste0(sim.wd, "SimulationOutputs/MSAT_N4800_marker/data.MSAT/N1/MSAT_N4800_resampArr.Rdata")
     # Run resampling in parallel, and save the resampling array result to specified location
     N4800_MSAT_N1_resamplingArrays <- mclapply(MSAT_geninds, Resample_genList, mc.cores = num_cores, n_to_drop=1)
-    saveRDS(N4800_MSAT_N1_resamplingArrays, file=N4800_MSAT_resampArr_N1_filepath)
+    saveRDS(N4800_MSAT_N1_resamplingArrays, file=N4800_MSAT_N1_resampArr_filepath)
     # DNA
     # Declare filepath to save resampling array to
     N4800_DNA_N1_resampArr_filepath <- 
@@ -314,7 +314,7 @@ if(nInd_4800_Flag==TRUE){
       paste0(sim.wd, "SimulationOutputs/MSAT_N4800_marker/data.MSAT/N1/MSAT_N4800_resampArr.Rdata")
     # Run resampling in parallel, and save the resampling array result to specified location
     N4800_MSAT_N2_resamplingArrays <- mclapply(MSAT_geninds, Resample_genList, mc.cores = num_cores, n_to_drop=2)
-    saveRDS(N4800_MSAT_N2_resamplingArrays, file=N4800_MSAT_resampArr_N2_filepath)
+    saveRDS(N4800_MSAT_N2_resamplingArrays, file=N4800_MSAT_N2_resampArr_filepath)
     # DNA
     # Declare filepath to save resampling array to
     N4800_DNA_N2_resampArr_filepath <- 

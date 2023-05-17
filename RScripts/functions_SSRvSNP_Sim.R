@@ -204,7 +204,13 @@ getTotalFreqs <- function(gen.obj){
 }
 
 # Exploratory function for reporting the proprtion of alleles of each category, from a (wild) frequency vector
-getWildAlleleFreqProportions <- function(gen.obj){
+getWildAlleleFreqProportions <- function(gen.obj, n_to_drop=0){
+  # Check n_to_drop flag: make sure it equals 0, 1 (singletons), or 2 (doubletons)
+  stopifnot(n_to_drop %in% c(0, 1, 2))
+  # Based on values of n_to_drop, remove singletons/doubletons from genind matrix
+  if(n_to_drop > 0){
+    gen.obj@tab <- gen.obj@tab[,-which(colSums(gen.obj@tab, na.rm = TRUE) <= n_to_drop)]
+  }
   # Build the wild allele frequency vector, using the getWildFreqs function
   wildFreqs <- getWildFreqs(gen.obj)
   # Very common
@@ -224,7 +230,13 @@ getWildAlleleFreqProportions <- function(gen.obj){
 
 # Exploratory function for reporting the proprtion of alleles of each category, 
 # from a frequency vector (of ALL alleles--garden AND wild)
-getTotalAlleleFreqProportions <- function(gen.obj){
+getTotalAlleleFreqProportions <- function(gen.obj, n_to_drop=0){
+  # Check n_to_drop flag: make sure it equals 0, 1 (singletons), or 2 (doubletons)
+  stopifnot(n_to_drop %in% c(0, 1, 2))
+  # Based on values of n_to_drop, remove singletons/doubletons from genind matrix
+  if(n_to_drop > 0){
+    gen.obj@tab <- gen.obj@tab[,-which(colSums(gen.obj@tab, na.rm = TRUE) <= n_to_drop)]
+  }
   # Build the total allele frequency vector, using the getTotalFreqs function
   totalFreqs <- getTotalFreqs(gen.obj)
   # Very common
@@ -298,48 +310,20 @@ getAlleleCategories <- function(freqVector, sampleMat, n_to_drop=0){
   return(exSituValues)
 }
 
-# Old version of getAlleleCategories function: without n_to_drop flag
-getAlleleCategories_OLD <- function(freqVector, sampleMat){
-  # Determine how many total alleles in the sample matrix are found in the frequency vector 
-  garden.total_Alleles <- length(which(names(freqVector) %in% colnames(sampleMat)))
-  wild.total_Alleles <- length(freqVector)
-  total_Percentage <- (garden.total_Alleles/wild.total_Alleles)*100
-  # Very common alleles (greater than 10%)
-  garden.vCom_Alleles <- length(which(names(which(freqVector > 10)) %in% colnames(sampleMat)))
-  wild.vCom_Alleles <- length(which(freqVector > 10))
-  vCom_Percentage <- (garden.vCom_Alleles/wild.vCom_Alleles)*100
-  # Common alleles (greater than 5%)
-  garden.com_Alleles <- length(which(names(which(freqVector > 5)) %in% colnames(sampleMat)))
-  wild.com_Alleles <- length(which(freqVector > 5))
-  com_Percentage <- (garden.com_Alleles/wild.com_Alleles)*100
-  # Low frequency alleles (between 1% and 10%)
-  garden.lowFr_Alleles <- length(which(names(which(freqVector < 10 & freqVector > 1)) %in% colnames(sampleMat)))
-  wild.lowFr_Alleles <- length(which(freqVector < 10 & freqVector > 1))
-  lowFr_Percentage <- (garden.lowFr_Alleles/wild.lowFr_Alleles)*100
-  # Rare alleles (less than 1%)
-  garden.rare_Alleles <- length(which(names(which(freqVector < 1)) %in% colnames(sampleMat)))
-  wild.rare_Alleles <- length(which(freqVector < 1))
-  rare_Percentage <- (garden.rare_Alleles/wild.rare_Alleles)*100
-  # Concatenate values to vectors
-  gardenAlleles <- c(garden.total_Alleles, garden.vCom_Alleles, garden.com_Alleles, garden.lowFr_Alleles, garden.rare_Alleles)
-  wildAlleles <- c(wild.total_Alleles, wild.vCom_Alleles, wild.com_Alleles, wild.lowFr_Alleles, wild.rare_Alleles)
-  repRates <- c(total_Percentage,vCom_Percentage,com_Percentage,lowFr_Percentage,rare_Percentage) 
-  # Bind vectors to a matrix, name dimensions, and return
-  exSituValues <- cbind(gardenAlleles, wildAlleles, repRates)
-  rownames(exSituValues) <- c("Total","Very common (>10%)","Common (>5%)",
-                              "Low frequency (1% -- 10%)","Rare (<1%)")
-  colnames(exSituValues) <- c("Garden", "Wild", "Rate (%)")
-  return(exSituValues)
-}
-
 # This function is a wrapper of getAlleleCategories, and takes as an argument a single genind object
 # (containing both garden and wild samples to analyze). It processes that genind object to extract the
 # objects it needs to calculate ex situ representation: a vector of wild allele frequencies, and a 
 # sample matrix of garden samples. Although simulations don't generate missing data, absent alleles
 # (those with frequencies or colSums of 0) are removed from the the frequency vector and sample matrix.
 # Depending on the returnMat argument, the function returns either a vector (of just proportions)
-# or a matrix (of raw allele counts and proportions)
-exSitu_Rep <- function(gen.obj, returnMat = 0){
+# or a matrix (of raw allele counts and proportions). The n_to_drop flag is passed to getAlleleCategories.
+exSitu_Rep <- function(gen.obj, returnMat = FALSE, n_to_drop=0){
+  # Check n_to_drop flag: make sure it equals 0, 1 (singletons), or 2 (doubletons)
+  stopifnot(n_to_drop %in% c(0, 1, 2))
+  # Based on values of n_to_drop, remove singletons/doubletons from genind matrix
+  if(n_to_drop > 0){
+    gen.obj@tab <- gen.obj@tab[,-which(colSums(gen.obj@tab, na.rm = TRUE) <= n_to_drop)]
+  }
   # Generate numerical vectors corresponding to garden and wild rows
   garden.Rows <- which(gen.obj@pop == "garden")
   wild.Rows <- which(gen.obj@pop == "wild")
@@ -354,8 +338,8 @@ exSitu_Rep <- function(gen.obj, returnMat = 0){
   gardenMat <- gardenMat[,which(colSums(gardenMat, na.rm = TRUE) != 0)]
   # Calculate how many alleles (of each category) the garden samples represent
   repValues <- getAlleleCategories(freqVector=wildFreqs, sampleMat = gardenMat)
-  if(returnMat==1){
-    # If returnMat==1, return a matrix of absolute values (garden alleles, wild alleles, and proportion)
+  if(returnMat==TRUE){
+    # Return a matrix of absolute values (garden alleles, wild alleles, and proportion)
     return(repValues)
   } else {
     # Otherwise, subset matrix returned by getAlleleCategories to just ex situ representation proportions
@@ -433,7 +417,13 @@ makeAlleleFreqHist_genList <- function(gen.List, outDir="~/Shared/SSRvSNP_Sim/Co
 # missing loci are removed, even though simulations by default do not generate any missing data.
 # Just the 3rd column of the matrix generated by getAlleleCategories (i.e. the representation rates) 
 # is retained for resampling, since we don't use the absolute allele count values.
-exSitu_Sample <- function(gen.obj, numSamples){
+exSitu_Sample <- function(gen.obj, numSamples, n_to_drop=0){
+  # Check n_to_drop flag: make sure it equals 0, 1 (singletons), or 2 (doubletons)
+  stopifnot(n_to_drop %in% c(0, 1, 2))
+  # Based on values of n_to_drop, remove singletons/doubletons from genind matrix
+  if(n_to_drop > 0){
+    gen.obj@tab <- gen.obj@tab[,-which(colSums(gen.obj@tab, na.rm = TRUE) <= n_to_drop)]
+  }
   # Build the wild allele frequency vector, using the getWildFreqs function
   freqVector <- getWildFreqs(gen.obj)
   # Remove any missing alleles (those with frequencies of 0) from the frequency vector
@@ -452,7 +442,13 @@ exSitu_Sample <- function(gen.obj, numSamples){
 }
 
 # Wrapper for the exSitu_Sample function, iterating that function over all wild samples in a genind object
-exSitu_Resample <- function(gen.obj){
+exSitu_Resample <- function(gen.obj, n_to_drop=0){
+  # Check n_to_drop flag: make sure it equals 0, 1 (singletons), or 2 (doubletons)
+  stopifnot(n_to_drop %in% c(0, 1, 2))
+  # Based on values of n_to_drop, remove singletons/doubletons from genind matrix
+  if(n_to_drop > 0){
+    gen.obj@tab <- gen.obj@tab[,-which(colSums(gen.obj@tab, na.rm = TRUE) <= n_to_drop)]
+  }
   # Apply the exSituSample function number of times equal to number of wild samples,
   # excluding 1 (because we need at least 2 individuals to sample)
   # Resulting matrix needs to be transposed in order to keep columns as different allele categories
@@ -464,7 +460,13 @@ exSitu_Resample <- function(gen.obj){
 }
 
 # Wrapper for exSitu_Resample, which will generate an array of values from a single genind object
-Resample_genind <- function(gen.obj, reps=5){
+Resample_genind <- function(gen.obj, reps=5, n_to_drop=0){
+  # Check n_to_drop flag: make sure it equals 0, 1 (singletons), or 2 (doubletons)
+  stopifnot(n_to_drop %in% c(0, 1, 2))
+  # Based on values of n_to_drop, remove singletons/doubletons from genind matrix
+  if(n_to_drop > 0){
+    gen.obj@tab <- gen.obj@tab[,-which(colSums(gen.obj@tab, na.rm = TRUE) <= n_to_drop)]
+  }
   # Run resampling for all replicates, using sapply and lambda function
   resamplingArray <- sapply(1:reps, function(x) exSitu_Resample(gen.obj = gen.obj), simplify = "array")
   # Rename third array dimension to describe simulation scenario (captured in the genind object), and return
@@ -473,19 +475,19 @@ Resample_genind <- function(gen.obj, reps=5){
 }
 
 # Wrapper for Resample_genind, which will generate an array of values from a list of genind objects
-Resample_genList <- function(gen.List, reps=5){
+Resample_genList <- function(gen.List, reps=5, n_to_drop=0){
   # Run resampling for all replicates, using lapply and lambda function, and return array
-  resamplingArray <- lapply(gen.List, function(x) Resample_genind(gen.obj = x, reps=reps))
+  resamplingArray <- lapply(gen.List, function(x) Resample_genind(gen.obj = x, reps=reps, n_to_drop=n_to_drop))
   return(resamplingArray)
 }
 
 # Parallel wrapper for exSitu_Resample, which will generate an array of values from a single genind object
 # This function has been made obsolete by Resample_genlist (an alternative), but is still declared here,
 # because this parallelized resampling approach can still work for N1200 datasets.
-parResample_genind <- function(gen.obj, reps=5, cluster){
+parResample_genind <- function(gen.obj, reps=5, n_to_drop=0, cluster){
   # Run resampling for all replicates, using parSapply and lambda function, and return array
   resamplingArray <- parSapply(cl=cluster, 1:reps, 
-                               function(x) exSitu_Resample(gen.obj = gen.obj), simplify = "array")
+                               function(x) exSitu_Resample(gen.obj = gen.obj, n_to_drop), simplify = "array")
   # Rename third array dimension to describe simulation scenario (captured in the genind object), and return
   dimnames(resamplingArray)[[3]] <- rep(unlist(gen.obj@other), dim(resamplingArray)[[3]])
   return(resamplingArray)
@@ -526,21 +528,6 @@ resample_meanValues <- function(resamplingArray){
   colnames(meanValue_mat) <- c("Total","Very common","Common","Low frequency","Rare")
   return(meanValue_mat)
 }
-
-# # From resampling array, calculate the mean values (across resampling replicates) for each allele frequency category
-# resample_meanValues_OLD <- function(resamplingArray){
-#   # Declare a matrix to receive average values
-#   meanValue_mat <- matrix(nrow=nrow(resamplingArray), ncol=ncol(resamplingArray))
-#   # For each column in the array, average results across resampling replicates (3rd array dimension)
-#   meanValue_mat[,1] <- apply(resamplingArray[,1,], 1, mean, na.rm=TRUE)
-#   meanValue_mat[,2] <- apply(resamplingArray[,2,], 1, mean, na.rm=TRUE)
-#   meanValue_mat[,3] <- apply(resamplingArray[,3,], 1, mean, na.rm=TRUE)
-#   meanValue_mat[,4] <- apply(resamplingArray[,4,], 1, mean, na.rm=TRUE)
-#   meanValue_mat[,5] <- apply(resamplingArray[,5,], 1, mean, na.rm=TRUE)
-#   # Give names to meanValue_mat columns, and return
-#   colnames(meanValue_mat) <- c("Total","Very common","Common","Low frequency","Rare")
-#   return(meanValue_mat)
-# }
 
 # Summary plotting function, from array
 resample_Plot <- function(resamplingArray, colors, largePopFlag=FALSE){

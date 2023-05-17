@@ -28,7 +28,12 @@ setwd(sim.wd)
 source("RScripts/functions_SSRvSNP_Sim.R")
 
 # ---- VARIABLES ----
+# This section specifies fsc simulation parameters as variables, for running simulations using strataG (below)
+
+# Specify the number of simulation replicates, per fsc simulation scenario
+# For each simulation replicate, a corresponding Arlequin (and, ultimately, genind) object will be created
 num_reps <- 5
+# Generate a string, indicating the version of fsc being utilized
 fscVersion <- "fsc2709"
 # DEMES
 # Specify number of total individuals, for all simulations
@@ -97,7 +102,7 @@ dna <- fscBlock_dna(sequence.length = 500, mut.rate = dna_mutRate)
 DNAgenetics <- fscSettingsGenetics(dna, dna, dna, dna, dna, dna, dna, dna, dna, dna, 
                                    num.chrom = 100)
 # ---- MSAT ----
-msat.wd <- paste0(sim.wd,"SimulationOutputs/MSAT_marker/")
+msat.wd <- paste0(sim.wd,"SimulationOutputs/MSAT_N1200_marker/")
 setwd(msat.wd)
 
 # 1 POPULATION
@@ -195,7 +200,7 @@ saveRDS(MSAT_16pop_migHigh.genind, file = paste0("data.MSAT/genind.MSAT_16pop_mi
 saveRDS(MSAT_16pop_migHigh.params, file = paste0("data.MSAT/params.MSAT_16pop_migHigh.",Sys.Date(),".Rdata"))
 
 # ---- DNA ----
-dna.wd <- paste0(sim.wd,"SimulationOutputs/DNA_marker/")
+dna.wd <- paste0(sim.wd,"SimulationOutputs/DNA_N1200_marker/")
 setwd(dna.wd)
 
 # 1 POPULATION

@@ -362,7 +362,7 @@ summarize_exSituRepresentation <- function(repRates){
 
 # Wrapper function, which generates both allele frequency proportions and ex situ representation rates,
 # for a list of genind objects
-summarize_simulations <- function(gen.List){
+summarize_simulations <- function(gen.List, n_to_drop=0){
   # Build array to capture allele frequency proportions
   alleleFreqSummaries <- array(dim = c(3, 2, length(gen.List)))
   rownames(alleleFreqSummaries) <- c("Very common (>10%)","Low frequency (1% -- 10%)","Rare (<1%)")
@@ -375,10 +375,10 @@ summarize_simulations <- function(gen.List){
   # Loop through list of genind objects, calculating metrics for each item
   for (i in 1:length(gen.List)){
     # Calculate and summarize allele frequency scenarios. Each array slot is a different scenario
-    alleleFrequencies <- sapply(gen.List[[i]], getWildAlleleFreqProportions)
+    alleleFrequencies <- sapply(gen.List[[i]], getWildAlleleFreqProportions, n_to_drop=n_to_drop)
     alleleFreqSummaries[,,i] <- summarize_alleleFreqProportions(alleleFrequencies)
     # Calculate and summarize ex situ representation rates. Each array slot is a different scenario
-    representationRates <- sapply(gen.List[[i]], exSitu_Rep)
+    representationRates <- sapply(gen.List[[i]], exSitu_Rep, n_to_drop=n_to_drop)
     repRateSummaries[,,i] <- summarize_exSituRepresentation(representationRates)
   }
   # Round results to 2 digits

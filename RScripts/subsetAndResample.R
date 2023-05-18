@@ -105,7 +105,7 @@ if(nInd_1200_Flag==TRUE){
     # DNA
     invisible(rapply(N1200_DNA_N0_resamplingArrays, resample_Plot_PNG, colors=plotColors, data.dir=N1200_DNA_N0_plotDir))
   }
-  if(n1_Flag==TRUE){
+  if(N1_Flag==TRUE){
     # %%% Summarize simulations ----
     # MSAT
     summarize_simulations(MSAT_geninds, n_to_drop=1)
@@ -147,7 +147,7 @@ if(nInd_1200_Flag==TRUE){
     # DNA
     invisible(rapply(N1200_DNA_N1_resamplingArrays, resample_Plot_PNG, colors=plotColors, data.dir=N1200_DNA_N1_plotDir))
   }
-  if(n2_Flag==TRUE){
+  if(N2_Flag==TRUE){
     # %%% Summarize simulations ----
     # MSAT
     summarize_simulations(MSAT_geninds, n_to_drop=2)
@@ -258,7 +258,7 @@ if(nInd_4800_Flag==TRUE){
     # DNA
     invisible(rapply(N4800_DNA_N0_resamplingArrays, resample_Plot_PNG, colors=plotColors, data.dir=N4800_DNA_N0_plotDir))
   }
-  if(n1_Flag==TRUE){
+  if(N1_Flag==TRUE){
     # %%% Summarize simulations ----
     # MSAT
     summarize_simulations(MSAT_geninds, n_to_drop=1)
@@ -300,7 +300,7 @@ if(nInd_4800_Flag==TRUE){
     # DNA
     invisible(rapply(N4800_DNA_N1_resamplingArrays, resample_Plot_PNG, colors=plotColors, data.dir=N4800_DNA_N1_plotDir))
   }
-  if(n2_Flag==TRUE){
+  if(N2_Flag==TRUE){
     # %%% Summarize simulations ----
     # MSAT
     summarize_simulations(MSAT_geninds, n_to_drop=2)

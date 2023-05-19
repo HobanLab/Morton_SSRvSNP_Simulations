@@ -64,6 +64,7 @@ if(nInd_1200_Flag==TRUE){
   DNA_geninds <- rapply(DNA_geninds, assignGardenSamples, proportion=gardenRate, how = "list")
   
   if(N0_Flag==TRUE){
+    print("%%% N TO DROP VALUE: 0")
     # %%% Summarize simulations ----
     # MSAT
     summarize_simulations(MSAT_geninds)
@@ -106,6 +107,7 @@ if(nInd_1200_Flag==TRUE){
     invisible(rapply(N1200_DNA_N0_resamplingArrays, resample_Plot_PNG, colors=plotColors, data.dir=N1200_DNA_N0_plotDir))
   }
   if(N1_Flag==TRUE){
+    print("%%% N TO DROP VALUE: 1")
     # %%% Summarize simulations ----
     # MSAT
     summarize_simulations(MSAT_geninds, n_to_drop=1)
@@ -148,6 +150,7 @@ if(nInd_1200_Flag==TRUE){
     invisible(rapply(N1200_DNA_N1_resamplingArrays, resample_Plot_PNG, colors=plotColors, data.dir=N1200_DNA_N1_plotDir))
   }
   if(N2_Flag==TRUE){
+    print("%%% N TO DROP VALUE: 2")
     # %%% Summarize simulations ----
     # MSAT
     summarize_simulations(MSAT_geninds, n_to_drop=2)
@@ -158,14 +161,14 @@ if(nInd_1200_Flag==TRUE){
     # MSAT 
     # Declare filepath to save resampling array to
     N1200_MSAT_N2_resampArr_filepath <- 
-      paste0(sim.wd, "SimulationOutputs/MSAT_N1200_marker/data.MSAT/N1/MSAT_N1200_resampArr.Rdata")
+      paste0(sim.wd, "SimulationOutputs/MSAT_N1200_marker/data.MSAT/N2/MSAT_N1200_resampArr.Rdata")
     # Run resampling in parallel, and save the resampling array result to specified location
     N1200_MSAT_N2_resamplingArrays <- mclapply(MSAT_geninds, Resample_genList, mc.cores = num_cores, n_to_drop=2)
     saveRDS(N1200_MSAT_N2_resamplingArrays, file=N1200_MSAT_N2_resampArr_filepath)
     # DNA
     # Declare filepath to save resampling array to
     N1200_DNA_N2_resampArr_filepath <- 
-      paste0(sim.wd, "SimulationOutputs/DNA_N1200_marker/data.DNA/N1/DNA_N1200_resampArr.Rdata")
+      paste0(sim.wd, "SimulationOutputs/DNA_N1200_marker/data.DNA/N2/DNA_N1200_resampArr.Rdata")
     # Run resampling in parallel, and save the resampling array result to specified location
     N1200_DNA_N2_resamplingArrays <- mclapply(DNA_geninds, Resample_genList, mc.cores = num_cores, n_to_drop=2)
     saveRDS(N1200_DNA_N2_resamplingArrays, file=N1200_DNA_N2_resampArr_filepath)
@@ -181,14 +184,15 @@ if(nInd_1200_Flag==TRUE){
     
     # %%% Plotting ----
     # Specify the directories to save plots to
-    N1200_MSAT_N2_plotDir <- "~/Documents/SSRvSNP/Simulations/Documentation/Images/nToDropTests_052023/N1200/MSAT/N1/"
-    N1200_DNA_N2_plotDir <- "~/Documents/SSRvSNP/Simulations/Documentation/Images/nToDropTests_052023/N1200/DNA/N1/"
+    N1200_MSAT_N2_plotDir <- "~/Documents/SSRvSNP/Simulations/Documentation/Images/nToDropTests_052023/N1200/MSAT/N2/"
+    N1200_DNA_N2_plotDir <- "~/Documents/SSRvSNP/Simulations/Documentation/Images/nToDropTests_052023/N1200/DNA/N2/"
     # Plotting commands nested in invisible function, to prevent text from being printed
     # MSAT
     invisible(rapply(N1200_MSAT_N2_resamplingArrays, resample_Plot_PNG, colors=plotColors, data.dir=N1200_MSAT_N2_plotDir))
     # DNA
     invisible(rapply(N1200_DNA_N2_resamplingArrays, resample_Plot_PNG, colors=plotColors, data.dir=N1200_DNA_N2_plotDir))
   }
+  print("%%% N1200 ANALYSES COMPLETE! %%%")
 }
 
 # %%% ORIGINAL SIMULATIONS: NIND 4800 %%% ----
@@ -217,6 +221,7 @@ if(nInd_4800_Flag==TRUE){
   DNA_geninds <- rapply(DNA_geninds, assignGardenSamples, proportion=gardenRate, how = "list")
   
   if(N0_Flag==TRUE){
+    print("%%% N TO DROP VALUE: 0")
     # %%% Summarize simulations ----
     # MSAT
     summarize_simulations(MSAT_geninds)
@@ -259,6 +264,7 @@ if(nInd_4800_Flag==TRUE){
     invisible(rapply(N4800_DNA_N0_resamplingArrays, resample_Plot_PNG, colors=plotColors, data.dir=N4800_DNA_N0_plotDir))
   }
   if(N1_Flag==TRUE){
+    print("%%% N TO DROP VALUE: 1")
     # %%% Summarize simulations ----
     # MSAT
     summarize_simulations(MSAT_geninds, n_to_drop=1)
@@ -301,6 +307,7 @@ if(nInd_4800_Flag==TRUE){
     invisible(rapply(N4800_DNA_N1_resamplingArrays, resample_Plot_PNG, colors=plotColors, data.dir=N4800_DNA_N1_plotDir))
   }
   if(N2_Flag==TRUE){
+    print("%%% N TO DROP VALUE: 2")
     # %%% Summarize simulations ----
     # MSAT
     summarize_simulations(MSAT_geninds, n_to_drop=2)
@@ -311,14 +318,14 @@ if(nInd_4800_Flag==TRUE){
     # MSAT 
     # Declare filepath to save resampling array to
     N4800_MSAT_N2_resampArr_filepath <- 
-      paste0(sim.wd, "SimulationOutputs/MSAT_N4800_marker/data.MSAT/N1/MSAT_N4800_resampArr.Rdata")
+      paste0(sim.wd, "SimulationOutputs/MSAT_N4800_marker/data.MSAT/N2/MSAT_N4800_resampArr.Rdata")
     # Run resampling in parallel, and save the resampling array result to specified location
     N4800_MSAT_N2_resamplingArrays <- mclapply(MSAT_geninds, Resample_genList, mc.cores = num_cores, n_to_drop=2)
     saveRDS(N4800_MSAT_N2_resamplingArrays, file=N4800_MSAT_N2_resampArr_filepath)
     # DNA
     # Declare filepath to save resampling array to
     N4800_DNA_N2_resampArr_filepath <- 
-      paste0(sim.wd, "SimulationOutputs/DNA_N4800_marker/data.DNA/N1/DNA_N4800_resampArr.Rdata")
+      paste0(sim.wd, "SimulationOutputs/DNA_N4800_marker/data.DNA/N2/DNA_N4800_resampArr.Rdata")
     # Run resampling in parallel, and save the resampling array result to specified location
     N4800_DNA_N2_resamplingArrays <- mclapply(DNA_geninds, Resample_genList, mc.cores = num_cores, n_to_drop=2)
     saveRDS(N4800_DNA_N2_resamplingArrays, file=N4800_DNA_N2_resampArr_filepath)
@@ -334,12 +341,13 @@ if(nInd_4800_Flag==TRUE){
     
     # %%% Plotting ----
     # Specify the directories to save plots to
-    N4800_MSAT_N2_plotDir <- "~/Documents/SSRvSNP/Simulations/Documentation/Images/nToDropTests_052023/N4800/MSAT/N1/"
-    N4800_DNA_N2_plotDir <- "~/Documents/SSRvSNP/Simulations/Documentation/Images/nToDropTests_052023/N4800/DNA/N1/"
+    N4800_MSAT_N2_plotDir <- "~/Documents/SSRvSNP/Simulations/Documentation/Images/nToDropTests_052023/N4800/MSAT/N2/"
+    N4800_DNA_N2_plotDir <- "~/Documents/SSRvSNP/Simulations/Documentation/Images/nToDropTests_052023/N4800/DNA/N2/"
     # Plotting commands nested in invisible function, to prevent text from being printed
     # MSAT
     invisible(rapply(N4800_MSAT_N2_resamplingArrays, resample_Plot_PNG, colors=plotColors, data.dir=N4800_MSAT_N2_plotDir))
     # DNA
     invisible(rapply(N4800_DNA_N2_resamplingArrays, resample_Plot_PNG, colors=plotColors, data.dir=N4800_DNA_N2_plotDir))
   }
+  print("%%% N4800 ANALYSES COMPLETE! %%%")
 }

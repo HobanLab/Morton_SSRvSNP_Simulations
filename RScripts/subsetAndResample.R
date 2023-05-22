@@ -259,9 +259,11 @@ if(nInd_4800_Flag==TRUE){
     N4800_DNA_N0_plotDir <- "~/Documents/SSRvSNP/Simulations/Documentation/Images/nToDropTests_052023/N4800/DNA/N0/"
     # Plotting commands nested in invisible function, to prevent text from being printed
     # MSAT
-    invisible(rapply(N4800_MSAT_N0_resamplingArrays, resample_Plot_PNG, colors=plotColors, data.dir=N4800_MSAT_N0_plotDir))
+    invisible(rapply(N4800_MSAT_N0_resamplingArrays, resample_Plot_PNG, largePopFlag=TRUE,
+                     colors=plotColors, data.dir=N4800_MSAT_N0_plotDir))
     # DNA
-    invisible(rapply(N4800_DNA_N0_resamplingArrays, resample_Plot_PNG, colors=plotColors, data.dir=N4800_DNA_N0_plotDir))
+    invisible(rapply(N4800_DNA_N0_resamplingArrays, resample_Plot_PNG, largePopFlag=TRUE, 
+                     colors=plotColors, data.dir=N4800_DNA_N0_plotDir))
   }
   if(N1_Flag==TRUE){
     print("%%% N TO DROP VALUE: 1")
@@ -302,9 +304,11 @@ if(nInd_4800_Flag==TRUE){
     N4800_DNA_N1_plotDir <- "~/Documents/SSRvSNP/Simulations/Documentation/Images/nToDropTests_052023/N4800/DNA/N1/"
     # Plotting commands nested in invisible function, to prevent text from being printed
     # MSAT
-    invisible(rapply(N4800_MSAT_N1_resamplingArrays, resample_Plot_PNG, colors=plotColors, data.dir=N4800_MSAT_N1_plotDir))
+    invisible(rapply(N4800_MSAT_N1_resamplingArrays, resample_Plot_PNG, largePopFlag=TRUE,
+                     colors=plotColors, data.dir=N4800_MSAT_N1_plotDir))
     # DNA
-    invisible(rapply(N4800_DNA_N1_resamplingArrays, resample_Plot_PNG, colors=plotColors, data.dir=N4800_DNA_N1_plotDir))
+    invisible(rapply(N4800_DNA_N1_resamplingArrays, resample_Plot_PNG, largePopFlag=TRUE,
+                     colors=plotColors, data.dir=N4800_DNA_N1_plotDir))
   }
   if(N2_Flag==TRUE){
     print("%%% N TO DROP VALUE: 2")
@@ -345,9 +349,11 @@ if(nInd_4800_Flag==TRUE){
     N4800_DNA_N2_plotDir <- "~/Documents/SSRvSNP/Simulations/Documentation/Images/nToDropTests_052023/N4800/DNA/N2/"
     # Plotting commands nested in invisible function, to prevent text from being printed
     # MSAT
-    invisible(rapply(N4800_MSAT_N2_resamplingArrays, resample_Plot_PNG, colors=plotColors, data.dir=N4800_MSAT_N2_plotDir))
+    invisible(rapply(N4800_MSAT_N2_resamplingArrays, resample_Plot_PNG, largePopFlag=TRUE, 
+                     colors=plotColors, data.dir=N4800_MSAT_N2_plotDir))
     # DNA
-    invisible(rapply(N4800_DNA_N2_resamplingArrays, resample_Plot_PNG, colors=plotColors, data.dir=N4800_DNA_N2_plotDir))
+    invisible(rapply(N4800_DNA_N2_resamplingArrays, resample_Plot_PNG, largePopFlag=TRUE, 
+                     colors=plotColors, data.dir=N4800_DNA_N2_plotDir))
   }
   print("%%% N4800 ANALYSES COMPLETE! %%%")
 }

@@ -13,9 +13,12 @@ SimulationOutputs/ArchivedScenarios
 # "Original" simulations (nInd = 1200)
 SimulationOutputs/MSAT_N1200_marker/data.MSAT
 SimulationOutputs/DNA_N1200_marker/data.DNA
-# Increased population size simulations (nInda=4800)
+# Increased population size simulations (nInd=4800)
 SimulationOutputs/MSAT_N4800_marker/data.MSAT
 SimulationOutputs/DNA_N4800_marker/data.DNA
+
+# Additional R scripts, not key to main analysis
+RScripts/resamplingPlotting.R
 
 # All Arlequin, .arb files, and .simparam. For SNP simulations with at least 1,000 loci, these files will outsize the GitHub file limit size
 **/*.arp

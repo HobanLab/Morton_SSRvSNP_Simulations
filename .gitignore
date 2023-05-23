@@ -16,6 +16,9 @@ SimulationOutputs/DNA_N1200_marker/data.DNA
 # Increased population size simulations (nInd=4800)
 SimulationOutputs/MSAT_N4800_marker/data.MSAT
 SimulationOutputs/DNA_N4800_marker/data.DNA
+# DNA low mutation rate scenarios (nInd=1200 and nInd=4800)
+SimulationOutputs/DNA_N1200_lowMut/data.DNA
+SimulationOutputs/DNA_N4800_lowMut/data.DNA
 
 # Additional R scripts, not key to main analysis
 RScripts/resamplingPlotting.R

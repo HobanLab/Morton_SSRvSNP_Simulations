@@ -40,7 +40,6 @@ N1_Flag <- TRUE
 N2_Flag <- TRUE
 dnaLowMut_Flag <- TRUE
 
-
 # %%% ORIGINAL SIMULATIONS: NIND 1200 %%% ----
 # Based on flag value, analyze NIND 1200 dataset
 if(nInd_1200_Flag==TRUE){
@@ -402,7 +401,7 @@ if(dnaLowMut_Flag==TRUE){
       
     # %%% Plotting ----
     # Specify the directories to save plots to
-    N1200_DNA_lowMut_plotDir <- "~/Documents/SSRvSNP/Simulations/Documentation/Images/dnaMutationRateTests_052023/N1200"
+    N1200_DNA_lowMut_plotDir <- "~/Documents/SSRvSNP/Simulations/Documentation/Images/dnaMutationRateTests_052023/N1200/"
     # Plotting commands nested in invisible function, to prevent text from being printed
     # DNA
     invisible(rapply(N1200_DNA_lowMut_resamplingArrays, resample_Plot_PNG, largePopFlag=TRUE, 
@@ -441,7 +440,7 @@ if(dnaLowMut_Flag==TRUE){
     
     # %%% Plotting ----
     # Specify the directories to save plots to
-    N4800_DNA_lowMut_plotDir <- "~/Documents/SSRvSNP/Simulations/Documentation/Images/dnaMutationRateTests_052023/N4800"
+    N4800_DNA_lowMut_plotDir <- "~/Documents/SSRvSNP/Simulations/Documentation/Images/dnaMutationRateTests_052023/N4800/"
     # Plotting commands nested in invisible function, to prevent text from being printed
     # DNA
     invisible(rapply(N4800_DNA_lowMut_resamplingArrays, resample_Plot_PNG, largePopFlag=TRUE, 

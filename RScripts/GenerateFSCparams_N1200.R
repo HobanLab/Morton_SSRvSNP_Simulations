@@ -1,6 +1,6 @@
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# %%% GENERATE FSC PARAMETERS USING STRATAG %%%
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# %%% GENERATE FSC PARAMETERS USING STRATAG (N1200) %%%
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # This script uses strataG to create the fastsimcoal2 (fsc) parameter files used for the simulation component
 # of the SSR v. SNP comparison project. Then, those parameter files are used to run fsc simulations. 

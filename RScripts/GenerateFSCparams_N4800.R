@@ -1,6 +1,6 @@
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# %%% GENERATE FSC PARAMETERS USING STRATAG: INCREASED POPULATION SIZE %%%
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# %%% GENERATE FSC PARAMETERS USING STRATAG (N4800) %%%
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # This script uses strataG to create the fastsimcoal2 (fsc) parameter files used for the simulation component
 # of the SSR v. SNP comparison project. Then, those parameter files are used to run fsc simulations. 

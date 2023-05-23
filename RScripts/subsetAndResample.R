@@ -10,7 +10,8 @@
 # of sample subsets (in comparison to the whole of wild allelic diversity) is calculated, then plotted
 
 # In order to function iteratively over large objects (i.e. lists of genind objects), the steps
-# in this script use many apply family functions
+# in this script use many apply family functions. To use this script multiple times without overwriting
+# data, we frame code sections in if statements using flags, to modularly resample different datasets.
 
 library(strataG)
 library(adegenet)
@@ -31,12 +32,14 @@ num_cores <- detectCores() - 4
 num_reps <- 5
 # Pick plot colors (for all plots!)
 plotColors <- c("red","red4","darkorange3","coral","purple")
-# Flags for processing different datasets (nInd=1200 and nInd=4800; different n_to_drop flags)
-nInd_1200_Flag <- TRUE
-nInd_4800_Flag <- TRUE
+# Flags for processing different datasets (nInd=1200, 4800; different n_to_drop flags; DNA low mutation)
+nInd_1200_Flag <- FALSE
+nInd_4800_Flag <- FALSE
 N0_Flag <- TRUE
 N1_Flag <- TRUE
 N2_Flag <- TRUE
+dnaLowMut_Flag <- TRUE
+
 
 # %%% ORIGINAL SIMULATIONS: NIND 1200 %%% ----
 # Based on flag value, analyze NIND 1200 dataset
@@ -356,4 +359,92 @@ if(nInd_4800_Flag==TRUE){
                      colors=plotColors, data.dir=N4800_DNA_N2_plotDir))
   }
   print("%%% N4800 ANALYSES COMPLETE! %%%")
+}
+
+# %%% DNA LOW MUTATION SCENARIOS %%% ----
+# Based on flag value, analyze DNA datasets with lower mutation rates (1e-8) 
+# We don't utilize n_to_drop flags for this analysis, but we do look at different population sizes
+nInd_1200_Flag <- TRUE
+nInd_4800_Flag <- TRUE
+if(dnaLowMut_Flag==TRUE){
+  print("%%% DNA LOW MUTATION RESAMPLING %%%")
+  # %%% Read in simulations and process results ----
+  if(nInd_1200_Flag==TRUE){
+    print("%%% ANALYZING N1200 DATASETS")
+    # Source the genind objects from previously run simulations, using readGeninds functions
+    readGeninds_DNA(paste0(sim.wd,"SimulationOutputs/DNA_N1200_lowMut/data.DNA/"))
+    
+    # Combine all scenarios for each marker into a list of genind lists
+    DNA_geninds <- list(DNA_01pop_migLow.genList, DNA_01pop_migHigh.genList, DNA_04pop_migLow.genList,
+                        DNA_04pop_migHigh.genList, DNA_16pop_migLow.genList, DNA_16pop_migHigh.genList)
+    
+    # %%% Assign garden samples ----
+    # Specify the proportion of total individuals assigned to gardens
+    gardenRate <- 0.05
+    # Assign individuals to garden populations. Since we're dealing with a list of lists, we use rapply
+    # (We could also use a nested lapply: genind_list <- lapply (genind_list, lapply, function, args))
+    DNA_geninds <- rapply(DNA_geninds, assignGardenSamples, proportion=gardenRate, how = "list")
+    
+    # %%% Resampling ----
+    # DNA
+    # Declare filepath to save resampling array to
+    N1200_DNA_lowMut_resampArr_filepath <- 
+      paste0(sim.wd, "SimulationOutputs/DNA_N1200_lowMut/data.DNA/DNA_N1200_resampArr.Rdata")
+    # Run resampling in parallel, and save the resampling array result to specified location
+    N1200_DNA_lowMut_resamplingArrays <- mclapply(DNA_geninds, Resample_genList, mc.cores = num_cores)
+    saveRDS(N1200_DNA_lowMut_resamplingArrays, file=N1200_DNA_lowMut_resampArr_filepath)
+      
+    # %%% Summarize resampling results ----
+    # Calculate 95% minimum sampling size, and the mean values of each category, for all scenarios
+    # DNA
+    N1200_DNA_min95Values <- rapply(N1200_DNA_lowMut_resamplingArrays, resample_min95_mean, how = "list")
+    N1200_DNA_meanValues <- rapply(N1200_DNA_lowMut_resamplingArrays, resample_meanValues, how = "list")
+      
+    # %%% Plotting ----
+    # Specify the directories to save plots to
+    N1200_DNA_lowMut_plotDir <- "~/Documents/SSRvSNP/Simulations/Documentation/Images/dnaMutationRateTests_052023/N1200"
+    # Plotting commands nested in invisible function, to prevent text from being printed
+    # DNA
+    invisible(rapply(N1200_DNA_lowMut_resamplingArrays, resample_Plot_PNG, largePopFlag=TRUE, 
+                     colors=plotColors, data.dir=N1200_DNA_lowMut_plotDir))
+  }
+  if(nInd_4800_Flag==TRUE){
+    print("%%% ANALYZING N4800 DATASETS")
+    # Source the genind objects from previously run simulations, using readGeninds functions
+    readGeninds_DNA(paste0(sim.wd,"SimulationOutputs/DNA_N4800_lowMut/data.DNA/"))
+    
+    # Combine all scenarios for each marker into a list of genind lists
+    DNA_geninds <- list(DNA_01pop_migLow.genList, DNA_01pop_migHigh.genList, DNA_04pop_migLow.genList,
+                        DNA_04pop_migHigh.genList, DNA_16pop_migLow.genList, DNA_16pop_migHigh.genList)
+    
+    # %%% Assign garden samples ----
+    # Specify the proportion of total individuals assigned to gardens
+    gardenRate <- 0.05
+    # Assign individuals to garden populations. Since we're dealing with a list of lists, we use rapply
+    # (We could also use a nested lapply: genind_list <- lapply (genind_list, lapply, function, args))
+    DNA_geninds <- rapply(DNA_geninds, assignGardenSamples, proportion=gardenRate, how = "list")
+    
+    # %%% Resampling ----
+    # DNA
+    # Declare filepath to save resampling array to
+    N4800_DNA_lowMut_resampArr_filepath <- 
+      paste0(sim.wd, "SimulationOutputs/DNA_N4800_lowMut/data.DNA/DNA_N4800_resampArr.Rdata")
+    # Run resampling in parallel, and save the resampling array result to specified location
+    N4800_DNA_lowMut_resamplingArrays <- mclapply(DNA_geninds, Resample_genList, mc.cores = num_cores)
+    saveRDS(N4800_DNA_lowMut_resamplingArrays, file=N4800_DNA_lowMut_resampArr_filepath)
+    
+    # %%% Summarize resampling results ----
+    # Calculate 95% minimum sampling size, and the mean values of each category, for all scenarios
+    # DNA
+    N4800_DNA_min95Values <- rapply(N4800_DNA_lowMut_resamplingArrays, resample_min95_mean, how = "list")
+    N4800_DNA_meanValues <- rapply(N4800_DNA_lowMut_resamplingArrays, resample_meanValues, how = "list")
+    
+    # %%% Plotting ----
+    # Specify the directories to save plots to
+    N4800_DNA_lowMut_plotDir <- "~/Documents/SSRvSNP/Simulations/Documentation/Images/dnaMutationRateTests_052023/N4800"
+    # Plotting commands nested in invisible function, to prevent text from being printed
+    # DNA
+    invisible(rapply(N4800_DNA_lowMut_resamplingArrays, resample_Plot_PNG, largePopFlag=TRUE, 
+                     colors=plotColors, data.dir=N4800_DNA_lowMut_plotDir))
+  }
 }

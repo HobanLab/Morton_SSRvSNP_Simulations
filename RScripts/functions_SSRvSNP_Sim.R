@@ -208,9 +208,7 @@ getWildAlleleFreqProportions <- function(gen.obj, n_to_drop=0){
   # Check n_to_drop flag: make sure it equals 0, 1 (singletons), or 2 (doubletons)
   stopifnot(n_to_drop %in% c(0, 1, 2))
   # Based on values of n_to_drop, remove singletons/doubletons from genind matrix
-  if(n_to_drop > 0){
-    gen.obj@tab <- gen.obj@tab[,-which(colSums(gen.obj@tab, na.rm = TRUE) <= n_to_drop)]
-  }
+  gen.obj@tab <- gen.obj@tab[,-which(colSums(gen.obj@tab, na.rm = TRUE) <= n_to_drop)]
   # Build the wild allele frequency vector, using the getWildFreqs function
   wildFreqs <- getWildFreqs(gen.obj)
   # Very common
@@ -234,9 +232,7 @@ getTotalAlleleFreqProportions <- function(gen.obj, n_to_drop=0){
   # Check n_to_drop flag: make sure it equals 0, 1 (singletons), or 2 (doubletons)
   stopifnot(n_to_drop %in% c(0, 1, 2))
   # Based on values of n_to_drop, remove singletons/doubletons from genind matrix
-  if(n_to_drop > 0){
-    gen.obj@tab <- gen.obj@tab[,-which(colSums(gen.obj@tab, na.rm = TRUE) <= n_to_drop)]
-  }
+  gen.obj@tab <- gen.obj@tab[,-which(colSums(gen.obj@tab, na.rm = TRUE) <= n_to_drop)]
   # Build the total allele frequency vector, using the getTotalFreqs function
   totalFreqs <- getTotalFreqs(gen.obj)
   # Very common
@@ -275,9 +271,7 @@ getAlleleCategories <- function(freqVector, sampleMat, n_to_drop=0){
   # Check n_to_drop flag: make sure it equals 0, 1 (singletons), or 2 (doubletons)
   stopifnot(n_to_drop %in% c(0, 1, 2))
   # Based on values of n_to_drop, remove singletons/doubletons
-  if(n_to_drop > 0){
-    sampleMat <- sampleMat[,-which(colSums(sampleMat, na.rm = TRUE) <= n_to_drop)]
-  }
+  sampleMat <- sampleMat[,-which(colSums(sampleMat, na.rm = TRUE) <= n_to_drop)]
   # Determine how many total alleles in the sample matrix are found in the frequency vector 
   garden.total_Alleles <- length(which(names(freqVector) %in% colnames(sampleMat)))
   wild.total_Alleles <- length(freqVector)
@@ -321,9 +315,7 @@ exSitu_Rep <- function(gen.obj, returnMat = FALSE, n_to_drop=0){
   # Check n_to_drop flag: make sure it equals 0, 1 (singletons), or 2 (doubletons)
   stopifnot(n_to_drop %in% c(0, 1, 2))
   # Based on values of n_to_drop, remove singletons/doubletons from genind matrix
-  if(n_to_drop > 0){
-    gen.obj@tab <- gen.obj@tab[,-which(colSums(gen.obj@tab, na.rm = TRUE) <= n_to_drop)]
-  }
+  gen.obj@tab <- gen.obj@tab[,-which(colSums(gen.obj@tab, na.rm = TRUE) <= n_to_drop)]
   # Generate numerical vectors corresponding to garden and wild rows
   garden.Rows <- which(gen.obj@pop == "garden")
   wild.Rows <- which(gen.obj@pop == "wild")
@@ -421,9 +413,7 @@ exSitu_Sample <- function(gen.obj, numSamples, n_to_drop=0){
   # Check n_to_drop flag: make sure it equals 0, 1 (singletons), or 2 (doubletons)
   stopifnot(n_to_drop %in% c(0, 1, 2))
   # Based on values of n_to_drop, remove singletons/doubletons from genind matrix
-  if(n_to_drop > 0){
-    gen.obj@tab <- gen.obj@tab[,-which(colSums(gen.obj@tab, na.rm = TRUE) <= n_to_drop)]
-  }
+  gen.obj@tab <- gen.obj@tab[,-which(colSums(gen.obj@tab, na.rm = TRUE) <= n_to_drop)]
   # Build the wild allele frequency vector, using the getWildFreqs function
   freqVector <- getWildFreqs(gen.obj)
   # Remove any missing alleles (those with frequencies of 0) from the frequency vector
@@ -446,9 +436,7 @@ exSitu_Resample <- function(gen.obj, n_to_drop=0){
   # Check n_to_drop flag: make sure it equals 0, 1 (singletons), or 2 (doubletons)
   stopifnot(n_to_drop %in% c(0, 1, 2))
   # Based on values of n_to_drop, remove singletons/doubletons from genind matrix
-  if(n_to_drop > 0){
-    gen.obj@tab <- gen.obj@tab[,-which(colSums(gen.obj@tab, na.rm = TRUE) <= n_to_drop)]
-  }
+  gen.obj@tab <- gen.obj@tab[,-which(colSums(gen.obj@tab, na.rm = TRUE) <= n_to_drop)]
   # Apply the exSituSample function number of times equal to number of wild samples,
   # excluding 1 (because we need at least 2 individuals to sample)
   # Resulting matrix needs to be transposed in order to keep columns as different allele categories
@@ -464,9 +452,7 @@ Resample_genind <- function(gen.obj, reps=5, n_to_drop=0){
   # Check n_to_drop flag: make sure it equals 0, 1 (singletons), or 2 (doubletons)
   stopifnot(n_to_drop %in% c(0, 1, 2))
   # Based on values of n_to_drop, remove singletons/doubletons from genind matrix
-  if(n_to_drop > 0){
-    gen.obj@tab <- gen.obj@tab[,-which(colSums(gen.obj@tab, na.rm = TRUE) <= n_to_drop)]
-  }
+  gen.obj@tab <- gen.obj@tab[,-which(colSums(gen.obj@tab, na.rm = TRUE) <= n_to_drop)]
   # Run resampling for all replicates, using sapply and lambda function
   resamplingArray <- sapply(1:reps, function(x) exSitu_Resample(gen.obj = gen.obj), simplify = "array")
   # Rename third array dimension to describe simulation scenario (captured in the genind object), and return

@@ -8,6 +8,9 @@ SimulationOutputs/demo_dnaMarkerIssue/seed.txt
 # Folder of archived fastSimcoal2 simulation outputs, using parameter values we explored in the past
 SimulationOutputs/ArchivedScenarios
 
+# Folder of log files, usually those from SenseCheck.R, which contain information about simulations
+logFiles/
+
 # Folder of strataG params and genind objects, which will be updated everytime the GenerateFSCparams.R script is run
 # Also contained in this folder are the Rdata objects storing resampling arrays
 # "Original" simulations (nInd = 1200)

@@ -69,6 +69,7 @@ mean(sapply(DNA_16pop_migHigh.genList, function(x) ncol(x@tab)))
 print("%%% AVERAGE PROPORTION OF ALLELES IN EACH FREQUENCY CATEGORY")
 # Note: this section reports the allele frequency proportions BEFORE garden assignment
 # (random assignment of samples to gardnes happens in subsetAndResample.R)
+# MSAT ----
 print("---MSAT---")
 print("1 population (low and high migration)")
 apply(sapply(MSAT_01pop_migLow.genList, getTotalAlleleFreqProportions), 1, mean)

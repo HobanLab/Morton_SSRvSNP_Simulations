@@ -19,12 +19,12 @@ source("RScripts/functions_SSRvSNP_Sim.R")
 # %%% NIND = 1200 %%% ----
 # %%% Read in resampling arrays and calculate 95% minimum sampling size estimates (MSSEs)
 # MSAT
-MSAT_N1200_resampArr_filepath <- paste0(sim.wd, "SimulationOutputs/MSAT_marker/data.MSAT/MSAT_N1200_resampArr.Rdata")
+MSAT_N1200_resampArr_filepath <- paste0(sim.wd, "SimulationOutputs/MSAT_N1200_marker/data.MSAT/N0/MSAT_N1200_resampArr.Rdata")
 MSAT_N1200_resamplingArrays <- readRDS(MSAT_N1200_resampArr_filepath)
 MSAT_N1200_min95Values <- rapply(MSAT_N1200_resamplingArrays, resample_min95_mean, how = "list")
 
 # DNA
-DNA_N1200_resampArr_filepath <- paste0(sim.wd, "SimulationOutputs/DNA_marker/data.DNA/DNA_N1200_resampArr.Rdata")
+DNA_N1200_resampArr_filepath <- paste0(sim.wd, "SimulationOutputs/DNA_N1200_marker/data.DNA/N0/DNA_N1200_resampArr.Rdata")
 DNA_N1200_resamplingArrays <-readRDS(DNA_N1200_resampArr_filepath)
 DNA_N1200_min95Values <- rapply(DNA_N1200_resamplingArrays, resample_min95_mean, how = "list")
 
@@ -65,12 +65,12 @@ mtext("Model Diagnostics: N1200", line=2)
 # %%% NIND = 4800 %%% ----
 # %%% Read in resampling arrays and calculate 95% minimum sampling size estimates (MSSEs)
 # MSAT
-MSAT_N4800_resampArr_filepath <- paste0(sim.wd, "SimulationOutputs/MSAT_N4800_marker/data.MSAT/MSAT_N4800_resampArr.Rdata")
+MSAT_N4800_resampArr_filepath <- paste0(sim.wd, "SimulationOutputs/MSAT_N4800_marker/data.MSAT/N0/MSAT_N4800_resampArr.Rdata")
 MSAT_N4800_resamplingArrays <- readRDS(MSAT_N4800_resampArr_filepath)
 MSAT_N4800_min95Values <- rapply(MSAT_N4800_resamplingArrays, resample_min95_mean, how = "list")
 
 # DNA
-DNA_N4800_resampArr_filepath <- paste0(sim.wd, "SimulationOutputs/DNA_N4800_marker/data.DNA/DNA_N4800_resampArr.Rdata")
+DNA_N4800_resampArr_filepath <- paste0(sim.wd, "SimulationOutputs/DNA_N4800_marker/data.DNA/N0/DNA_N4800_resampArr.Rdata")
 DNA_N4800_resamplingArrays <-readRDS(DNA_N4800_resampArr_filepath)
 DNA_N4800_min95Values <- rapply(DNA_N4800_resamplingArrays, resample_min95_mean, how = "list")
 

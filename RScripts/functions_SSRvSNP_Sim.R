@@ -433,6 +433,11 @@ exSitu_Sample <- function(gen.obj, numSamples, n_to_drop=0){
 
 # Wrapper for the exSitu_Sample function, iterating that function over all wild samples in a genind object
 exSitu_Resample <- function(gen.obj, n_to_drop=0){
+  # Check that populations in the genind object are properly formatted (need to be either "garden" or "wild")
+  if(!("wild" %in% levels(pop(gen.obj)))){
+    stop("Error: Samples in gen.obj must belong to populations that are named either 'garden'
+         or 'wild'. Please reformat the genind object such that only these population names are used.")
+  }
   # Check n_to_drop flag: make sure it equals 0, 1 (singletons), or 2 (doubletons)
   stopifnot(n_to_drop %in% c(0, 1, 2))
   # Based on values of n_to_drop, remove singletons/doubletons from genind matrix
@@ -449,6 +454,11 @@ exSitu_Resample <- function(gen.obj, n_to_drop=0){
 
 # Wrapper for exSitu_Resample, which will generate an array of values from a single genind object
 Resample_genind <- function(gen.obj, reps=5, n_to_drop=0){
+  # Check that populations in the genind object are properly formatted (need to be either "garden" or "wild")
+  if(!("wild" %in% levels(pop(gen.obj)))){
+    stop("Error: Samples in gen.obj must belong to populations that are named either 'garden'
+         or 'wild'. Please reformat the genind object such that only these population names are used.")
+  }
   # Check n_to_drop flag: make sure it equals 0, 1 (singletons), or 2 (doubletons)
   stopifnot(n_to_drop %in% c(0, 1, 2))
   # Based on values of n_to_drop, remove singletons/doubletons from genind matrix

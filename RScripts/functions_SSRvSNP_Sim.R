@@ -30,7 +30,7 @@ strataG_arp2gen <- function(params, repNumber){
   arp <- fscReadArp(params, sim=c(1,repNumber), marker = marker)
   gtype <- df2gtypes(arp, ploidy = 2)
   genind <- gtypes2genind(gtype)
-  # In the "other" slot of the genind object, pass the name of the simulation scenario, and return
+  # In the 'other' slot of the genind object, pass the name of the simulation scenario, and return
   genind@other <- list(params$label)
   return(genind)
 }
@@ -43,10 +43,10 @@ convertAllArp <- function(arp.path, params){
   setwd(arp.path)
   # Create an empty list object to receive list of genind.
   # The length of this list is the number of replicates, which is specified as a numeric vector
-  gen.List <- vector("list",length=length(dir()[str_detect(dir(), pattern = ".arp")]))
+  gen.List <- vector('list',length=length(dir()[str_detect(dir(), pattern = '.arp')]))
   fscReps <- seq(1, length(gen.List))
   # Move up one directory, in order for the fscReadArp command (within strataG_arp2gen) to work
-  setwd("..")
+  setwd('..')
   # Convert all Arlequin files to a list of genind objects
   for(i in 1:length(gen.List)){
     genind.obj <- strataG_arp2gen(params, rep=i)
@@ -58,7 +58,7 @@ convertAllArp <- function(arp.path, params){
 }
 
 # Function for reading in MSAT strataG params files, in specified directory. Prefix specifies how to name the params variables
-readParams_MSAT <- function(params.wd, prefix="MSAT"){
+readParams_MSAT <- function(params.wd, prefix='MSAT'){
   # Retrieve original working directory, to reset to after conversion
   original.wd <- getwd()
   # Navigate to the folder containing strataG params objects
@@ -68,24 +68,24 @@ readParams_MSAT <- function(params.wd, prefix="MSAT"){
   # The pos=1 argument allows the variable to be passed to the global environment (rather than being kept locally)
   # The ^ character in dir allows any file with the given suffix to be read in, allowing for file name flexibility
   # [length(dir(pattern))] means if multiple params objects are present in the directory, read the most recent one
-  assign(paste0(prefix, "_01pop_migLow.params"), readRDS(
-    dir(pattern = "^params.MSAT_01pop_migLow")[length(dir(pattern = "^params.MSAT_01pop_migLow"))]), pos = 1)
-  assign(paste0(prefix, "_01pop_migHigh.params"), readRDS(
-    dir(pattern = "^params.MSAT_01pop_migHigh")[length(dir(pattern = "^params.MSAT_01pop_migHigh"))]), pos = 1)
-  assign(paste0(prefix, "_04pop_migLow.params"), readRDS(
-    dir(pattern = "^params.MSAT_04pop_migLow")[length(dir(pattern = "^params.MSAT_04pop_migLow"))]), pos = 1)
-  assign(paste0(prefix, "_04pop_migHigh.params"), readRDS(
-    dir(pattern = "^params.MSAT_04pop_migHigh")[length(dir(pattern = "^params.MSAT_04pop_migHigh"))]), pos = 1)
-  assign(paste0(prefix, "_16pop_migLow.params"), readRDS(
-    dir(pattern = "^params.MSAT_16pop_migLow")[length(dir(pattern = "^params.MSAT_16pop_migLow"))]), pos = 1)
-  assign(paste0(prefix, "_16pop_migHigh.params"), readRDS(
-    dir(pattern = "^params.MSAT_16pop_migHigh")[length(dir(pattern = "^params.MSAT_16pop_migHigh"))]), pos = 1)
+  assign(paste0(prefix, '_01pop_migLow.params'), readRDS(
+    dir(pattern = '^params.MSAT_01pop_migLow')[length(dir(pattern = '^params.MSAT_01pop_migLow'))]), pos = 1)
+  assign(paste0(prefix, '_01pop_migHigh.params'), readRDS(
+    dir(pattern = '^params.MSAT_01pop_migHigh')[length(dir(pattern = '^params.MSAT_01pop_migHigh'))]), pos = 1)
+  assign(paste0(prefix, '_04pop_migLow.params'), readRDS(
+    dir(pattern = '^params.MSAT_04pop_migLow')[length(dir(pattern = '^params.MSAT_04pop_migLow'))]), pos = 1)
+  assign(paste0(prefix, '_04pop_migHigh.params'), readRDS(
+    dir(pattern = '^params.MSAT_04pop_migHigh')[length(dir(pattern = '^params.MSAT_04pop_migHigh'))]), pos = 1)
+  assign(paste0(prefix, '_16pop_migLow.params'), readRDS(
+    dir(pattern = '^params.MSAT_16pop_migLow')[length(dir(pattern = '^params.MSAT_16pop_migLow'))]), pos = 1)
+  assign(paste0(prefix, '_16pop_migHigh.params'), readRDS(
+    dir(pattern = '^params.MSAT_16pop_migHigh')[length(dir(pattern = '^params.MSAT_16pop_migHigh'))]), pos = 1)
   # Reset to original working directory
   setwd(original.wd)
 }
 
 # Function for reading in MSAT genind files, in specified directory. Prefix specifies how to name the genind variables
-readGeninds_MSAT <- function(geninds.wd, prefix="MSAT"){
+readGeninds_MSAT <- function(geninds.wd, prefix='MSAT'){
   # Retrieve original working directory, to reset to after conversion
   original.wd <- getwd()
   # Navigate to the folder containing genind objects
@@ -95,24 +95,24 @@ readGeninds_MSAT <- function(geninds.wd, prefix="MSAT"){
   # The pos=1 argument allows the variable to be passed to the global environment (rather than being kept locally)
   # The ^ character in dir allows any file with the given suffix to be read in, allowing for file name flexibility
   # [length(dir(pattern))] means if multiple genind objects are present in the directory, read the most recent one
-  assign(paste0(prefix, "_01pop_migLow.genList"), readRDS(
-    dir(pattern = "^genind.MSAT_01pop_migLow")[length(dir(pattern = "^genind.MSAT_01pop_migLow"))]), pos = 1)
-  assign(paste0(prefix, "_01pop_migHigh.genList"), readRDS(
-    dir(pattern = "^genind.MSAT_01pop_migHigh")[length(dir(pattern = "^genind.MSAT_01pop_migHigh"))]), pos = 1)
-  assign(paste0(prefix, "_04pop_migLow.genList"), readRDS(
-    dir(pattern = "^genind.MSAT_04pop_migLow")[length(dir(pattern = "^genind.MSAT_04pop_migLow"))]), pos = 1)
-  assign(paste0(prefix, "_04pop_migHigh.genList"), readRDS(
-    dir(pattern = "^genind.MSAT_04pop_migHigh")[length(dir(pattern = "^genind.MSAT_04pop_migHigh"))]), pos = 1)
-  assign(paste0(prefix, "_16pop_migLow.genList"), readRDS(
-    dir(pattern = "^genind.MSAT_16pop_migLow")[length(dir(pattern = "^genind.MSAT_16pop_migLow"))]), pos = 1)
-  assign(paste0(prefix, "_16pop_migHigh.genList"), readRDS(
-    dir(pattern = "^genind.MSAT_16pop_migHigh")[length(dir(pattern = "^genind.MSAT_16pop_migHigh"))]), pos = 1)
+  assign(paste0(prefix, '_01pop_migLow.genList'), readRDS(
+    dir(pattern = '^genind.MSAT_01pop_migLow')[length(dir(pattern = '^genind.MSAT_01pop_migLow'))]), pos = 1)
+  assign(paste0(prefix, '_01pop_migHigh.genList'), readRDS(
+    dir(pattern = '^genind.MSAT_01pop_migHigh')[length(dir(pattern = '^genind.MSAT_01pop_migHigh'))]), pos = 1)
+  assign(paste0(prefix, '_04pop_migLow.genList'), readRDS(
+    dir(pattern = '^genind.MSAT_04pop_migLow')[length(dir(pattern = '^genind.MSAT_04pop_migLow'))]), pos = 1)
+  assign(paste0(prefix, '_04pop_migHigh.genList'), readRDS(
+    dir(pattern = '^genind.MSAT_04pop_migHigh')[length(dir(pattern = '^genind.MSAT_04pop_migHigh'))]), pos = 1)
+  assign(paste0(prefix, '_16pop_migLow.genList'), readRDS(
+    dir(pattern = '^genind.MSAT_16pop_migLow')[length(dir(pattern = '^genind.MSAT_16pop_migLow'))]), pos = 1)
+  assign(paste0(prefix, '_16pop_migHigh.genList'), readRDS(
+    dir(pattern = '^genind.MSAT_16pop_migHigh')[length(dir(pattern = '^genind.MSAT_16pop_migHigh'))]), pos = 1)
   # Reset to original working directory
   setwd(original.wd)
 }
 
 # Function for reading in DNA strataG params files, in specified directory. Prefix specifies how to name the params variables
-readParams_DNA <- function(params.wd, prefix="DNA"){
+readParams_DNA <- function(params.wd, prefix='DNA'){
   # Retrieve original working directory, to reset to after conversion
   original.wd <- getwd()
   # Navigate to the folder containing strataG params objects
@@ -122,24 +122,24 @@ readParams_DNA <- function(params.wd, prefix="DNA"){
   # The pos=1 argument allows the variable to be passed to the global environment (rather than being kept locally)
   # The ^ character in dir allows any file with the given suffix to be read in, allowing for file name flexibility
   # [length(dir(pattern))] means if multiple params objects are present in the directory, read the most recent one
-  assign(paste0(prefix, "_01pop_migLow.params"), readRDS(
-    dir(pattern = "^params.DNA_01pop_migLow")[length(dir(pattern = "^params.DNA_01pop_migLow"))]), pos = 1)
-  assign(paste0(prefix, "_01pop_migHigh.params"), readRDS(
-    dir(pattern = "^params.DNA_01pop_migHigh")[length(dir(pattern = "^params.DNA_01pop_migHigh"))]), pos = 1)
-  assign(paste0(prefix, "_04pop_migLow.params"), readRDS(
-    dir(pattern = "^params.DNA_04pop_migLow")[length(dir(pattern = "^params.DNA_04pop_migLow"))]), pos = 1)
-  assign(paste0(prefix, "_04pop_migHigh.params"), readRDS(
-    dir(pattern = "^params.DNA_04pop_migHigh")[length(dir(pattern = "^params.DNA_04pop_migHigh"))]), pos = 1)
-  assign(paste0(prefix, "_16pop_migLow.params"), readRDS(
-    dir(pattern = "^params.DNA_16pop_migLow")[length(dir(pattern = "^params.DNA_16pop_migLow"))]), pos = 1)
-  assign(paste0(prefix, "_16pop_migHigh.params"), readRDS(
-    dir(pattern = "^params.DNA_16pop_migHigh")[length(dir(pattern = "^params.DNA_16pop_migHigh"))]), pos = 1)
+  assign(paste0(prefix, '_01pop_migLow.params'), readRDS(
+    dir(pattern = '^params.DNA_01pop_migLow')[length(dir(pattern = '^params.DNA_01pop_migLow'))]), pos = 1)
+  assign(paste0(prefix, '_01pop_migHigh.params'), readRDS(
+    dir(pattern = '^params.DNA_01pop_migHigh')[length(dir(pattern = '^params.DNA_01pop_migHigh'))]), pos = 1)
+  assign(paste0(prefix, '_04pop_migLow.params'), readRDS(
+    dir(pattern = '^params.DNA_04pop_migLow')[length(dir(pattern = '^params.DNA_04pop_migLow'))]), pos = 1)
+  assign(paste0(prefix, '_04pop_migHigh.params'), readRDS(
+    dir(pattern = '^params.DNA_04pop_migHigh')[length(dir(pattern = '^params.DNA_04pop_migHigh'))]), pos = 1)
+  assign(paste0(prefix, '_16pop_migLow.params'), readRDS(
+    dir(pattern = '^params.DNA_16pop_migLow')[length(dir(pattern = '^params.DNA_16pop_migLow'))]), pos = 1)
+  assign(paste0(prefix, '_16pop_migHigh.params'), readRDS(
+    dir(pattern = '^params.DNA_16pop_migHigh')[length(dir(pattern = '^params.DNA_16pop_migHigh'))]), pos = 1)
   # Reset to original working directory
   setwd(original.wd)
 }
 
 # Function for reading in DNA genind files, in specified directory. Prefix specifies how to name the genind variables
-readGeninds_DNA <- function(geninds.wd, prefix="DNA"){
+readGeninds_DNA <- function(geninds.wd, prefix='DNA'){
   # Retrieve original working directory, to reset to after conversion
   original.wd <- getwd()
   # Navigate to the folder containing genind objects
@@ -149,32 +149,32 @@ readGeninds_DNA <- function(geninds.wd, prefix="DNA"){
   # The pos=1 argument allows the variable to be passed to the global environment (rather than being kept locally)
   # The ^ character in dir allows any file with the given suffix to be read in, allowing for file name flexibility
   # [length(dir(pattern))] means if multiple genind objects are present in the directory, read the most recent one
-  assign(paste0(prefix, "_01pop_migLow.genList"), readRDS(
-    dir(pattern = "^genind.DNA_01pop_migLow")[length(dir(pattern = "^genind.DNA_01pop_migLow"))]), pos = 1)
-  assign(paste0(prefix, "_01pop_migHigh.genList"), readRDS(
-    dir(pattern = "^genind.DNA_01pop_migHigh")[length(dir(pattern = "^genind.DNA_01pop_migHigh"))]), pos = 1)
-  assign(paste0(prefix, "_04pop_migLow.genList"), readRDS(
-    dir(pattern = "^genind.DNA_04pop_migLow")[length(dir(pattern = "^genind.DNA_04pop_migLow"))]), pos = 1)
-  assign(paste0(prefix, "_04pop_migHigh.genList"), readRDS(
-    dir(pattern = "^genind.DNA_04pop_migHigh")[length(dir(pattern = "^genind.DNA_04pop_migHigh"))]), pos = 1)
-  assign(paste0(prefix, "_16pop_migLow.genList"), readRDS(
-    dir(pattern = "^genind.DNA_16pop_migLow")[length(dir(pattern = "^genind.DNA_16pop_migLow"))]), pos = 1)
-  assign(paste0(prefix, "_16pop_migHigh.genList"), readRDS(
-    dir(pattern = "^genind.DNA_16pop_migHigh")[length(dir(pattern = "^genind.DNA_16pop_migHigh"))]), pos = 1)
+  assign(paste0(prefix, '_01pop_migLow.genList'), readRDS(
+    dir(pattern = '^genind.DNA_01pop_migLow')[length(dir(pattern = '^genind.DNA_01pop_migLow'))]), pos = 1)
+  assign(paste0(prefix, '_01pop_migHigh.genList'), readRDS(
+    dir(pattern = '^genind.DNA_01pop_migHigh')[length(dir(pattern = '^genind.DNA_01pop_migHigh'))]), pos = 1)
+  assign(paste0(prefix, '_04pop_migLow.genList'), readRDS(
+    dir(pattern = '^genind.DNA_04pop_migLow')[length(dir(pattern = '^genind.DNA_04pop_migLow'))]), pos = 1)
+  assign(paste0(prefix, '_04pop_migHigh.genList'), readRDS(
+    dir(pattern = '^genind.DNA_04pop_migHigh')[length(dir(pattern = '^genind.DNA_04pop_migHigh'))]), pos = 1)
+  assign(paste0(prefix, '_16pop_migLow.genList'), readRDS(
+    dir(pattern = '^genind.DNA_16pop_migLow')[length(dir(pattern = '^genind.DNA_16pop_migLow'))]), pos = 1)
+  assign(paste0(prefix, '_16pop_migHigh.genList'), readRDS(
+    dir(pattern = '^genind.DNA_16pop_migHigh')[length(dir(pattern = '^genind.DNA_16pop_migHigh'))]), pos = 1)
   # Reset to original working directory
   setwd(original.wd)
 }
 
 # EX SITU REPRESENTATION ----
-# Function for randomly assigning a proportion of a genind matrix to a "garden" population (the rest get "wild")
+# Function for randomly assigning a proportion of a genind matrix to a 'garden' population (the rest get 'wild')
 assignGardenSamples <- function(genind.obj, proportion=0.2){
-  # Create a vector to store population names (start with all samples being "wild")
-  popIDs <- rep("wild",length=(nInd(genind.obj)))
+  # Create a vector to store population names (start with all samples being 'wild')
+  popIDs <- rep('wild',length=(nInd(genind.obj)))
   # Get the names of randomly sampled rows of the genind matrix, based on the proportion argument
   gardenSamples <- rownames(genind.obj@tab[sample(nrow(genind.obj@tab), 
                                                   size=nInd(genind.obj)*proportion, replace = FALSE),])
-  # Assign randomly sampled rows as "garden"
-  popIDs[which(rownames(genind.obj@tab) %in% gardenSamples)] <- "garden"
+  # Assign randomly sampled rows as 'garden'
+  popIDs[which(rownames(genind.obj@tab) %in% gardenSamples)] <- 'garden'
   # Assign pop values and return genind object
   pop(genind.obj) <- popIDs
   return(genind.obj)
@@ -182,8 +182,8 @@ assignGardenSamples <- function(genind.obj, proportion=0.2){
 
 # Function for generating a vector of wild allele frequencies from a genind object
 getWildFreqs <- function(gen.obj, wholeValues=TRUE){
-  # Build a vector of rows corresponding to wild individuals (those that do not have a population of "garden")
-  wildRows <- which(pop(gen.obj)!="garden")
+  # Build a vector of rows corresponding to wild individuals (those that do not have a population of 'garden')
+  wildRows <- which(pop(gen.obj)!='garden')
   # Build the wild allele frequency vector: colSums of alleles (removing NAs), 
   # divided by number of haplotypes (Ne*2). wholeValues argument determines whether 
   # to return whole percentages or fractions
@@ -222,7 +222,7 @@ getWildAlleleFreqProportions <- function(gen.obj, n_to_drop=0){
   rare_prop <- (length(rareAlleles)/length(wildFreqs))*100
   # Build list of proportions, and return
   freqProportions <- c(veryCommon_prop, lowFrequency_prop, rare_prop)
-  names(freqProportions) <- c("Very common (>10%)","Low frequency (1% -- 10%)","Rare (<1%)")
+  names(freqProportions) <- c('Very common (>10%)','Low frequency (1% -- 10%)','Rare (<1%)')
   return(freqProportions)
 }
 
@@ -246,7 +246,7 @@ getTotalAlleleFreqProportions <- function(gen.obj, n_to_drop=0){
   rare_prop <- (length(rareAlleles)/length(totalFreqs))*100
   # Build list of proportions, and return
   freqProportions <- c(veryCommon_prop, lowFrequency_prop, rare_prop)
-  names(freqProportions) <- c("Very common (>10%)","Low frequency (1% -- 10%)","Rare (<1%)")
+  names(freqProportions) <- c('Very common (>10%)','Low frequency (1% -- 10%)','Rare (<1%)')
   return(freqProportions)
 }
 
@@ -298,9 +298,9 @@ getAlleleCategories <- function(freqVector, sampleMat, n_to_drop=0){
   repRates <- c(total_Percentage,vCom_Percentage,com_Percentage,lowFr_Percentage,rare_Percentage) 
   # Bind vectors to a matrix, name dimensions, and return
   exSituValues <- cbind(gardenAlleles, wildAlleles, repRates)
-  rownames(exSituValues) <- c("Total","Very common (>10%)","Common (>5%)",
-                              "Low frequency (1% -- 10%)","Rare (<1%)")
-  colnames(exSituValues) <- c("Garden", "Wild", "Rate (%)")
+  rownames(exSituValues) <- c('Total','Very common (>10%)','Common (>5%)',
+                              'Low frequency (1% -- 10%)','Rare (<1%)')
+  colnames(exSituValues) <- c('Garden', 'Wild', 'Rate (%)')
   return(exSituValues)
 }
 
@@ -317,8 +317,8 @@ exSitu_Rep <- function(gen.obj, returnMat = FALSE, n_to_drop=0){
   # Based on values of n_to_drop, remove singletons/doubletons from genind matrix
   gen.obj@tab <- gen.obj@tab[,which(colSums(gen.obj@tab, na.rm = TRUE) > n_to_drop)]
   # Generate numerical vectors corresponding to garden and wild rows
-  garden.Rows <- which(gen.obj@pop == "garden")
-  wild.Rows <- which(gen.obj@pop == "wild")
+  garden.Rows <- which(gen.obj@pop == 'garden')
+  wild.Rows <- which(gen.obj@pop == 'wild')
   # Build the wild allele frequency vector: sum the allele counts, and divide by the number of wild samples
   # (which is equal to the number of wild rows in the genind matrix) times 2 (assuming diploid individuals)
   wildFreqs <- colSums(gen.obj@tab[wild.Rows,], na.rm = TRUE)/(length(wild.Rows)*2)*100
@@ -357,12 +357,12 @@ summarize_exSituRepresentation <- function(repRates){
 summarize_simulations <- function(gen.List, n_to_drop=0){
   # Build array to capture allele frequency proportions
   alleleFreqSummaries <- array(dim = c(3, 2, length(gen.List)))
-  rownames(alleleFreqSummaries) <- c("Very common (>10%)","Low frequency (1% -- 10%)","Rare (<1%)")
+  rownames(alleleFreqSummaries) <- c('Very common (>10%)','Low frequency (1% -- 10%)','Rare (<1%)')
   # Build array to capture ex situ representation rates
   repRateSummaries <- array(dim = c(5, 2, length(gen.List)))
   rownames(repRateSummaries) <- 
-    c("Total","Very common (>10%)","Common (>5%)","Low frequency (1% -- 10%)","Rare (<1%)")
-  colnames(alleleFreqSummaries) <- colnames(repRateSummaries) <-c("mean", "sd")
+    c('Total','Very common (>10%)','Common (>5%)','Low frequency (1% -- 10%)','Rare (<1%)')
+  colnames(alleleFreqSummaries) <- colnames(repRateSummaries) <-c('mean', 'sd')
   
   # Loop through list of genind objects, calculating metrics for each item
   for (i in 1:length(gen.List)){
@@ -377,7 +377,7 @@ summarize_simulations <- function(gen.List, n_to_drop=0){
   alleleFreqSummaries <- round(alleleFreqSummaries, 2)  
   repRateSummaries <- round(repRateSummaries, 2)
   # Generate a list of the two arrays, and return
-  return(list("alleleFrequencyProportions"=alleleFreqSummaries, "representationRates"=repRateSummaries))
+  return(list('alleleFrequencyProportions'=alleleFreqSummaries, 'representationRates'=repRateSummaries))
 }
 
 # Exploratory function, which creates a histogram of allele frequencies from a genind object
@@ -389,11 +389,11 @@ makeAlleleFreqHist <- function(gen.obj){
 }
 
 # Exploratory function, which creates a histogram of allele frequencies from a list of genind objects
-makeAlleleFreqHist_genList <- function(gen.List, outDir="~/Shared/SSRvSNP_Sim/Code/"){
+makeAlleleFreqHist_genList <- function(gen.List, outDir='~/Shared/SSRvSNP_Sim/Code/'){
   # Use a loop to process each genind item in the list
   for(i in 1:length(gen.List)){
     # Call the png command, to save histogram outputs. Save to specified directory
-    png(filename = paste0(outDir, gen.List[[i]]@other, "_", i, ".png", width = 1262, height = 734))
+    png(filename = paste0(outDir, gen.List[[i]]@other, '_', i, '.png', width = 1262, height = 734))
     # Call makeAlleleFreqHist function, nested within invisible to avoid code printing to standard output
     invisible(makeAlleleFreqHist(gen.List[[i]]))
     dev.off()
@@ -418,8 +418,8 @@ exSitu_Sample <- function(gen.obj, numSamples, n_to_drop=0){
   freqVector <- getWildFreqs(gen.obj)
   # Remove any missing alleles (those with frequencies of 0) from the frequency vector
   freqVector <- freqVector[which(freqVector != 0)]
-  # Create a matrix of wild individuals (those with population "wild") from genind object
-  wildMat <- gen.obj@tab[which(pop(gen.obj) == "wild"),]
+  # Create a matrix of wild individuals (those with population 'wild') from genind object
+  wildMat <- gen.obj@tab[which(pop(gen.obj) == 'wild'),]
   # From a matrix of individuals, select a set of random individuals (rows)
   samp <- wildMat[sample(nrow(wildMat), size=numSamples, replace = FALSE),]
   # Remove any missing alleles (those with colSums of 0) from the sample matrix
@@ -433,10 +433,10 @@ exSitu_Sample <- function(gen.obj, numSamples, n_to_drop=0){
 
 # Wrapper for the exSitu_Sample function, iterating that function over all wild samples in a genind object
 exSitu_Resample <- function(gen.obj, n_to_drop=0){
-  # Check that populations in the genind object are properly formatted (need to be either "garden" or "wild")
-  if(!("wild" %in% levels(pop(gen.obj)))){
-    stop("Error: Samples in gen.obj must belong to populations that are named either 'garden'
-         or 'wild'. Please reformat the genind object such that only these population names are used.")
+  # Check that populations in the genind object are properly formatted (need to be either 'garden' or 'wild')
+  if(!('wild' %in% levels(pop(gen.obj)))){
+    stop('Error: Samples in gen.obj must belong to populations that are named either 'garden'
+         or 'wild'. Please reformat the genind object such that only these population names are used.')
   }
   # Check n_to_drop flag: make sure it equals 0, 1 (singletons), or 2 (doubletons)
   stopifnot(n_to_drop %in% c(0, 1, 2))
@@ -445,26 +445,26 @@ exSitu_Resample <- function(gen.obj, n_to_drop=0){
   # Apply the exSituSample function number of times equal to number of wild samples,
   # excluding 1 (because we need at least 2 individuals to sample)
   # Resulting matrix needs to be transposed in order to keep columns as different allele categories
-  representationMatrix <- t(sapply(2:length(which(pop(gen.obj)=="wild")), 
+  representationMatrix <- t(sapply(2:length(which(pop(gen.obj)=='wild')), 
                                    function(x) exSitu_Sample(gen.obj, x)))
   # Name columns according to categories of allelic representation, and return matrix
-  colnames(representationMatrix) <- c("Total","Very common","Common","Low frequency","Rare")
+  colnames(representationMatrix) <- c('Total','Very common','Common','Low frequency','Rare')
   return(representationMatrix)
 }
 
 # Wrapper for exSitu_Resample, which will generate an array of values from a single genind object
 Resample_genind <- function(gen.obj, reps=5, n_to_drop=0){
-  # Check that populations in the genind object are properly formatted (need to be either "garden" or "wild")
-  if(!("wild" %in% levels(pop(gen.obj)))){
-    stop("Error: Samples in gen.obj must belong to populations that are named either 'garden'
-         or 'wild'. Please reformat the genind object such that only these population names are used.")
+  # Check that populations in the genind object are properly formatted (need to be either 'garden' or 'wild')
+  if(!('wild' %in% levels(pop(gen.obj)))){
+    stop('Error: Samples in gen.obj must belong to populations that are named either 'garden'
+         or 'wild'. Please reformat the genind object such that only these population names are used.')
   }
   # Check n_to_drop flag: make sure it equals 0, 1 (singletons), or 2 (doubletons)
   stopifnot(n_to_drop %in% c(0, 1, 2))
   # Based on values of n_to_drop, remove singletons/doubletons from genind matrix
   gen.obj@tab <- gen.obj@tab[,which(colSums(gen.obj@tab, na.rm = TRUE) > n_to_drop)]
   # Run resampling for all replicates, using sapply and lambda function
-  resamplingArray <- sapply(1:reps, function(x) exSitu_Resample(gen.obj = gen.obj), simplify = "array")
+  resamplingArray <- sapply(1:reps, function(x) exSitu_Resample(gen.obj = gen.obj), simplify = 'array')
   # Rename third array dimension to describe simulation scenario (captured in the genind object), and return
   dimnames(resamplingArray)[[3]] <- rep(unlist(gen.obj@other), dim(resamplingArray)[[3]])
   return(resamplingArray)
@@ -483,12 +483,13 @@ Resample_genList <- function(gen.List, reps=5, n_to_drop=0){
 parResample_genind <- function(gen.obj, reps=5, n_to_drop=0, cluster){
   # Run resampling for all replicates, using parSapply and lambda function, and return array
   resamplingArray <- parSapply(cl=cluster, 1:reps, 
-                               function(x) exSitu_Resample(gen.obj = gen.obj, n_to_drop), simplify = "array")
+                               function(x) exSitu_Resample(gen.obj = gen.obj, n_to_drop), simplify = 'array')
   # Rename third array dimension to describe simulation scenario (captured in the genind object), and return
   dimnames(resamplingArray)[[3]] <- rep(unlist(gen.obj@other), dim(resamplingArray)[[3]])
   return(resamplingArray)
 }
 
+# PROCESSING RESAMPLING ARRAYS ----
 # From resampling arrayy, calculate the mean minimum sample size to represent 95% of the total wild diversity
 resample_min95_mean <- function(resamplingArray){
   # resampling array[,1,]: returns the Total column values for each replicate (3rd array dimension)
@@ -521,8 +522,31 @@ resample_meanValues <- function(resamplingArray){
     meanValue_mat[,i] <- apply(resamplingArray[,i,], 1, mean, na.rm=TRUE)
   }
   # Give names to meanValue_mat columns, and return
-  colnames(meanValue_mat) <- c("Total","Very common","Common","Low frequency","Rare")
+  colnames(meanValue_mat) <- c('Total','Very common','Common','Low frequency','Rare')
   return(meanValue_mat)
+}
+
+# From resampling array, generate a data.frame by collapsing values across replicates into vectors
+# allValues flag indicates whether or not to include categories of alleles other that 'Total'
+resample_array2dataframe <- function(resamplingArray, allValues=FALSE){
+  # Create a vector of sample numbers. The values in this vector range from 2:total number
+  # of samples (at least 2 samples are required in order for sample function to work; see above).
+  # These values are repeated for the number of replicates in the resampling array (3rd dimension)
+  sampleNumbers <- rep(2:(nrow(resamplingArray)+1), dim(resamplingArray)[[3]])
+  # Pass sample number vector to data.frame, which will be the final output of the function
+  resamp_DF <- data.frame(sampleNumbers=sampleNumbers)
+  # Loop through the array by colunms (variables)
+  for(i in 1:ncol(resamplingArray)){
+    # For each, collapse the column into one long vector, and add that vector to the data.frame
+    resamp_DF <- cbind(resamp_DF, c(resamplingArray[,i,]))
+  }
+  # Rename the data.frame values according to the column names of the array
+  names(resamp_DF) <- c('sampleNumbers', colnames(resamplingArray))
+  # If allValues flag is FALSE, remove the allele categories other than 'Total'
+  if(allValues==FALSE){
+    resamp_DF <- resamp_DF[,-(3:6)]
+  }
+  return(resamp_DF)
 }
 
 # Summary plotting function, from array
@@ -536,10 +560,10 @@ resample_Plot <- function(resamplingArray, colors, largePopFlag=FALSE){
   min95_Value <- resample_min95_mean(resamplingArray)
   # Use the matplot function to plot the matrix of average values, with specified settings
   matplot(averageValueMat, ylim=c(0,110), col=fadedColors, pch=16,
-          xlab="Number of Individuals", ylab="Percent Diversity Representation",
+          xlab='Number of Individuals', ylab='Percent Diversity Representation',
           main=unique(dimnames(resamplingArray)[[3]]))
   # Mark the 95% threshold line, as well as the 95% minimum sampling size
-  abline(h=95, col="black", lty=3); abline(v=min95_Value, col="black")
+  abline(h=95, col='black', lty=3); abline(v=min95_Value, col='black')
   # Depending on total population size, plot text and legends in different areas of the graph
   if(largePopFlag==FALSE){
     # nInd = 1200 graphs
@@ -553,12 +577,12 @@ resample_Plot <- function(resamplingArray, colors, largePopFlag=FALSE){
     yLeg <- 60
   }
   # Add text for the minimum sampling size line
-  mtext(text=paste0("Minimum sampling size (95%) = ", min95_Value),
+  mtext(text=paste0('Minimum sampling size (95%) = ', min95_Value),
         side=1, line=-1.5, at=min95_Line)
   # Add legend
   legend(x=xLeg, y=yLeg, inset = 0.05,
-         legend = c("Total","Very common","Common","Low frequency", "Rare"),
-         col=fullColors, pch = c(20,20,20), cex=1, pt.cex = 2, bty="n", y.intersp = 1)
+         legend = c('Total','Very common','Common','Low frequency', 'Rare'),
+         col=fullColors, pch = c(20,20,20), cex=1, pt.cex = 2, bty='n', y.intersp = 1)
 }
 
 # Summary plotting function, from array. This function saves the plots generate to the disk (in .png format)
@@ -567,7 +591,7 @@ resample_Plot_PNG <- function(resamplingArray, colors, largePopFlag=FALSE, data.
   scenName <- unique(dimnames(resamplingArray)[[3]])
   # Call png command, to save resampling plot to disk. To determine a unique file name to save plot, 
   # find out how many PNG files already exist in specified folder.
-  png(filename = paste0(data.dir, scenName, "_", length(list.files(path=data.dir, pattern = ".png"))+1, ".png"), 
+  png(filename = paste0(data.dir, scenName, '_', length(list.files(path=data.dir, pattern = '.png'))+1, '.png'), 
       width = 1262, height = 734)
   # Create two vectors for colors. This is to show points on the graph and in the legend clearly
   fullColors <- colors
@@ -578,9 +602,9 @@ resample_Plot_PNG <- function(resamplingArray, colors, largePopFlag=FALSE, data.
   min95_Value <- resample_min95_mean(resamplingArray)
   # Use the matplot function to plot the matrix of average values, with specified settings
   matplot(averageValueMat, ylim=c(0,110), col=fadedColors, pch=16,
-          xlab="Number of Individuals", ylab="Percent Diversity Representation", main=scenName)
+          xlab='Number of Individuals', ylab='Percent Diversity Representation', main=scenName)
   # Mark the 95% threshold line, as well as the 95% minimum sampling size
-  abline(h=95, col="black", lty=3); abline(v=min95_Value, col="black")
+  abline(h=95, col='black', lty=3); abline(v=min95_Value, col='black')
   # Depending on total population size, plot text and legends in different areas of the graph
   if(largePopFlag==FALSE){
     # nInd = 1200 graphs
@@ -594,12 +618,12 @@ resample_Plot_PNG <- function(resamplingArray, colors, largePopFlag=FALSE, data.
     yLeg <- 60
   }
   # Add text for the minimum sampling size line
-  mtext(text=paste0("Minimum sampling size (95%) = ", min95_Value),
+  mtext(text=paste0('Minimum sampling size (95%) = ', min95_Value),
         side=1, line=-1.5, at=min95_Line)
   # Add legend
   legend(x=xLeg, y=yLeg, inset = 0.05,
-         legend = c("Total","Very common","Common","Low frequency", "Rare"),
-         col=fullColors, pch = c(20,20,20), cex=1, pt.cex = 2, bty="n", y.intersp = 1)
+         legend = c('Total','Very common','Common','Low frequency', 'Rare'),
+         col=fullColors, pch = c(20,20,20), cex=1, pt.cex = 2, bty='n', y.intersp = 1)
   # Turn off plotting device
   dev.off()
 }

@@ -28,6 +28,14 @@ DNA_N1200_resampArr_filepath <- paste0(sim.wd, "SimulationOutputs/DNA_N1200_mark
 DNA_N1200_resamplingArrays <-readRDS(DNA_N1200_resampArr_filepath)
 DNA_N1200_min95Values <- rapply(DNA_N1200_resamplingArrays, resample_min95_mean, how = "list")
 
+
+# Need a function that will take a list of lists of resampling arrays and collapse them 
+DNA_N1200_DFs <- rapply(DNA_N1200_resamplingArrays, resample_array2dataframe, how = "list")
+
+# Also, below--need to change expand.grid such that each combination of parameter values is repeated
+# more frequently
+
+
 # %%% Build parameters data.frame, from which linear models will be built
 # Specify numeric explanatory variables as categorical, using as.factor 
 params <- data.frame(expand.grid(n.pop=as.factor(c(1,4,16)), mig.Rate=as.factor(c(0.001,0.01)), marker=c("MSAT", "DNA")))

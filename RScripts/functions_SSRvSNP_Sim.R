@@ -166,15 +166,20 @@ readGeninds_DNA <- function(geninds.wd, prefix='DNA'){
 }
 
 # EX SITU REPRESENTATION ----
-# Function for randomly assigning a proportion of a genind matrix to a 'garden' population (the rest get 'wild')
-assignGardenSamples <- function(genind.obj, proportion=0.2){
+# Function for randomly assigning samples to a population. The proportion argument has a default of 
+# NULL; if a value is specified, then the specified proportion of a genind matrix is assigned to the
+# 'garden' population (the rest get 'wild').
+assignSamplePopulations <- function(genind.obj, proportion=NULL){
   # Create a vector to store population names (start with all samples being 'wild')
   popIDs <- rep('wild',length=(nInd(genind.obj)))
-  # Get the names of randomly sampled rows of the genind matrix, based on the proportion argument
-  gardenSamples <- rownames(genind.obj@tab[sample(nrow(genind.obj@tab), 
-                                                  size=nInd(genind.obj)*proportion, replace = FALSE),])
-  # Assign randomly sampled rows as 'garden'
-  popIDs[which(rownames(genind.obj@tab) %in% gardenSamples)] <- 'garden'
+  # If proportion argument is specified, assign the specified proportion of samples to the 'garden' population
+  if(!is.null(proportion)){
+    # Get the names of randomly sampled rows of the genind matrix, based on the proportion argument
+    gardenSamples <- rownames(genind.obj@tab[sample(nrow(genind.obj@tab), 
+                                                    size=nInd(genind.obj)*proportion, replace = FALSE),])
+    # Assign randomly sampled rows as 'garden'
+    popIDs[which(rownames(genind.obj@tab) %in% gardenSamples)] <- 'garden'
+  }
   # Assign pop values and return genind object
   pop(genind.obj) <- popIDs
   return(genind.obj)
@@ -435,8 +440,8 @@ exSitu_Sample <- function(gen.obj, numSamples, n_to_drop=0){
 exSitu_Resample <- function(gen.obj, n_to_drop=0){
   # Check that populations in the genind object are properly formatted (need to be either 'garden' or 'wild')
   if(!('wild' %in% levels(pop(gen.obj)))){
-    stop('Error: Samples in gen.obj must belong to populations that are named either 'garden'
-         or 'wild'. Please reformat the genind object such that only these population names are used.')
+    stop("Error: Samples in gen.obj must belong to populations that are named either 'garden'
+         or 'wild'. Please reformat the genind object such that only these population names are used.")
   }
   # Check n_to_drop flag: make sure it equals 0, 1 (singletons), or 2 (doubletons)
   stopifnot(n_to_drop %in% c(0, 1, 2))
@@ -456,8 +461,8 @@ exSitu_Resample <- function(gen.obj, n_to_drop=0){
 Resample_genind <- function(gen.obj, reps=5, n_to_drop=0){
   # Check that populations in the genind object are properly formatted (need to be either 'garden' or 'wild')
   if(!('wild' %in% levels(pop(gen.obj)))){
-    stop('Error: Samples in gen.obj must belong to populations that are named either 'garden'
-         or 'wild'. Please reformat the genind object such that only these population names are used.')
+    stop("Error: Samples in gen.obj must belong to populations that are named either 'garden'
+         or 'wild'. Please reformat the genind object such that only these population names are used.")
   }
   # Check n_to_drop flag: make sure it equals 0, 1 (singletons), or 2 (doubletons)
   stopifnot(n_to_drop %in% c(0, 1, 2))
@@ -533,6 +538,35 @@ resample_array2dataframe <- function(resamplingArray, allValues=FALSE){
   # of samples (at least 2 samples are required in order for sample function to work; see above).
   # These values are repeated for the number of replicates in the resampling array (3rd dimension)
   sampleNumbers <- rep(2:(nrow(resamplingArray)+1), dim(resamplingArray)[[3]])
+  # Pass sample number vector to data.frame, which will be the final output of the function
+  resamp_DF <- data.frame(sampleNumbers=sampleNumbers)
+  # Loop through the array by colunms (variables)
+  for(i in 1:ncol(resamplingArray)){
+    # For each, collapse the column into one long vector, and add that vector to the data.frame
+    resamp_DF <- cbind(resamp_DF, c(resamplingArray[,i,]))
+  }
+  # Rename the data.frame values according to the column names of the array
+  names(resamp_DF) <- c('sampleNumbers', colnames(resamplingArray))
+  # If allValues flag is FALSE, remove the allele categories other than 'Total'
+  if(allValues==FALSE){
+    resamp_DF <- resamp_DF[,-(3:6)]
+  }
+  return(resamp_DF)
+}
+
+# From resampling array, generate a data.frame by collapsing values across replicates into vectors
+# allValues flag indicates whether or not to include categories of alleles other that 'Total'
+resample_array2dataframe_NEW <- function(resampArrList, allValues=FALSE){
+  browser()
+  # Loop through the list of resampling arrays, appending each one into the data.frame
+  for(i in 1:length(resampArrList)){
+    # Create a vector of sample numbers. The values in this vector range from 2:total number
+    # of samples (at least 2 samples are required in order for sample function to work; see above).
+    # These values are repeated for the number of replicates in the resampling array (3rd dimension)
+    sampleNumbers <- rep(2:(nrow(resampArrList[[i]])+1), dim(resampArrList[[i]])[[3]])
+    
+  }
+  
   # Pass sample number vector to data.frame, which will be the final output of the function
   resamp_DF <- data.frame(sampleNumbers=sampleNumbers)
   # Loop through the array by colunms (variables)

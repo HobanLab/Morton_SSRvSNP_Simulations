@@ -542,7 +542,7 @@ resample_array2dataframe <- function(resamplingArray, allValues=FALSE){
   # These values are repeated for the number of replicates in the resampling array (3rd dimension)
   sampleNumbers <- rep(2:(nrow(resamplingArray)+1), dim(resamplingArray)[[3]])
   # Pass sample number vector to a results data.frame, which will be the final output of the function
-  resamp_DF <- data.frame(sampleNumbers=sampleNumbers)
+  resamp_DF <- data.frame(nSamples=sampleNumbers)
   # Loop through the array by columns (variables)
   for(i in 1:ncol(resamplingArray)){
     # For each, collapse the column into one long vector, and add that vector to the data.frame
@@ -562,10 +562,10 @@ resample_array2dataframe <- function(resamplingArray, allValues=FALSE){
   params <- unlist(strsplit(scenName, '_'))
   # NUMBER OF POPULATIONS
   numPops <- as.numeric(sub('pop', '', params[[2]]))
-  resamp_DF$numberOfPops <- rep(numPops, nrow(resamp_DF))
+  resamp_DF$nPops <- rep(numPops, nrow(resamp_DF))
   # TOTAL POPULATION SIZE
   # Iterate the maximum number of samples (total population size) for every row in results data.frame
-  resamp_DF$totalPopSize <- rep(max(sampleNumbers), nrow(resamp_DF))
+  resamp_DF$tPopSize <- rep(max(sampleNumbers), nrow(resamp_DF))
   # MIGRATION RATE
   # Based on whether migration is "Low" or "High", iterate the value across data.frame rows
   if(params[[3]] == 'migLow'){

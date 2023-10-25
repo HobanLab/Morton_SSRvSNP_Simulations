@@ -10,121 +10,126 @@
 # Using these data.frames, linear models are constructed to measure the relative effects of the simulation
 # parameters (our explanatory variables) on MSSEs (our response variables). 
 
-library(data.table)
-
 # Set working directory to the GitHub repo (containing scripts and fastSimcoal outputs)
 sim.wd <- '/home/akoontz/Shared/SSRvSNP_Sim/Code/'
 setwd(sim.wd)
 # Read in relevant functions
 source('RScripts/functions_SSRvSNP_Sim.R')
+# Load data.table library, for rbindlist function
+library(data.table)
 
 # %%% NIND = 1200 %%% ----
 # %%% Read in resampling arrays and build results data.frames
 # MSAT
-MSAT_N1200_resampArr_filepath <- 
+N1200_MSAT_resampArr_filepath <- 
   paste0(sim.wd, 'SimulationOutputs/MSAT_N1200_marker/data.MSAT/N0/MSAT_N1200_resampArr.Rdata')
-MSAT_N1200_resamplingArrays <- readRDS(MSAT_N1200_resampArr_filepath)
+N1200_MSAT_resamplingArrays <- readRDS(N1200_MSAT_resampArr_filepath)
 # Transform resampling arrays into data.frames (for linear modeling)
-MSAT_N1200_DF <- rapply(MSAT_N1200_resamplingArrays, resample_array2dataframe, how = 'list')
+N1200_MSAT_DF <- rapply(N1200_MSAT_resamplingArrays, resample_array2dataframe, how = 'list')
 # Collapse multiple data.frames into single large data.frame (with all replicates of all scenarios;
 # this step takes multiple calls because we have a list of lists, and rbindlist cannot be rapply-ed)
-MSAT_N1200_DF <- lapply(MSAT_N1200_DF, rbindlist)
-MSAT_N1200_DF <- rbindlist(MSAT_N1200_DF)
+N1200_MSAT_DF <- lapply(N1200_MSAT_DF, rbindlist)
+N1200_MSAT_DF <- rbindlist(N1200_MSAT_DF)
 
 # DNA
-DNA_N1200_resampArr_filepath <- 
+N1200_DNA_resampArr_filepath <- 
   paste0(sim.wd, 'SimulationOutputs/DNA_N1200_marker/data.DNA/N0/DNA_N1200_resampArr.Rdata')
-DNA_N1200_resamplingArrays <-readRDS(DNA_N1200_resampArr_filepath)
+N1200_DNA_resamplingArrays <-readRDS(N1200_DNA_resampArr_filepath)
 # Transform resampling arrays into data.frames (for linear modeling)
-DNA_N1200_DF <- rapply(DNA_N1200_resamplingArrays, resample_array2dataframe, how = 'list')
+N1200_DNA_DF <- rapply(N1200_DNA_resamplingArrays, resample_array2dataframe, how = 'list')
 # Collapse multiple data.frames into single large data.frame (with all replicates of all scenarios;
 # this step takes multiple calls because we have a list of lists, and rbindlist cannot be rapply-ed)
-DNA_N1200_DF <- lapply(DNA_N1200_DF, rbindlist)
-DNA_N1200_DF <- rbindlist(DNA_N1200_DF)
+N1200_DNA_DF <- lapply(N1200_DNA_DF, rbindlist)
+N1200_DNA_DF <- rbindlist(N1200_DNA_DF)
 
-# CORRECT CODE BELOW
+# Combine DNA and MSAT results into single data.frame
+N1200_DF <- rbind(N1200_MSAT_DF, N1200_DNA_DF)
 
-# # %%% Build parameters data.frame, from which linear models will be built
-# # Specify numeric explanatory variables as categorical, using as.factor 
-# params <- data.frame(expand.grid(n.pop=as.factor(c(1,4,16)), mig.Rate=as.factor(c(0.001,0.01)), marker=c('MSAT', 'DNA')))
-# # Replicate each parameter combination 5 times, for each simulation replicate
-# results.N1200 <- params[rep(1:nrow(params), each=5),]
-# # Append MSSE values to results data.frame
-# results.N1200$MSSE <- c(unlist(MSAT_N1200_min95Values), unlist(DNA_N1200_min95Values))
+# %%% Build linear model and predict 95% MSSE
+# MSAT model
+# N1200_MSAT_model <- lm(nSamples ~ (Total + nPops + migRate), data=N1200_MSAT_DF)
+N1200_MSAT_model <- lm(nSamples ~ Total, data=N1200_MSAT_DF)
+# DNA model
+# N1200_DNA_model <- lm(nSamples ~ (Total + nPops + migRate), data=N1200_DNA_DF)
+N1200_DNA_model <- lm(nSamples ~ Total, data=N1200_DNA_DF)
+# # Complete model
+# N1200_model <- lm(sampleNumbers ~ (Total+numberOfPops+migRate+marker), data=N1200_DF)
 
-# %%% Run linear model
-# Complete model
-n1200_model <- lm(MSSE ~ (n.pop+mig.Rate+marker), data=results.N1200)
-# Model without markers
-n1200_noMarker_model <- lm(MSSE ~ (n.pop+mig.Rate), data=results.N1200)
-# ANOVA demonstrating the value of introducing markers (note p value and large F statistic value)
-anova(n1200_noMarker_model, n1200_model)
-# Model summaries
-summary.lm(n1200_model)
-summary.aov(n1200_model)
-confint(n1200_model)
+# Declare a variable that's used as the prediction point (i.e. 95% allelic representation)
+predictPoint <- data.frame(Total=95)
 
-# %%% Plotting model results
-# Use layout to fit all results into a window
-layout( matrix(c(1,2,3,3), nrow=2, byrow=TRUE) )
-plot(MSSE ~ (n.pop+mig.Rate+marker), data=results.N1200, ylab='95% minimum sample size estimates', 
-     main='MSSEs across sim parameters (nInd = 1200)')
-# Diagnostic model plots: used to assess whether the model meets our assumptions 
-# (particularly, that model residuals are Normally distributed). Change mfrow (to allow multiple plots per window)
-par(mfrow=c(2,2))
-plot(n1200_model)
-# Set mfrow back to default value (1 plot per window)
-par(mfrow=c(1,1))
-# Add title
-mtext('Model Diagnostics: N1200', line=2)
+# Predict 95% MSSE using MSAT data
+predict(N1200_MSAT_model, predictPoint, interval = "prediction")
+# Predict 95% MSSE using DNA data
+predict(N1200_DNA_model, predictPoint, interval = "prediction")
+
+# # Model without markers
+# n1200_noMarker_model <- lm(sampleNumbers ~ (Total+numberOfPops+migRate), data=N1200_DF)
+# # ANOVA demonstrating the value of introducing markers (note p value and large F statistic value)
+# anova(n1200_noMarker_model, n1200_model)
+# # Model summaries
+# summary.lm(n1200_model)
+# summary.aov(n1200_model)
+# confint(n1200_model)
+
+# # %%% Plotting model results
+# # Use layout to fit all results into a window
+# layout( matrix(c(1,2,3,3), nrow=2, byrow=TRUE) )
+# plot(Total ~ (numberOfPops+migRate+marker), data=N1200_DF, ylab='95% minimum sample size estimates', 
+#      main='MSSEs across sim parameters (nInd = 1200)')
+# # Diagnostic model plots: used to assess whether the model meets our assumptions 
+# # (particularly, that model residuals are Normally distributed). Change mfrow (to allow multiple plots per window)
+# par(mfrow=c(2,2))
+# plot(n1200_model)
+# # Set mfrow back to default value (1 plot per window)
+# par(mfrow=c(1,1))
+# # Add title
+# mtext('Model Diagnostics: N1200', line=2)
 
 # %%% NIND = 4800 %%% ----
-# %%% Read in resampling arrays and calculate 95% minimum sampling size estimates (MSSEs)
+# %%% Read in resampling arrays and build results data.frames
 # MSAT
-MSAT_N4800_resampArr_filepath <- 
+N4800_MSAT_resampArr_filepath <- 
   paste0(sim.wd, 'SimulationOutputs/MSAT_N4800_marker/data.MSAT/N0/MSAT_N4800_resampArr.Rdata')
-MSAT_N4800_resamplingArrays <- readRDS(MSAT_N4800_resampArr_filepath)
-MSAT_N4800_min95Values <- rapply(MSAT_N4800_resamplingArrays, resample_min95_mean, how = 'list')
+N4800_MSAT_resamplingArrays <- readRDS(N4800_MSAT_resampArr_filepath)
+# Transform resampling arrays into data.frames (for linear modeling)
+N4800_MSAT_DF <- rapply(N4800_MSAT_resamplingArrays, resample_array2dataframe, how = 'list')
+# Collapse multiple data.frames into single large data.frame (with all replicates of all scenarios;
+# this step takes multiple calls because we have a list of lists, and rbindlist cannot be rapply-ed)
+N4800_MSAT_DF <- lapply(N4800_MSAT_DF, rbindlist)
+N4800_MSAT_DF <- rbindlist(N4800_MSAT_DF)
 
 # DNA
-DNA_N4800_resampArr_filepath <- 
+N4800_DNA_resampArr_filepath <- 
   paste0(sim.wd, 'SimulationOutputs/DNA_N4800_marker/data.DNA/N0/DNA_N4800_resampArr.Rdata')
-DNA_N4800_resamplingArrays <-readRDS(DNA_N4800_resampArr_filepath)
-DNA_N4800_min95Values <- rapply(DNA_N4800_resamplingArrays, resample_min95_mean, how = 'list')
+N4800_DNA_resamplingArrays <-readRDS(N4800_DNA_resampArr_filepath)
+# Transform resampling arrays into data.frames (for linear modeling)
+N4800_DNA_DF <- rapply(N4800_DNA_resamplingArrays, resample_array2dataframe, how = 'list')
+# Collapse multiple data.frames into single large data.frame (with all replicates of all scenarios;
+# this step takes multiple calls because we have a list of lists, and rbindlist cannot be rapply-ed)
+N4800_DNA_DF <- lapply(N4800_DNA_DF, rbindlist)
+N4800_DNA_DF <- rbindlist(N4800_DNA_DF)
 
-# %%% Build parameters data.frame, from which linear models will be built
-# Specify numeric explanatory variables as categorical, using as.factor 
-params <- data.frame(expand.grid(n.pop=as.factor(c(1,4,16)), mig.Rate=as.factor(c(0.001,0.01)), marker=c('MSAT', 'DNA')))
-# Replicate each parameter combination 5 times, for each simulation replicate
-results.N4800 <- params[rep(1:nrow(params), each=5),]
-# Append MSSE values to results data.frame
-results.N4800$MSSE <- c(unlist(MSAT_N4800_min95Values), unlist(DNA_N4800_min95Values))
+# Combine DNA and MSAT results into single data.frame
+N4800_DF <- rbind(N4800_MSAT_DF, N4800_DNA_DF)
 
-# %%% Run linear model
-# Complete model
-n4800_model <- lm(MSSE ~ (n.pop+mig.Rate+marker), data=results.N4800)
-# Model without markers
-n4800_noMarker_model <- lm(MSSE ~ (n.pop+mig.Rate), data=results.N4800)
-# ANOVA demonstrating the value of introducing markers (note p value and large F statistic value)
-anova(n4800_noMarker_model, n4800_model)
-# Model summaries
-summary.lm(n4800_model)
-summary.aov(n4800_model)
-confint(n4800_model)
+# %%% Build linear model and predict 95% MSSE
+# MSAT model
+# N4800_MSAT_model <- lm(nSamples ~ (Total + nPops + migRate), data=N4800_MSAT_DF)
+N4800_MSAT_model <- lm(nSamples ~ Total, data=N4800_MSAT_DF)
+# DNA model
+# N4800_DNA_model <- lm(nSamples ~ (Total + nPops + migRate), data=N4800_DNA_DF)
+N4800_DNA_model <- lm(nSamples ~ Total, data=N4800_DNA_DF)
+# # Complete model
+# N4800_model <- lm(sampleNumbers ~ (Total+numberOfPops+migRate+marker), data=N4800_DF)
 
-# %%% Plotting model results
-# Use layout to fit all results into a window
-layout( matrix(c(1,2,3,3), nrow=2, byrow=TRUE) )
-plot(MSSE ~ (n.pop+mig.Rate+marker), data=results.N4800, ylab='95% minimum sample size estimates', 
-     main='MSSEs across sim parameters (nInd = 4800)')
-# Diagnostic model plots: used to assess whether the model meets our assumptions 
-# (particularly, that model residuals are Normally distributed). Change mfrow (to allow multiple plots per window)
-par(mfrow=c(2,2))
-plot(n4800_model)
-# Set mfrow back to default value (1 plot per window)
-par(mfrow=c(1,1))
-# Add title
-mtext('Model Diagnostics: N4800', line=2)
+# Declare a variable that's used as the prediction point (i.e. 95% allelic representation)
+predictPoint <- data.frame(Total=95)
+
+# Predict 95% MSSE using MSAT data
+predict(N4800_MSAT_model, predictPoint, interval = "prediction")
+# Predict 95% MSSE using DNA data
+predict(N4800_DNA_model, predictPoint, interval = "prediction")
 
 # %%% ACROSS TOTAL POPULATION SIZES %%% ----
 # %%% Build parameters data.frame, from which linear models will be built

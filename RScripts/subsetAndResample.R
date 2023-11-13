@@ -97,9 +97,9 @@ if(nInd_1200_Flag==TRUE){
     # %%% Plotting ----
     # Specify the directories to save plots to
     N1200_MSAT_N0_plotDir <- 
-      '/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/nToDropTests_052023/N1200/MSAT/N0/'
+      '/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/noGarden_20231112/N1200/MSAT/N0/'
     N1200_DNA_N0_plotDir <- 
-      '/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/nToDropTests_052023/N1200/DNA/N0/'
+      '/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/noGarden_20231112/N1200/DNA/N0/'
     # Plotting commands nested in invisible function, to prevent text from being printed
     # MSAT
     invisible(rapply(N1200_MSAT_N0_resamplingArrays, resample_Plot_PNG, colors=plotColors, data.dir=N1200_MSAT_N0_plotDir))
@@ -142,9 +142,9 @@ if(nInd_1200_Flag==TRUE){
     # %%% Plotting ----
     # Specify the directories to save plots to
     N1200_MSAT_N1_plotDir <- 
-      '/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/nToDropTests_052023/N1200/MSAT/N1/'
+      '/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/noGarden_20231112/N1200/MSAT/N1/'
     N1200_DNA_N1_plotDir <- 
-      '/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/nToDropTests_052023/N1200/DNA/N1/'
+      '/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/noGarden_20231112/N1200/DNA/N1/'
     # Plotting commands nested in invisible function, to prevent text from being printed
     # MSAT
     invisible(rapply(N1200_MSAT_N1_resamplingArrays, resample_Plot_PNG, colors=plotColors, data.dir=N1200_MSAT_N1_plotDir))
@@ -187,9 +187,9 @@ if(nInd_1200_Flag==TRUE){
     # %%% Plotting ----
     # Specify the directories to save plots to
     N1200_MSAT_N2_plotDir <- 
-      '/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/nToDropTests_052023/N1200/MSAT/N2/'
+      '/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/noGarden_20231112/N1200/MSAT/N2/'
     N1200_DNA_N2_plotDir <- 
-      '/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/nToDropTests_052023/N1200/DNA/N2/'
+      '/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/noGarden_20231112/N1200/DNA/N2/'
     # Plotting commands nested in invisible function, to prevent text from being printed
     # MSAT
     invisible(rapply(N1200_MSAT_N2_resamplingArrays, resample_Plot_PNG, colors=plotColors, data.dir=N1200_MSAT_N2_plotDir))
@@ -256,9 +256,9 @@ if(nInd_4800_Flag==TRUE){
     # %%% Plotting ----
     # Specify the directories to save plots to
     N4800_MSAT_N0_plotDir <- 
-      '/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/nToDropTests_052023/N4800/MSAT/N0/'
+      '/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/noGarden_20231112/N4800/MSAT/N0/'
     N4800_DNA_N0_plotDir <- 
-      '/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/nToDropTests_052023/N4800/DNA/N0/'
+      '/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/noGarden_20231112/N4800/DNA/N0/'
     # Plotting commands nested in invisible function, to prevent text from being printed
     # MSAT
     invisible(rapply(N4800_MSAT_N0_resamplingArrays, resample_Plot_PNG, largePopFlag=TRUE,
@@ -303,9 +303,9 @@ if(nInd_4800_Flag==TRUE){
     # %%% Plotting ----
     # Specify the directories to save plots to
     N4800_MSAT_N1_plotDir <- 
-      '/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/nToDropTests_052023/N4800/MSAT/N1/'
+      '/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/noGarden_20231112/N4800/MSAT/N1/'
     N4800_DNA_N1_plotDir <- 
-      '/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/nToDropTests_052023/N4800/DNA/N1/'
+      '/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/noGarden_20231112/N4800/DNA/N1/'
     # Plotting commands nested in invisible function, to prevent text from being printed
     # MSAT
     invisible(rapply(N4800_MSAT_N1_resamplingArrays, resample_Plot_PNG, largePopFlag=TRUE,
@@ -350,9 +350,9 @@ if(nInd_4800_Flag==TRUE){
     # %%% Plotting ----
     # Specify the directories to save plots to
     N4800_MSAT_N2_plotDir <- 
-      '/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/nToDropTests_052023/N4800/MSAT/N2/'
+      '/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/noGarden_20231112/N4800/MSAT/N2/'
     N4800_DNA_N2_plotDir <- 
-      '/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/nToDropTests_052023/N4800/DNA/N2/'
+      '/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/noGarden_20231112/N4800/DNA/N2/'
     # Plotting commands nested in invisible function, to prevent text from being printed
     # MSAT
     invisible(rapply(N4800_MSAT_N2_resamplingArrays, resample_Plot_PNG, largePopFlag=TRUE, 
@@ -445,4 +445,5 @@ if(dnaLowMut_Flag==TRUE){
     invisible(rapply(N4800_DNA_lowMut_resamplingArrays, resample_Plot_PNG, largePopFlag=TRUE, 
                      colors=plotColors, data.dir=N4800_DNA_lowMut_plotDir))
   }
+  print('%%% DNA LOW MUTATION ANALYSES COMPLETE! %%%')
 }

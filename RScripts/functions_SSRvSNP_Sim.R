@@ -560,6 +560,11 @@ resample_array2dataframe <- function(resamplingArray, allValues=FALSE){
   # and migration rate)
   scenName <- unique(dimnames(resamplingArray)[[3]])
   params <- unlist(strsplit(scenName, '_'))
+  # If N4800 datasets are being processed, then "N4800" string needs to be removed from params list
+  if(nrow(resamplingArray) > 1200){
+    params <- params[-2]
+  }
+  
   # NUMBER OF POPULATIONS
   numPops <- as.numeric(sub('pop', '', params[[2]]))
   resamp_DF$nPops <- rep(numPops, nrow(resamp_DF))

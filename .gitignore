@@ -25,6 +25,7 @@ SimulationOutputs/DNA_N4800_lowMut/data.DNA
 
 # Additional R scripts, not key to main analysis
 RScripts/resamplingPlotting.R
+RScripts/alleleFreqHist_Plotting.R
 
 # All Arlequin, .arb files, and .simparam. For SNP simulations with at least 1,000 loci, these files will outsize the GitHub file limit size
 **/*.arp

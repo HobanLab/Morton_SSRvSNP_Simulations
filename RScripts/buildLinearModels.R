@@ -78,9 +78,9 @@ layout(matrix(c(1,1,2,3), nrow=2, byrow=TRUE))
 # %%% MSAT
 # Standard resampling curve
 plot(Total ~ nSamples, data=N1200_MSAT_DF, ylab='Allelic representation (%)',
-     xlab='Number of samples', pch=16, col=alpha("darkred", 0.45))
+     xlab='Number of samples', pch=16, col=alpha("purple", 0.10))
 # Title
-mtext("N1200: MSAT: Simulation parameters", line=2, cex=1.5)
+mtext("N1200: MSAT: Allelic representation across scenario parameters", line=2, cex=1.5)
 # Boxplots for migration rate and number of populations
 boxplot(Total ~ migRate, data=N1200_MSAT_DF, ylab='Allelic representation (%)',
         xlab = 'Migration rate', pch=16)
@@ -89,9 +89,9 @@ boxplot(Total ~ nPops, data=N1200_MSAT_DF, ylab='Allelic representation (%)',
 # %%% DNA
 # Standard resampling curve
 plot(Total ~ nSamples, data=N1200_DNA_DF, ylab='Allelic representation (%)',
-     xlab='Number of samples', pch=16, col=alpha("darkred", 0.45))
+     xlab='Number of samples', pch=16, col=alpha("darkgreen", 0.10))
 # Title
-mtext("N1200: DNA: Simulation parameters", line=2, cex=1.5)
+mtext("N1200: DNA: Allelic representation across scenario parameters", line=2, cex=1.5)
 # Boxplots for migration rate and number of populations
 boxplot(Total ~ migRate, data=N1200_DNA_DF, ylab='Allelic representation (%)',
         xlab = 'Migration rate', pch=16)
@@ -151,9 +151,9 @@ layout(matrix(c(1,1,2,3), nrow=2, byrow=TRUE))
 # %%% MSAT
 # Standard resampling curve
 plot(Total ~ nSamples, data=N4800_MSAT_DF, ylab='Allelic representation (%)',
-     xlab='Number of samples', pch=16, col=alpha("darkred", 0.45))
+     xlab='Number of samples', pch=16, col=alpha("purple", 0.10))
 # Title
-mtext("N4800: MSAT: Simulation parameters", line=2, cex=1.5)
+mtext("N4800: MSAT: Allelic representation across scenario parameters", line=2, cex=1.5)
 # Boxplots for migration rate and number of populations
 boxplot(Total ~ migRate, data=N4800_MSAT_DF, ylab='Allelic representation (%)',
         xlab = 'Migration rate', pch=16)
@@ -162,9 +162,9 @@ boxplot(Total ~ nPops, data=N4800_MSAT_DF, ylab='Allelic representation (%)',
 # %%% DNA
 # Standard resampling curve
 plot(Total ~ nSamples, data=N4800_DNA_DF, ylab='Allelic representation (%)',
-     xlab='Number of samples', pch=16, col=alpha("darkred", 0.45))
+     xlab='Number of samples', pch=16, col=alpha("darkgreen", 0.10))
 # Title
-mtext("N4800: DNA: Simulation parameters", line=2, cex=1.5)
+mtext("N4800: DNA: Allelic representation across scenario parameters", line=2, cex=1.5)
 # Boxplots for migration rate and number of populations
 boxplot(Total ~ migRate, data=N4800_DNA_DF, ylab='Allelic representation (%)',
         xlab = 'Migration rate', pch=16)

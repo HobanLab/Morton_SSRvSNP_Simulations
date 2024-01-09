@@ -535,7 +535,7 @@ resample_meanValues <- function(resamplingArray){
 # In addition to number of samples and the allelic representation values, the results data.frame
 # is also populated with the values of simulation parameters, determined using the scenario name
 # passed to the resampling array when the array was constructed. The allValues flag indicates whether
-# or not to include categories of alleles other that 'Total'
+# or not to include categories of alleles other than 'Total'
 resample_array2dataframe <- function(resamplingArray, allValues=FALSE){
   # Create a vector of sample numbers. The values in this vector range from 2:total number
   # of samples (at least 2 samples are required in order for sample function to work; see above).
@@ -566,7 +566,8 @@ resample_array2dataframe <- function(resamplingArray, allValues=FALSE){
   }
   
   # NUMBER OF POPULATIONS
-  numPops <- as.numeric(sub('pop', '', params[[2]]))
+  # Using grep to find position in params that contains pop values (this changes across datasets)
+  numPops <- as.numeric(sub('pop', '', params[[grep("pop", params)]]))
   resamp_DF$nPops <- rep(numPops, nrow(resamp_DF))
   # TOTAL POPULATION SIZE
   # Iterate the maximum number of samples (total population size) for every row in results data.frame

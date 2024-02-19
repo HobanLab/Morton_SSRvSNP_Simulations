@@ -97,7 +97,7 @@ histEvent16 <- fscSettingsEvents(hist.event0,hist.event1,hist.event2,hist.event3
 # MSAT
 # Higher mutation rate (1e-3) and range constraint (15) to match Empirical distributions
 msats <- fscBlock_microsat(num.loci = 1, mut.rate = 1e-3, range.constraint = 15)
-MSATgenetics <- fscSettingsGenetics(msats, num.chrom = 20)
+MSATgenetics <- fscSettingsGenetics(msats, num.chrom = 25)
 # DNA
 # Mutation rate set to match Empirical R80 distributions
 # Large sequence length/number of blocks/number of chromosomes set to generate 1,000 SNP loci

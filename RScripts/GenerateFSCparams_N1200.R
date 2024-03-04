@@ -37,7 +37,7 @@ num_reps <- 5
 fscVersion <- "fsc28"
 # Flags for running MSAT or SNP simulations
 Flag_MSAT <- TRUE
-Flag_DNA <- FALSE
+Flag_DNA <- TRUE
 # DEMES
 # Specify number of total individuals, for all simulations
 # Since there are 4 deme and 16 deme scenarios, this value must be divisible by 4 and 16

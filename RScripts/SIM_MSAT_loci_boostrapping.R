@@ -1,29 +1,11 @@
+# this script combines the 
 rm(list = ls())
-library(strataG)
-library(adegenet)
-library(stringr)
-library(parallel)
-library(RColorBrewer)
-library(scales)
+library(abind)
 sim.wd <- 'C:/Users/gsalas/Documents/resampling_CIs/Code/'
 setwd(sim.wd)
 source('Morton_SSRvSNP_Simulations/RScripts/functions_SSRvSNP_Sim.R')
-# Parallelism: specify number of cores to use
-num_cores <- detectCores() - 4
-# Specify number of resampling replicates, to use for all scenarios below
-num_reps <- 5
-# Pick plot colors (for all plots!)
-plotColors <- c('red','red4','darkorange3','coral','purple')
-# Flags for processing different datasets (marker=msat, dna; nInd=1200, 4800; different n_to_drop flags; DNA low mutation)
-MSAT_Flag <- TRUE
-nInd_1200_Flag <- TRUE
-if(nInd_1200_Flag==TRUE){
-  print('%%% ANALYZING NIND=1200 DATASET %%%')
-  # %%% Read in simulations and process results ----
-  # Source the genind objects from previously run simulations, using readGeninds functions
-  readGeninds_MSAT(paste0(sim.wd,'Datasets/MSAT_N1200/'))
-}
-
+readGeninds_MSAT(paste0(sim.wd,'Datasets/MSAT_N1200/'))
+## Building resampling array ##
 gm_resamp_array_function <- function(insert_genind, num_loci, num_reps){
   # Create an empty array named 'resamp_category5loc' to store results
   resamp_category <- array(dim = c(nrow(insert_genind@tab),4,num_reps))
@@ -94,4 +76,67 @@ gm_resamp_array_function <- function(insert_genind, num_loci, num_reps){
   return(resamp_category)
 }
 
-list(MSAT_01pop_migHigh.genList[[1]]@tab)
+## Linear model ##
+# pass all arrays to a dataframe using the function. define the function that takes an input 'data_array'
+analyze_resampling_array <- function(data_array) {
+  # linear model of resampling array. Extract the column named 'total' from the array.
+  # concatenate the extracted column values into the vector.
+  totalsVector <- c(data_array[,1,]) 
+  
+  # Specify sample numbers column.
+  # Create a vector of sample numbers from 1 to the number of rows in the 'total' column 
+  gm_sampleNumbers <- 1:(nrow(data_array[,1,]))
+  # Repeat the sample numbers vector for the number of replicates
+  gm_sampleNumbers <- rep(gm_sampleNumbers, dim(data_array)[[3]])
+  
+  # Create data frame from resampling array values
+  gm_DF <- data.frame(sampleNumbers=gm_sampleNumbers, totalValues=totalsVector)
+  
+  # Build and analyze linear models
+  gm_Model <- lm(sampleNumbers ~ I((totalValues)^3), data = gm_DF)
+  # Create a new data fram 'gm_newData with a single column 'totalValues' containing the value 0.95
+  gm_newData <- data.frame(totalValues=0.95)
+  # Use the linear model to predict the response for the new data frame. Specify 'interval = prediction to obtain a prediction interval
+  gm_95MSSEprediction <- predict(gm_Model, gm_newData, interval = "prediction")
+  
+  # Pass the gm_95MSSEprediction to the object storing our results 
+  # Store the predicted values and predictino interval in the object named 'result' 
+  result <- gm_95MSSEprediction
+  # Calculate the width of the prediction interval by substracting the lower limit from the upper limit
+  piWidth <- gm_95MSSEprediction[3] - gm_95MSSEprediction[2]
+  # Return a list containing the predicted values and the width of the prediction interval
+  return(list(result = result, piWidth = piWidth))
+}
+
+## Filling in matrix ##
+# Iterate through the arrays and store results in the matrix
+# Initiate loop that iterates over the indices of 'array_list'
+build_matrix_func <- function(array_list, input_matrix){
+  for (i in 1:length(array_list)) {
+    # Store results and piWidth values in the ith row of the matrix
+    input_matrix[i, ] <- c(array_list[[i]]$result, 
+                           array_list[[i]]$piWidth)
+  }
+  return(input_matrix)
+}
+
+supremeArray <- array(dim = c(1200, 5, 25))
+
+MSAT_levels <- c(5, 10, 15, 20, 25)
+
+QUAC_array_list = list(length(MSAT_levels))
+
+QUAC_predict_results <- list(length(MSAT_levels))
+
+for (i in 1:length(MSAT_levels)) {
+  for (j in 1:length(MSAT_01pop_migHigh.genList)) {
+    QUAC_array_list <- gm_resamp_array_function(MSAT_01pop_migHigh.genList[[j]],MSAT_levels[i],5)
+  }
+  supremeArray[,,i] <- abind(QUAC_array_list[[i]])
+  # store the results into a list 
+  QUAC_predict_results[[i]] <- analyze_resampling_array(supremeArray)
+  print(QUAC_predict_results)
+}
+
+
+

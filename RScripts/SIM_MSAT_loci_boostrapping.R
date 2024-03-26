@@ -120,6 +120,8 @@ build_matrix_func <- function(array_list, input_matrix){
   return(input_matrix)
 }
 
+test_representation_values
+
 supremeArray <- array(dim = c(1200, 5, 25))
 
 MSAT_levels <- c(5, 10, 15, 20, 25)
@@ -128,15 +130,26 @@ QUAC_array_list = list(length(MSAT_levels))
 
 QUAC_predict_results <- list(length(MSAT_levels))
 
+# for (i in 1:length(MSAT_levels)) {
+#   for (j in 1:length(MSAT_01pop_migHigh.genList)) {
+#     QUAC_array_list <- gm_resamp_array_function(MSAT_01pop_migHigh.genList[[j]],MSAT_levels[i],5)
+#   }
+#   supremeArray[,,i] <- abind(QUAC_array_list[[i]])
+#   # store the results into a list 
+#   QUAC_predict_results[[i]] <- analyze_resampling_array(supremeArray)
+#   print(QUAC_predict_results)
+# }
+QUAC_array_list = list(length(MSAT_levels))
+supremeArray <- array(dim = c(1200, 5, 25))
+test_MSAT_levels <- c(5)
 for (i in 1:length(MSAT_levels)) {
   for (j in 1:length(MSAT_01pop_migHigh.genList)) {
-    QUAC_array_list <- gm_resamp_array_function(MSAT_01pop_migHigh.genList[[j]],MSAT_levels[i],5)
+    QUAC_array_list <- gm_resamp_array_function(MSAT_01pop_migHigh.genList[[j]],5,5)
   }
-  supremeArray[,,i] <- abind(QUAC_array_list[[i]])
+  supremeArray[,,i] <- abind(QUAC_array_list[,,i])
   # store the results into a list 
   QUAC_predict_results[[i]] <- analyze_resampling_array(supremeArray)
   print(QUAC_predict_results)
 }
 
-
-
+test_supreme <- abind(QUAC_array_list[,,1], QUAC_array_list[,,2])

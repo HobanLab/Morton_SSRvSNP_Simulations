@@ -139,17 +139,39 @@ QUAC_predict_results <- list(length(MSAT_levels))
 #   QUAC_predict_results[[i]] <- analyze_resampling_array(supremeArray)
 #   print(QUAC_predict_results)
 # }
-QUAC_array_list = list(length(MSAT_levels))
-supremeArray <- array(dim = c(1200, 5, 25))
+QUAC_array_list = list(MSAT_levels[5])
+supremeArray <- array(dim = c(1200, 4, 25))
 test_MSAT_levels <- c(5)
-for (i in 1:length(MSAT_levels)) {
-  for (j in 1:length(MSAT_01pop_migHigh.genList)) {
-    QUAC_array_list <- gm_resamp_array_function(MSAT_01pop_migHigh.genList[[j]],5,5)
-  }
-  supremeArray[,,i] <- abind(QUAC_array_list[,,i])
-  # store the results into a list 
-  QUAC_predict_results[[i]] <- analyze_resampling_array(supremeArray)
-  print(QUAC_predict_results)
-}
 
-test_supreme <- abind(QUAC_array_list[,,1], QUAC_array_list[,,2])
+#loop repeats 5 times (once for every level of loci)
+for (i in 1:length(MSAT_levels)) {
+  # loop repeats 
+  for (j in 1:length(MSAT_01pop_migHigh.genList)) {
+    QUAC_array_list <- gm_resamp_array_function(MSAT_01pop_migHigh.genList[[j]],MSAT_levels[i],5)
+    supremeArray[,,i] <- abind(QUAC_array_list[,,i])
+  }
+}
+# store the results into a list 
+QUAC_predict_results <- analyze_resampling_array(supremeArray)
+print(QUAC_predict_results)
+
+
+
+
+
+
+
+
+
+for (j in 1:length(MSAT_01pop_migHigh.genList)) {
+  QUAC_array_list <- gm_resamp_array_function(MSAT_01pop_migHigh.genList[[j]],MSAT_levels[i],5)
+  supremeArray[,,i] <- abind(QUAC_array_list[,,i])
+}
+supremeArray[,,6]
+QUAC_array_list
+test_supreme <- array(dim = c(1200, 4, 25))
+test_supreme[,,1] <- abind(QUAC_array_list[,,1])
+test_supreme[,,2] <- abind(QUAC_array_list[,,2])
+analyze_resampling_array(test_supreme)
+
+str(test_supreme)

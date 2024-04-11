@@ -1,16 +1,17 @@
-##############
-# 03/26/2024 #
-##############
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# %%% 03/26/2024 Simulated MSAT Loci bootstrapping %%%
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 # This script generates a list "QUAC_array_list" of 5 arrays. Each array stores 
 # representation values across replicates from each scenario based on a number of loci
 # (5-25 loci are bootstrapped at intervals of 5)
+# clear environment
 rm(list = ls())
 library(abind)
 sim.wd <- 'C:/Users/gsalas/Documents/resampling_CIs/Code/'
 setwd(sim.wd)
-source('Morton_SSRvSNP_Simulations/RScripts/functions_SSRvSNP_Sim.R')
-# readGeninds_MSAT(paste0(sim.wd,'Datasets/MSAT_N1200/'))
-## Building resampling array ##
+# ---- FUNCTIONS ----
+# Building resampling array ----
 gm_resamp_array_function <- function(insert_genind, num_loci, num_reps){
   # Create an empty array named 'resamp_category5loc' to store results
   resamp_category <- array(dim = c(nrow(insert_genind@tab),4,num_reps))
@@ -81,7 +82,7 @@ gm_resamp_array_function <- function(insert_genind, num_loci, num_reps){
   return(resamp_category)
 }
 
-## Linear model ##
+# Linear model ----
 # pass all arrays to a dataframe using the function. define the function that takes an input 'data_array'
 analyze_resampling_array <- function(data_array) {
   # linear model of resampling array. Extract the column named 'total' from the array.
@@ -113,7 +114,7 @@ analyze_resampling_array <- function(data_array) {
   return(list(result = result, piWidth = piWidth))
 }
 
-## Filling in matrix ##
+# Filling in matrix ----
 # Iterate through the arrays and store results in the matrix
 # Initiate loop that iterates over the indices of 'array_list'
 build_matrix_func <- function(array_list, input_matrix){
@@ -124,6 +125,7 @@ build_matrix_func <- function(array_list, input_matrix){
   }
   return(input_matrix)
 }
+# %%% All Simulation Outputs %%% ----
 # declare all objects for the loop
 # this array stores a resampling array from a simulated genind object of a scenario, of which there are 5 simulated genind objects.
 replicatesArray <- array(dim = c(1200, 4, 5))
@@ -137,14 +139,12 @@ QUAC_array_list = list(length(MSAT_levels))
 MSATscenarios <- list.files(path = 'Datasets/MSAT_N1200/', pattern = "genind.MSAT_", full.names = TRUE)
 # a list that stores all the simulation scenarios after being added to the environment
 MSATscenariosList = list(length(MSATscenarios))
-# MSAT_levels <- c(5,10)
+# %%% Loci bootstrapping representation value replicates across scenarios----
 # Print starting time
 startTime <- Sys.time() 
 print(paste0('%%% RUNTIME START: ', startTime))
 for (i in 1:length(MSAT_levels)) {
   for (j in 1:length(MSATscenarios)) {
-    # browser()
-    # MSATscenariosList[[j]] <- readRDS(MSATscenarios[j])
     currentScenario <- readRDS(MSATscenarios[[j]])
     for (k in 1:length(currentScenario)){
       replicatesArray <- gm_resamp_array_function(currentScenario[[k]],MSAT_levels[[i]],5)
@@ -165,24 +165,25 @@ endTime <- Sys.time()
 print(paste0('%%% RUNTIME END: ', endTime))
 cat(paste0('\n', '%%% TOTAL RUNTIME: ', endTime-startTime))
 
-
+# %%% Prediction outputs ----
 # prints out the prediction width results and the fit for each array with the same number of loci
 for (i in 1:length(MSAT_levels)) {
   MSAT_1200_predict_results[i] <- list(analyze_resampling_array(QUAC_array_list[[i]]))
 }
 print(MSAT_1200_predict_results)
 
-# Set column names
+# declare object that will store the names for the columns 
 predict_outputs <- c("fit", "lower", "upper", "piWidth")
 # this matrix will store the pi values and pi widths
-# Create an empty matrix to store the results
+# %%% Create an empty matrix to store the results ----
 MSAT_1200_matrix <- matrix(nrow = length(MSAT_levels), ncol = length(predict_outputs))
 # Set column names for 'results_Matrix'
 colnames(MSAT_1200_matrix) <- predict_outputs
 # Set row names for 'resutls_Matrix'
 rownames(MSAT_1200_matrix) <- MSAT_levels
-
+# %%% Insert list and empty matrix to the build matrix func function ----
 MSAT_1200_PI_matrix <- build_matrix_func(MSAT_1200_predict_results, MSAT_1200_matrix)
+# write csv to outputs folder
 write.csv(MSAT_1200_PI_matrix,
           file = 'C:/Users/gsalas/Documents/resampling_CIs/Code/Outputs/MSAT_1200_PI_matrix.csv',
           row.names = TRUE)

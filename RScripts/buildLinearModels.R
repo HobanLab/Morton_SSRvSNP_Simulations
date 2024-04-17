@@ -75,16 +75,36 @@ anova(N1200_model, N1200_noMarker_model)
 
 # %%% Plotting model results ----
 # Use layout to generate multiple plots in a single window
-layout(matrix(c(1,1,2,3), nrow=2, byrow=TRUE))
-# %%% MSAT
-# Standard resampling curve
-plot(Total ~ nSamples, data=N1200_MSAT_DF, ylab='Allelic representation (%)',
-     xlab='Number of samples', pch=16, col=alpha("purple", 0.10))
-# Title
-mtext("N1200: MSAT: Allelic representation across scenario parameters", line=2, cex=1.5)
-# Boxplots for migration rate and number of populations
-boxplot(Total ~ migRate, data=N1200_MSAT_DF, ylab='Allelic representation (%)',
-        xlab = 'Migration rate', pch=16)
+layout(matrix(c(1,1,2,2,3,3), nrow=3, byrow=TRUE))
+# Standard resampling curve, MSAT data
+plot(Total ~ nSamples, data=N1200_DF[which(N1200_DF$marker == "MSAT"),], 
+     ylab='', xlab='Number of samples', pch=16, col=alpha("purple", 0.01))
+# Standard resampling curve, DNA data
+points(Total ~ nSamples, data=N1200_DF[which(N1200_DF$marker == "DNA"),],
+       pch=16, col=alpha("darkgreen", 0.01))
+# Legend and title
+legend(x=625, y=156, inset = 0.05, xpd=TRUE,
+       legend = c('MSAT', 'DNA'), col=c('purple','darkgreen'), 
+       pch = c(20,20), cex=1.2, pt.cex = 2, bty='n', y.intersp = 0.15)
+mtext("N1200: Allelic representation across scenario parameters", line=2, cex=1.5)
+
+# Boxplots
+# Migration rate
+boxplot(Total ~ marker+migRate, data=N1200_DF, ylab='Allelic representation (%)', 
+        xlab = '', col=c('darkgreen','purple','darkgreen','purple'),
+        names=c('DNA','MSAT','DNA','MSAT'))
+# Line below doesn't work...seems like it's tricky to add lines when you're using a custom plotting window
+lines(2.5, 60, col = "red")
+# Number of populations
+boxplot(Total ~ marker+nPops, data=N1200_DF, ylab='Allelic representation (%)', 
+        xlab = '', col=c('darkgreen','purple','darkgreen','purple','darkgreen','purple'),
+        names=c('DNA','MSAT','DNA','MSAT','DNA','MSAT'))
+
+# Boxplots for number of populations
+# MSAT and DNA
+boxplot(Total ~ migRate, data=N1200_DF[which(N1200_DF$marker == "MSAT"),], 
+        ylab='Allelic representation (%)', xlab = 'Migration rate', pch=16, col='purple')
+
 boxplot(Total ~ nPops, data=N1200_MSAT_DF, ylab='Allelic representation (%)',
         xlab = 'Number of populations', pch=16)
 # %%% DNA
@@ -146,31 +166,31 @@ summary.aov(N4800_noMarker_model)
 # ANOVA demonstrating the value of introducing markers (note p value and large F statistic value)
 anova(N4800_model, N4800_noMarker_model)
 
-# %%% Plotting model results ----
-# Use layout to generate multiple plots in a single window
-layout(matrix(c(1,1,2,3), nrow=2, byrow=TRUE))
-# %%% MSAT
-# Standard resampling curve
-plot(Total ~ nSamples, data=N4800_MSAT_DF, ylab='Allelic representation (%)',
-     xlab='Number of samples', pch=16, col=alpha("purple", 0.10))
-# Title
-mtext("N4800: MSAT: Allelic representation across scenario parameters", line=2, cex=1.5)
-# Boxplots for migration rate and number of populations
-boxplot(Total ~ migRate, data=N4800_MSAT_DF, ylab='Allelic representation (%)',
-        xlab = 'Migration rate', pch=16)
-boxplot(Total ~ nPops, data=N4800_MSAT_DF, ylab='Allelic representation (%)',
-        xlab = 'Number of populations', pch=16)
-# %%% DNA
-# Standard resampling curve
-plot(Total ~ nSamples, data=N4800_DNA_DF, ylab='Allelic representation (%)',
-     xlab='Number of samples', pch=16, col=alpha("darkgreen", 0.10))
-# Title
-mtext("N4800: SNP: Allelic representation across scenario parameters", line=2, cex=1.5)
-# Boxplots for migration rate and number of populations
-boxplot(Total ~ migRate, data=N4800_DNA_DF, ylab='Allelic representation (%)',
-        xlab = 'Migration rate', pch=16)
-boxplot(Total ~ nPops, data=N4800_DNA_DF, ylab='Allelic representation (%)',
-        xlab = 'Number of populations', pch=16)
+# # %%% Plotting model results ----
+# # Use layout to generate multiple plots in a single window
+# layout(matrix(c(1,1,2,3), nrow=2, byrow=TRUE))
+# # %%% MSAT
+# # Standard resampling curve
+# plot(Total ~ nSamples, data=N4800_MSAT_DF, ylab='Allelic representation (%)',
+#      xlab='Number of samples', pch=16, col=alpha("purple", 0.10))
+# # Title
+# mtext("N4800: MSAT: Allelic representation across scenario parameters", line=2, cex=1.5)
+# # Boxplots for migration rate and number of populations
+# boxplot(Total ~ migRate, data=N4800_MSAT_DF, ylab='Allelic representation (%)',
+#         xlab = 'Migration rate', pch=16)
+# boxplot(Total ~ nPops, data=N4800_MSAT_DF, ylab='Allelic representation (%)',
+#         xlab = 'Number of populations', pch=16)
+# # %%% DNA
+# # Standard resampling curve
+# plot(Total ~ nSamples, data=N4800_DNA_DF, ylab='Allelic representation (%)',
+#      xlab='Number of samples', pch=16, col=alpha("darkgreen", 0.10))
+# # Title
+# mtext("N4800: SNP: Allelic representation across scenario parameters", line=2, cex=1.5)
+# # Boxplots for migration rate and number of populations
+# boxplot(Total ~ migRate, data=N4800_DNA_DF, ylab='Allelic representation (%)',
+#         xlab = 'Migration rate', pch=16)
+# boxplot(Total ~ nPops, data=N4800_DNA_DF, ylab='Allelic representation (%)',
+#         xlab = 'Number of populations', pch=16)
 
 # %%% DNA: LOW MUTATION RATE (1E-8) %%% ----
 # %%% N1200 ----

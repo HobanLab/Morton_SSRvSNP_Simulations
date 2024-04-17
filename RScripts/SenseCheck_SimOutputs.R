@@ -95,7 +95,7 @@ if(Flag_MSAT == TRUE){
   # 5. ALLELE FREQUENCY SPECTRA ----
   print("%%% ALLELE FREQUENCIES")
   # Specify the directory to save histograms to
-  histDir <- "/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/SimulationSummaries_20240304/N1200/MSAT/"
+  histDir <- "/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/SimulationSummaries_20240305/N1200/MSAT/"
   # Generate histograms of each simulation replicate in each genind list, and save to a png file in the directory
   makeAlleleFreqHist_genList(MSAT_01pop_migLow.genList, outDir = histDir)
   makeAlleleFreqHist_genList(MSAT_01pop_migHigh.genList, outDir = histDir)
@@ -159,7 +159,7 @@ if(Flag_DNA == TRUE){
   # 5. ALLELE FREQUENCY SPECTRA ----
   print("%%% ALLELE FREQUENCIES")
   # Specify the directory to save histograms to
-  histDir <- "/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/SimulationSummaries_20240304/N1200/DNA/"
+  histDir <- "/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/SimulationSummaries_20240305/N1200/DNA/"
   # Generate histograms of each simulation replicate in each genind list, and save to a png file in the directory
   makeAlleleFreqHist_genList(DNA_01pop_migLow.genList, outDir = histDir)
   makeAlleleFreqHist_genList(DNA_01pop_migHigh.genList, outDir = histDir)
@@ -227,7 +227,7 @@ if(Flag_MSAT == TRUE){
   # 5. ALLELE FREQUENCY SPECTRA ----
   print("%%% ALLELE FREQUENCIES")
   # Specify the directory to save histograms to
-  histDir <- "/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/SimulationSummaries_20240304/N4800/MSAT/"
+  histDir <- "/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/SimulationSummaries_20240305/N4800/MSAT/"
   # Generate histograms of each simulation replicate in each genind list, and save to a png file in the directory
   makeAlleleFreqHist_genList(MSAT_01pop_migLow.genList, outDir = histDir)
   makeAlleleFreqHist_genList(MSAT_01pop_migHigh.genList, outDir = histDir)
@@ -291,7 +291,7 @@ if(Flag_DNA == TRUE){
   # 5. ALLELE FREQUENCY SPECTRA ----
   print("%%% ALLELE FREQUENCIES")
   # Specify the directory to save histograms to
-  histDir <- "/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/SimulationSummaries_20240304/N4800/DNA/"
+  histDir <- "/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/SimulationSummaries_20240305/N4800/DNA/"
   # Generate histograms of each simulation replicate in each genind list, and save to a png file in the directory
   makeAlleleFreqHist_genList(DNA_01pop_migLow.genList, outDir = histDir)
   makeAlleleFreqHist_genList(DNA_01pop_migHigh.genList, outDir = histDir)

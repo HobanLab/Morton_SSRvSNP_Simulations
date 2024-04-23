@@ -7,6 +7,7 @@
 # (5-25 loci are bootstrapped at intervals of 5)
 # clear environment
 rm(list = ls())
+library(adegenet)
 library(abind)
 sim.wd <- 'C:/Users/gsalas/Documents/resampling_CIs/Code/'
 setwd(sim.wd)
@@ -134,11 +135,13 @@ scenarioArray <- array(dim = c(1200, 4, 0))
 # this array 
 combinedArray <- array(dim = c(1200, 4, 0))
 MSAT_levels <- c(5, 10, 15, 20, 25)
-QUAC_array_list = list(length(MSAT_levels))
+# QUAC_array_list = list(length(MSAT_levels))
+QUAC_array_list <- vector("list", length = length(MSAT_levels))
 # reading in the names of each of the scenarios to be processed
 MSATscenarios <- list.files(path = 'Datasets/MSAT_N1200/', pattern = "genind.MSAT_", full.names = TRUE)
 # a list that stores all the simulation scenarios after being added to the environment
-MSATscenariosList = list(length(MSATscenarios))
+# MSATscenariosList = list(length(MSATscenarios))
+MSATscenariosList <- vector("list", length = length(MSATscenarios))
 # %%% Loci bootstrapping representation value replicates across scenarios----
 # Print starting time
 startTime <- Sys.time() 
@@ -166,9 +169,11 @@ print(paste0('%%% RUNTIME END: ', endTime))
 cat(paste0('\n', '%%% TOTAL RUNTIME: ', endTime-startTime))
 
 # %%% Prediction outputs ----
+# empty list with length of 5 that will contain the outputs of the predict analysis
+MSAT_1200_predict_results <- vector("list", 5)
 # prints out the prediction width results and the fit for each array with the same number of loci
 for (i in 1:length(MSAT_levels)) {
-  MSAT_1200_predict_results[i] <- list(analyze_resampling_array(QUAC_array_list[[i]]))
+  MSAT_1200_predict_results[[i]] <- analyze_resampling_array(QUAC_array_list[[i]])
 }
 print(MSAT_1200_predict_results)
 

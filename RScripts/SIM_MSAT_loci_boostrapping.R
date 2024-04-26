@@ -130,9 +130,9 @@ build_matrix_func <- function(array_list, input_matrix){
 # # declare all objects for the loop
 # # this array stores a resampling array from a simulated genind object of a scenario, of which there are 5 simulated genind objects.
 # replicatesArray <- array(dim = c(1200, 4, 5))
-# # this array stores the 
+# # this array stores the
 # scenarioArray <- array(dim = c(1200, 4, 0))
-# # this array 
+# # this array
 # combinedArray <- array(dim = c(1200, 4, 0))
 # MSAT_levels <- c(5, 10, 15, 20, 25)
 # # QUAC_array_list = list(length(MSAT_levels))
@@ -144,14 +144,14 @@ build_matrix_func <- function(array_list, input_matrix){
 # MSATscenariosList <- vector("list", length = length(MSATscenarios))
 # # %%% Loci bootstrapping representation value replicates across scenarios----
 # # Print starting time
-# startTime <- Sys.time() 
+# startTime <- Sys.time()
 # print(paste0('%%% RUNTIME START: ', startTime))
 # for (i in 1:length(MSAT_levels)) {
 #   for (j in 1:length(MSATscenarios)) {
 #     currentScenario <- readRDS(MSATscenarios[[j]])
 #     for (k in 1:length(currentScenario)){
 #       replicatesArray <- gm_resamp_array_function(currentScenario[[k]],MSAT_levels[[i]],5)
-#       
+# 
 #       scenarioArray <- abind(replicatesArray,scenarioArray)
 #     }
 #     combinedArray <- abind(scenarioArray,combinedArray)
@@ -164,10 +164,10 @@ build_matrix_func <- function(array_list, input_matrix){
 #   combinedArray <- array(dim = c(1200,4,0))
 # }
 # # Print ending time and total runtime
-# endTime <- Sys.time() 
+# endTime <- Sys.time()
 # print(paste0('%%% RUNTIME END: ', endTime))
 # cat(paste0('\n', '%%% TOTAL RUNTIME: ', endTime-startTime))
-# 
+
 # # %%% Prediction outputs ----
 # # empty list with length of 5 that will contain the outputs of the predict analysis
 # MSAT_1200_predict_results <- vector("list", 5)
@@ -177,7 +177,7 @@ build_matrix_func <- function(array_list, input_matrix){
 # }
 # print(MSAT_1200_predict_results)
 # 
-# # declare object that will store the names for the columns 
+# # declare object that will store the names for the columns
 # predict_outputs <- c("fit", "lower", "upper", "piWidth")
 # # this matrix will store the pi values and pi widths
 # # %%% Create an empty matrix to store the results ----
@@ -195,13 +195,16 @@ build_matrix_func <- function(array_list, input_matrix){
 
 # %%% MSAT N4800 %%% ----
 # declare all objects for the loop
-# this array stores a resampling array from a simulated genind object of a scenario, of which there are 5 simulated genind objects.
-replicatesArray <- array(dim = c(4800, 4, 5))
-# this array stores the 
+# this array stores 5 replicates for representation values from a simulated genind object of a scenario, of which there are 6 simulated genind objects.
+# replicatesArray <- array(dim = c(4800, 4, 5))
+replicatesArray <- array(dim = c(4800, 4, 2))
+# this array stores the
 scenarioArray <- array(dim = c(4800, 4, 0))
-# this array 
+# this array
 combinedArray <- array(dim = c(4800, 4, 0))
-MSAT_levels <- c(5, 10, 15, 20, 25)
+# MSAT_levels <- c(5, 10, 15, 20, 25)
+MSAT_levels <- c(5)
+
 # QUAC_array_list = list(length(MSAT_levels))
 QUAC_array_list <- vector("list", length = length(MSAT_levels))
 # reading in the names of each of the scenarios to be processed
@@ -210,14 +213,15 @@ MSATscenarios <- list.files(path = 'Datasets/Simulated/MSAT_N4800/', pattern = "
 MSATscenariosList <- vector("list", length = length(MSATscenarios))
 # %%% Loci bootstrapping representation value replicates across scenarios----
 # Print starting time
-startTime <- Sys.time() 
+startTime <- Sys.time()
 print(paste0('%%% RUNTIME START: ', startTime))
 for (i in 1:length(MSAT_levels)) {
   for (j in 1:length(MSATscenarios)) {
     currentScenario <- readRDS(MSATscenarios[[j]])
     for (k in 1:length(currentScenario)){
-      replicatesArray <- gm_resamp_array_function(currentScenario[[k]],MSAT_levels[[i]],5)
-      
+      # browser()
+      replicatesArray <- gm_resamp_array_function(currentScenario[[k]],MSAT_levels[[i]],2)
+
       scenarioArray <- abind(replicatesArray,scenarioArray)
     }
     combinedArray <- abind(scenarioArray,combinedArray)
@@ -230,7 +234,7 @@ for (i in 1:length(MSAT_levels)) {
   combinedArray <- array(dim = c(4800,4,0))
 }
 # Print ending time and total runtime
-endTime <- Sys.time() 
+endTime <- Sys.time()
 print(paste0('%%% RUNTIME END: ', endTime))
 cat(paste0('\n', '%%% TOTAL RUNTIME: ', endTime-startTime))
 
@@ -243,7 +247,7 @@ for (i in 1:length(MSAT_levels)) {
 }
 print(MSAT_4800_predict_results)
 
-# declare object that will store the names for the columns 
+# declare object that will store the names for the columns
 predict_outputs <- c("fit", "lower", "upper", "piWidth")
 # this matrix will store the pi values and pi widths
 # %%% Create an empty matrix to store the results ----

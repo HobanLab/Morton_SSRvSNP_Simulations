@@ -1,0 +1,584 @@
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# %%% 03/26/2024 Simulated MSAT Loci bootstrapping %%%
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# This script generates a list "QUAC_array_list" of 5 arrays. Each array stores 
+# representation values across replicates from each scenario based on a number of loci
+# (5-25 loci are bootstrapped at intervals of 5)
+# clear environment
+rm(list = ls())
+library(adegenet)
+# library(abind)
+sim.wd <- 'C:/Users/gsalas/Documents/resampling_CIs/Code/'
+setwd(sim.wd)
+# ---- FUNCTIONS ----
+# Building resampling array ----
+gm_resamp_array_function <- function(insert_genind, num_loci, num_reps){
+  # Create an empty array named 'resamp_category5loc' to store results
+  resamp_category <- array(dim = c(nrow(insert_genind@tab),4,num_reps))
+  # loop 25 times for sets (5 loci in one set) of randomly selected loci
+  for (i in 1:num_reps) {
+    # Randomly sample an amount of loci from the genind object based on user input
+    samp_loc <- sample(locNames(insert_genind), size = num_loci, replace = FALSE)
+    # Subset the genind object to include only the columns corresponding to the sampled loci
+    gm.Wild.genind <- insert_genind[, loc = samp_loc]
+    # declare objects
+    # access the genind matrix that shows the type of alleles and quantity present among wild individuals
+    wildSamp <- gm.Wild.genind@tab
+    # calculate the sum of each column in the matrix, ignoring NA values.
+    # identify the indices where the sum is not equal to zero, this indicates columns with 
+    # variation in allele counts. Subset the original matrix by selecting only the columns identified
+    # in the previous step, removing columns with no variation in allele counts
+    wildSamp <- wildSamp[, which(colSums(wildSamp, na.rm = TRUE) != 0)]
+    # calculating a vector of allele frequencies (sum of allele counts divided by number of haplotypes, or individuals * 2)
+    wildComplete <- colSums(wildSamp, na.rm = TRUE) / (nrow(wildSamp) * 2)
+    # Subset 'wildComplete' to include only the alleles with non-zero frequency
+    wildSubset <- wildComplete[wildComplete > 0]
+    # initialize vectors to store results 
+    total <- vector(length = nrow(wildSamp))
+    common <- vector(length = nrow(wildSamp))
+    lowfreq <- vector(length = nrow(wildSamp))
+    rare <- vector(length = nrow(wildSamp))
+    # Loop for each sample size, ranging from 1 tto the number of loci in the wild population
+    for (j in 1:nrow(wildSamp)) {
+      # randomly select a subset of rows from the matrix, without replacement
+      samp <- sample(nrow(wildSamp), size = j, replace = FALSE)
+      # subset the original matrix, to inlcude only the rows randomly selected
+      samp <- wildSamp[samp,]
+      # Measure the proportion of allelic representation in that sample
+      # Check if its the first iteration of the inner loop
+      if (j == 1) {
+        # Identify the names of alleles in the sample that are also present in 'wildSubset'. 
+        # Calculate the proportion of alleles in the sample that are also present in 'wildSubset'.
+        total[j] <- length(names(wildSubset)[which(names(wildSubset) %in% names(which(samp > 0)))]) / length(names(wildSubset))
+        # Identify the names of the alleles in the sample that are also present in the 'wildSubset' for alleles with frequency >0.1
+        # Calculate the proportion of common alleles in the sample compared to the 'wildSubset' for alleles with frequency >0.1
+        common[j] <- length(which(names(which(wildSubset > 0.1)) %in% names(which(samp > 0)))) / length(which(wildSubset > 0.1))
+        # Identify the names of alleles in the sample that are also present in the 'wildSubset' for alleles with frequency >0.01 and frequency <0.1
+        # Calculate the proportion of low frequency alleles in the sample compared to the 'wildSubset' for allels with frequency >0.01 and frequency <0.1
+        lowfreq[j] <- length(which(names(which(wildSubset > 0.01 & wildSubset < 0.1)) %in% names(which(samp > 0)))) / length(which(wildSubset > 0.01 & wildSubset < 0.1))
+        # Identify the names of alleles in the sample that are also present in the 'wildSubset' for allleles with frequency <0.02.
+        # Calcualte the proportion of rare alleles in the sample compared to the 'wildSubset' for alleles with frequency <0.01.
+        rare[j] <- length(which(names(which(wildSubset < 0.01)) %in% names(which(samp > 0)))) / length(which(wildSubset < 0.01))
+      } else {
+        # Calculate the proportion of alleles in the sample that are also present in the 'wildSubset' for the case where j is not 1
+        total[j] <- length(names(wildSubset)[which(names(wildSubset) %in% names(which(colSums(samp, na.rm = TRUE) > 0)))]) / length(names(wildSubset))
+        # Calculate the proportion of alleles of common alleles in the sample compared toe the 'wildSubset' where j is not 1
+        common[j] <- length(which(names(which(wildSubset > 0.1)) %in% names(which(colSums(samp, na.rm = TRUE) > 0)))) / length(which(wildSubset > 0.1))
+        # Calculate the proportion of alleles of low frequency alleles in the sample compared to the 'wildSubset' for the case where j is not 1
+        lowfreq[j] <- length(which(names(which(wildSubset > 0.01 & wildSubset < 0.1)) %in% names(which(colSums(samp, na.rm = TRUE) > 0)))) / length(which(wildSubset > 0.01 & wildSubset < 0.1))
+        # Calculate the proportion of rare alleles in the sample compared ot the 'wildSubset' for the case where j is not 1
+        rare[j] <- length(which(names(which(wildSubset < 0.01)) %in% names(which(colSums(samp, na.rm = TRUE) > 0)))) / length(which(wildSubset < 0.01))
+      }
+      # Combine the results (proportions) for each sample size into a matrix named 'categorymat_10loc'.
+      categorymat <- cbind(total, common, lowfreq, rare)
+      # extract the column names (categories) from the matrix
+      category <- colnames(categorymat)
+      # set row and column names for 'resamp_category10loc'
+      dimnames(resamp_category) <- list(paste0("sample ", 1:nrow(categorymat)), category, paste0("replicate ", 1:num_reps))
+      # Store the results for the current replicate in resamp_category5loc
+      resamp_category[, , i] <- categorymat
+    }
+  }
+  return(resamp_category)
+}
+
+# Linear model ----
+# pass all arrays to a dataframe using the function. define the function that takes an input 'data_array'
+analyze_resampling_array <- function(data_array) {
+  # linear model of resampling array. Extract the column named 'total' from the array.
+  # concatenate the extracted column values into the vector.
+  totalsVector <- c(data_array[,1,]) 
+  
+  # Specify sample numbers column.
+  # Create a vector of sample numbers from 1 to the number of rows in the 'total' column 
+  gm_sampleNumbers <- 1:(nrow(data_array[,1,]))
+  # Repeat the sample numbers vector for the number of replicates
+  gm_sampleNumbers <- rep(gm_sampleNumbers, dim(data_array)[[3]])
+  
+  # Create data frame from resampling array values
+  gm_DF <- data.frame(sampleNumbers=gm_sampleNumbers, totalValues=totalsVector)
+  
+  # Build and analyze linear models
+  gm_Model <- lm(sampleNumbers ~ I((totalValues)^3), data = gm_DF)
+  # Create a new data fram 'gm_newData with a single column 'totalValues' containing the value 0.95
+  gm_newData <- data.frame(totalValues=0.95)
+  # Use the linear model to predict the response for the new data frame. Specify 'interval = prediction to obtain a prediction interval
+  gm_95MSSEprediction <- predict(gm_Model, gm_newData, interval = "prediction")
+  
+  # Pass the gm_95MSSEprediction to the object storing our results 
+  # Store the predicted values and predictino interval in the object named 'result' 
+  result <- gm_95MSSEprediction
+  # Calculate the width of the prediction interval by substracting the lower limit from the upper limit
+  piWidth <- gm_95MSSEprediction[3] - gm_95MSSEprediction[2]
+  # Return a list containing the predicted values and the width of the prediction interval
+  return(list(result = result, piWidth = piWidth))
+}
+
+# Filling in matrix ----
+# Iterate through the arrays and store results in the matrix
+# Initiate loop that iterates over the indices of 'array_list'
+build_matrix_func <- function(array_list, input_matrix){
+  for (i in 1:length(array_list)) {
+    # Store results and piWidth values in the ith row of the matrix
+    input_matrix[i, ] <- c(array_list[[i]]$result, 
+                           array_list[[i]]$piWidth)
+  }
+  return(input_matrix)
+}
+# # %%% MSAT N1200 %%% OLD APPROACH----
+# # declare all objects for the loop
+# # this array stores a resampling array from a simulated genind object of a scenario, of which there are 5 simulated genind objects.
+# replicatesArray <- array(dim = c(1200, 4, 5))
+# # this array stores the
+# scenarioArray <- array(dim = c(1200, 4, 0))
+# # this array
+# combinedArray <- array(dim = c(1200, 4, 0))
+# MSAT_levels <- c(5, 10, 15, 20, 25)
+# # QUAC_array_list = list(length(MSAT_levels))
+# QUAC_array_list <- vector("list", length = length(MSAT_levels))
+# # reading in the names of each of the scenarios to be processed
+# MSATscenarios <- list.files(path = 'Datasets/Simulated/MSAT_N1200/', pattern = "genind.MSAT_", full.names = TRUE)
+# # a list that stores all the simulation scenarios after being added to the environment
+# # MSATscenariosList = list(length(MSATscenarios))
+# MSATscenariosList <- vector("list", length = length(MSATscenarios))
+# # %%% Loci bootstrapping representation value replicates across scenarios----
+# # Print starting time
+# startTime <- Sys.time()
+# print(paste0('%%% RUNTIME START: ', startTime))
+# for (i in 1:length(MSAT_levels)) {
+#   for (j in 1:length(MSATscenarios)) {
+#     currentScenario <- readRDS(MSATscenarios[[j]])
+#     for (k in 1:length(currentScenario)){
+#       replicatesArray <- gm_resamp_array_function(currentScenario[[k]],MSAT_levels[[i]],5)
+# 
+#       scenarioArray <- abind(replicatesArray,scenarioArray)
+#     }
+#     combinedArray <- abind(scenarioArray,combinedArray)
+#     # empties out scenario array
+#     scenarioArray <- array(dim = c(1200, 4, 0))
+#     # QUAC_predict_results <- analyze_resampling_array(combinedArray)
+#     # print(QUAC_predict_results)
+#   }
+#   QUAC_array_list[[i]] <- combinedArray
+#   combinedArray <- array(dim = c(1200,4,0))
+# }
+# # Print ending time and total runtime
+# endTime <- Sys.time()
+# print(paste0('%%% RUNTIME END: ', endTime))
+# cat(paste0('\n', '%%% TOTAL RUNTIME: ', endTime-startTime))
+
+# # %%% Prediction outputs ----
+# # empty list with length of 5 that will contain the outputs of the predict analysis
+# MSAT_1200_predict_results <- vector("list", 5)
+# # prints out the prediction width results and the fit for each array with the same number of loci
+# for (i in 1:length(MSAT_levels)) {
+#   MSAT_1200_predict_results[[i]] <- analyze_resampling_array(QUAC_array_list[[i]])
+# }
+# print(MSAT_1200_predict_results)
+# 
+# # declare object that will store the names for the columns
+# predict_outputs <- c("fit", "lower", "upper", "piWidth")
+# # this matrix will store the pi values and pi widths
+# # %%% Create an empty matrix to store the results ----
+# MSAT_1200_matrix <- matrix(nrow = length(MSAT_levels), ncol = length(predict_outputs))
+# # Set column names for 'results_Matrix'
+# colnames(MSAT_1200_matrix) <- predict_outputs
+# # Set row names for 'resutls_Matrix'
+# rownames(MSAT_1200_matrix) <- MSAT_levels
+# # %%% Insert list and empty matrix to the build matrix func function ----
+# MSAT_1200_PI_matrix <- build_matrix_func(MSAT_1200_predict_results, MSAT_1200_matrix)
+# # write csv to outputs folder
+# write.csv(MSAT_1200_PI_matrix,
+#           file = 'C:/Users/gsalas/Documents/resampling_CIs/Code/Outputs/MSAT_1200_PI_matrix.csv',
+#           row.names = TRUE)
+
+# # %%% DNA N1200 %%% ----
+# # declare all objects for the loop
+# # this array stores a resampling array from a simulated genind object of a scenario, of which there are 5 simulated genind objects.
+# replicatesArray <- array(dim = c(1200, 4, 5))
+# # this array stores the 
+# scenarioArray <- array(dim = c(1200, 4, 0))
+# # this array 
+# combinedArray <- array(dim = c(1200, 4, 0))
+# MSAT_levels <- c(5, 10, 15, 20, 25)
+# # QUAC_array_list = list(length(MSAT_levels))
+# QUAC_array_list <- vector("list", length = length(MSAT_levels))
+# # reading in the names of each of the scenarios to be processed
+# MSATscenarios <- list.files(path = 'Datasets/MSAT_N1200/', pattern = "genind.MSAT_", full.names = TRUE)
+# # a list that stores all the simulation scenarios after being added to the environment
+# # MSATscenariosList = list(length(MSATscenarios))
+# MSATscenariosList <- vector("list", length = length(MSATscenarios))
+# # %%% Loci bootstrapping representation value replicates across scenarios----
+# # Print starting time
+# startTime <- Sys.time() 
+# print(paste0('%%% RUNTIME START: ', startTime))
+# for (i in 1:length(MSAT_levels)) {
+#   for (j in 1:length(MSATscenarios)) {
+#     currentScenario <- readRDS(MSATscenarios[[j]])
+#     for (k in 1:length(currentScenario)){
+#       replicatesArray <- gm_resamp_array_function(currentScenario[[k]],MSAT_levels[[i]],5)
+#       
+#       scenarioArray <- abind(replicatesArray,scenarioArray)
+#     }
+#     combinedArray <- abind(scenarioArray,combinedArray)
+#     # empties out scenario array
+#     scenarioArray <- array(dim = c(1200, 4, 0))
+#     # QUAC_predict_results <- analyze_resampling_array(combinedArray)
+#     # print(QUAC_predict_results)
+#   }
+#   QUAC_array_list[[i]] <- combinedArray
+#   combinedArray <- array(dim = c(1200,4,0))
+# }
+# # Print ending time and total runtime
+# endTime <- Sys.time() 
+# print(paste0('%%% RUNTIME END: ', endTime))
+# cat(paste0('\n', '%%% TOTAL RUNTIME: ', endTime-startTime))
+# 
+# # %%% Prediction outputs ----
+# # empty list with length of 5 that will contain the outputs of the predict analysis
+# MSAT_1200_predict_results <- vector("list", 5)
+# # prints out the prediction width results and the fit for each array with the same number of loci
+# for (i in 1:length(MSAT_levels)) {
+#   MSAT_1200_predict_results[[i]] <- analyze_resampling_array(QUAC_array_list[[i]])
+# }
+# print(MSAT_1200_predict_results)
+# 
+# # declare object that will store the names for the columns 
+# predict_outputs <- c("fit", "lower", "upper", "piWidth")
+# # this matrix will store the pi values and pi widths
+# # %%% Create an empty matrix to store the results ----
+# MSAT_1200_matrix <- matrix(nrow = length(MSAT_levels), ncol = length(predict_outputs))
+# # Set column names for 'results_Matrix'
+# colnames(MSAT_1200_matrix) <- predict_outputs
+# # Set row names for 'resutls_Matrix'
+# rownames(MSAT_1200_matrix) <- MSAT_levels
+# # %%% Insert list and empty matrix to the build matrix func function ----
+# MSAT_1200_PI_matrix <- build_matrix_func(MSAT_1200_predict_results, MSAT_1200_matrix)
+# # write csv to outputs folder
+# write.csv(MSAT_1200_PI_matrix,
+#           file = 'C:/Users/gsalas/Documents/resampling_CIs/Code/Outputs/MSAT_1200_PI_matrix.csv',
+#           row.names = TRUE)
+
+# # %%% DNA N4800 %%% ----
+# # declare all objects for the loop
+# # this array stores a resampling array from a simulated genind object of a scenario, of which there are 5 simulated genind objects.
+# replicatesArray <- array(dim = c(1200, 4, 5))
+# # this array stores the 
+# scenarioArray <- array(dim = c(1200, 4, 0))
+# # this array 
+# combinedArray <- array(dim = c(1200, 4, 0))
+# MSAT_levels <- c(5, 10, 15, 20, 25)
+# # QUAC_array_list = list(length(MSAT_levels))
+# QUAC_array_list <- vector("list", length = length(MSAT_levels))
+# # reading in the names of each of the scenarios to be processed
+# MSATscenarios <- list.files(path = 'Datasets/MSAT_N1200/', pattern = "genind.MSAT_", full.names = TRUE)
+# # a list that stores all the simulation scenarios after being added to the environment
+# # MSATscenariosList = list(length(MSATscenarios))
+# MSATscenariosList <- vector("list", length = length(MSATscenarios))
+# # %%% Loci bootstrapping representation value replicates across scenarios----
+# # Print starting time
+# startTime <- Sys.time() 
+# print(paste0('%%% RUNTIME START: ', startTime))
+# for (i in 1:length(MSAT_levels)) {
+#   for (j in 1:length(MSATscenarios)) {
+#     currentScenario <- readRDS(MSATscenarios[[j]])
+#     for (k in 1:length(currentScenario)){
+#       replicatesArray <- gm_resamp_array_function(currentScenario[[k]],MSAT_levels[[i]],5)
+#       
+#       scenarioArray <- abind(replicatesArray,scenarioArray)
+#     }
+#     combinedArray <- abind(scenarioArray,combinedArray)
+#     # empties out scenario array
+#     scenarioArray <- array(dim = c(1200, 4, 0))
+#     # QUAC_predict_results <- analyze_resampling_array(combinedArray)
+#     # print(QUAC_predict_results)
+#   }
+#   QUAC_array_list[[i]] <- combinedArray
+#   combinedArray <- array(dim = c(1200,4,0))
+# }
+# # Print ending time and total runtime
+# endTime <- Sys.time() 
+# print(paste0('%%% RUNTIME END: ', endTime))
+# cat(paste0('\n', '%%% TOTAL RUNTIME: ', endTime-startTime))
+# 
+# # %%% Prediction outputs ----
+# # empty list with length of 5 that will contain the outputs of the predict analysis
+# MSAT_1200_predict_results <- vector("list", 5)
+# # prints out the prediction width results and the fit for each array with the same number of loci
+# for (i in 1:length(MSAT_levels)) {
+#   MSAT_1200_predict_results[[i]] <- analyze_resampling_array(QUAC_array_list[[i]])
+# }
+# print(MSAT_1200_predict_results)
+# 
+# # declare object that will store the names for the columns 
+# predict_outputs <- c("fit", "lower", "upper", "piWidth")
+# # this matrix will store the pi values and pi widths
+# # %%% Create an empty matrix to store the results ----
+# MSAT_1200_matrix <- matrix(nrow = length(MSAT_levels), ncol = length(predict_outputs))
+# # Set column names for 'results_Matrix'
+# colnames(MSAT_1200_matrix) <- predict_outputs
+# # Set row names for 'resutls_Matrix'
+# rownames(MSAT_1200_matrix) <- MSAT_levels
+# # %%% Insert list and empty matrix to the build matrix func function ----
+# MSAT_1200_PI_matrix <- build_matrix_func(MSAT_1200_predict_results, MSAT_1200_matrix)
+# # write csv to outputs folder
+# write.csv(MSAT_1200_PI_matrix,
+#           file = 'C:/Users/gsalas/Documents/resampling_CIs/Code/Outputs/MSAT_1200_PI_matrix.csv',
+#           row.names = TRUE)
+
+# %%% MSAT N1200 %%% NEW APPROACH----
+# # declare all objects for the loop
+# # this array stores a resampling array from a simulated genind object of a scenario, of which there are 5 simulated genind objects.
+# this array stores all the replicates from each scenario at a specific loci level
+combinedArray <- array(dim = c(1200, 4, 6*5*1))
+MSAT_levels <- c(5, 10, 15, 20, 25)
+MSAT_N1200_arrayList <- vector("list", length = length(MSAT_levels))
+# reading in the names of each of the scenarios to be processed
+MSATscenarios <- list.files(path = 'Datasets/Simulated/MSAT_N1200/', pattern = "genind.MSAT_", full.names = TRUE)
+# number of replicates we want the resampling array to have
+numReps <- 1
+# this for loop creates a list that contains all the simulation replicates for every scenario
+scenariorepsList <- list()
+for(i in 1:length(MSATscenarios)){
+  # browser()
+  currentScenario <- readRDS(MSATscenarios[[i]])
+  scenariorepsList <- c(currentScenario,scenariorepsList)
+}
+
+
+
+# %%% Loci bootstrapping representation value replicates across scenarios----
+# Print starting time
+startTime <- Sys.time()
+print(paste0('%%% RUNTIME START: ', startTime))
+for (i in 1:length(MSAT_levels)) {
+  for (j in 1:length(scenariorepsList)){
+    # browser()
+    combinedArray[,,j] <- gm_resamp_array_function(scenariorepsList[[j]],MSAT_levels[i], numReps)
+  }
+  MSAT_N1200_arrayList[[i]] <- combinedArray
+  combinedArray <- array(dim = c(1200,4,6*5*1))
+}
+# Print ending time and total runtime
+endTime <- Sys.time()
+print(paste0('%%% RUNTIME END: ', endTime))
+cat(paste0('\n', '%%% TOTAL RUNTIME: ', endTime-startTime))
+
+# saveRDS(MSAT_N1200_arrayList, "MSAT_N1200_arrayList.Rdata")
+
+# %%% Prediction outputs ----
+# empty list with length of 5 that will contain the outputs of the predict analysis
+# MSAT_1200_predict_results <- vector("list", 5)
+# # prints out the prediction width results and the fit for each array with the same number of loci
+# for (i in 1:length(MSAT_levels)) {
+#   MSAT_1200_predict_results[[i]] <- analyze_resampling_array(MSAT_N1200_arrayList[[i]])
+# }
+# print(MSAT_1200_predict_results)
+# 
+# # declare object that will store the names for the columns
+# predict_outputs <- c("fit", "lower", "upper", "piWidth")
+# # this matrix will store the pi values and pi widths
+# # %%% Create an empty matrix to store the results ----
+# MSAT_1200_matrix <- matrix(nrow = length(MSAT_levels), ncol = length(predict_outputs))
+# # Set column names for 'results_Matrix'
+# colnames(MSAT_1200_matrix) <- predict_outputs
+# # Set row names for 'resutls_Matrix'
+# rownames(MSAT_1200_matrix) <- MSAT_levels
+# # %%% Insert list and empty matrix to the build matrix func function ----
+# MSAT_1200_PI_matrix <- build_matrix_func(MSAT_1200_predict_results, MSAT_1200_matrix)
+# # write csv to outputs folder
+# write.csv(MSAT_1200_PI_matrix,
+#           file = 'C:/Users/gsalas/Documents/resampling_CIs/Code/Outputs/MSAT_1200_PI_matrix.csv',
+#           row.names = TRUE)
+
+# # %%% MSAT N4800 %%% NEW APPROACH----
+# # declare all objects for the loop
+# # this array stores the arrays of all the scenarios, of which there are 5 simulation replicates, and 1 replicate per simulation replicate
+# combinedArray <- array(dim = c(4800, 4, 6*5*1))
+# MSAT_levels <- c(5, 10, 15, 20, 25)
+# MSAT_N4800_arrayList <- vector("list", length = length(MSAT_levels))
+# # reading in the names of each of the scenarios to be processed
+# MSATscenarios <- list.files(path = 'Datasets/Simulated/MSAT_N4800/', pattern = "genind.MSAT_", full.names = TRUE)
+# # number of times you do the resampling of each resampling replicate
+# numReps <- 1
+# 
+# scenariorepsList <- list()
+# for(i in 1:length(MSATscenarios)){
+#   # browser()
+#   currentScenario <- readRDS(MSATscenarios[[i]])
+#   scenariorepsList <- c(currentScenario,scenariorepsList)
+# }
+# 
+# # %%% Loci bootstrapping representation value replicates across scenarios----
+# # Print starting time
+# startTime <- Sys.time()
+# print(paste0('%%% RUNTIME START: ', startTime))
+# for (i in 1:length(MSAT_levels)) {
+#   for (j in 1:length(scenariorepsList)){
+#     # browser()
+#     combinedArray[,,j] <- gm_resamp_array_function(scenariorepsList[[j]],MSAT_levels[i], numReps)
+#   }
+#   MSAT_N4800_arrayList[[i]] <- combinedArray
+#   combinedArray <- array(dim = c(4800,4,6*5*1))
+# }
+# # Print ending time and total runtime
+# endTime <- Sys.time()
+# print(paste0('%%% RUNTIME END: ', endTime))
+# cat(paste0('\n', '%%% TOTAL RUNTIME: ', endTime-startTime))
+# 
+# saveRDS(MSAT_N4800_arrayList, "MSAT_N4800_arrayList.Rdata")
+# 
+# # %%% Prediction outputs ----
+# # empty list with length of 5 that will contain the outputs of the predict analysis
+# MSAT_4800_predict_results <- vector("list", 5)
+# # prints out the prediction width results and the fit for each array with the same number of loci
+# for (i in 1:length(MSAT_levels)) {
+#   MSAT_4800_predict_results[[i]] <- analyze_resampling_array(MSAT_N4800_arrayList[[i]])
+# }
+# print(MSAT_4800_predict_results)
+# 
+# # declare object that will store the names for the columns
+# predict_outputs <- c("fit", "lower", "upper", "piWidth")
+# # this matrix will store the pi values and pi widths
+# # %%% Create an empty matrix to store the results ----
+# MSAT_4800_matrix <- matrix(nrow = length(MSAT_levels), ncol = length(predict_outputs))
+# # Set column names for 'results_Matrix'
+# colnames(MSAT_4800_matrix) <- predict_outputs
+# # Set row names for 'resutls_Matrix'
+# rownames(MSAT_4800_matrix) <- MSAT_levels
+# # %%% Insert list and empty matrix to the build matrix func function ----
+# MSAT_4800_PI_matrix <- build_matrix_func(MSAT_4800_predict_results, MSAT_4800_matrix)
+# # write csv to outputs folder
+# write.csv(MSAT_4800_PI_matrix,
+#           file = 'C:/Users/gsalas/Documents/resampling_CIs/Code/Outputs/MSAT_4800_PI_matrix.csv',
+#           row.names = TRUE)
+# 
+# # %%% DNA N1200 NEW APPROACH %%% ---- 
+# combinedArray <- array(dim = c(1200, 4, 6*5*1))
+# DNA_levels <- c(100,250,500,750,1000)
+# DNA_N1200_arrayList <- vector("list", length = length(DNA_levels))
+# # QUAC_array_list = list(length(MSAT_levels))
+# # QUAC_array_list <- vector("list", length = length(MSAT_levels))
+# # reading in the names of each of the scenarios to be processed
+# DNAscenarios <- list.files(path = 'Datasets/Simulated/DNA_N1200/', pattern = "genind.DNA_", full.names = TRUE)
+# # a list that stores all the simulation scenarios after being added to the environment
+# 
+# numReps <- 1
+# 
+# scenariorepsList <- list()
+# for(i in 1:length(DNAscenarios)){
+#   # browser()
+#   currentScenario <- readRDS(DNAscenarios[[i]])
+#   scenariorepsList <- c(currentScenario,scenariorepsList)
+# }
+# 
+# 
+# 
+# # %%% Loci bootstrapping representation value replicates across scenarios----
+# # Print starting time
+# startTime <- Sys.time()
+# print(paste0('%%% RUNTIME START: ', startTime))
+# for (i in 1:length(DNA_levels)) {
+#   for (j in 1:length(scenariorepsList)){
+#     # browser()
+#     combinedArray[,,j] <- gm_resamp_array_function(scenariorepsList[[j]],DNA_levels[i], numReps)
+#   }
+#   DNA_N1200_arrayList[[i]] <- combinedArray
+#   combinedArray <- array(dim = c(1200,4,6*5*1))
+# }
+# # Print ending time and total runtime
+# endTime <- Sys.time()
+# print(paste0('%%% RUNTIME END: ', endTime))
+# cat(paste0('\n', '%%% TOTAL RUNTIME: ', endTime-startTime))
+# 
+# saveRDS(DNA_N1200_arrayList, "DNA_N1200_arrayList.Rdata")
+# 
+# # # %%% Prediction outputs ----
+# # # empty list with length of 5 that will contain the outputs of the predict analysis
+# DNA_1200_predict_results <- vector("list", 5)
+# # prints out the prediction width results and the fit for each array with the same number of loci
+# for (i in 1:length(DNA_levels)) {
+#   DNA_1200_predict_results[[i]] <- analyze_resampling_array(DNA_N1200_arrayList[[i]])
+# }
+# print(DNA_1200_predict_results)
+# 
+# # declare object that will store the names for the columns
+# predict_outputs <- c("fit", "lower", "upper", "piWidth")
+# # this matrix will store the pi values and pi widths
+# # %%% Create an empty matrix to store the results ----
+# DNA_1200_matrix <- matrix(nrow = length(DNA_levels), ncol = length(predict_outputs))
+# # Set column names for 'results_Matrix'
+# colnames(DNA_1200_matrix) <- predict_outputs
+# # Set row names for 'resutls_Matrix'
+# rownames(DNA_1200_matrix) <- DNA_levels
+# # %%% Insert list and empty matrix to the build matrix func function ----
+# DNA_1200_PI_matrix <- build_matrix_func(DNA_1200_predict_results, DNA_1200_matrix)
+# # write csv to outputs folder
+# write.csv(DNA_1200_PI_matrix,
+#           file = 'C:/Users/gsalas/Documents/resampling_CIs/Code/Outputs/DNA_1200_PI_matrix.csv',
+#           row.names = TRUE)
+# 
+# # %%% DNA N4800 NEW APPROACH %%% ----
+# combinedArray <- array(dim = c(4800, 4, 6*5*1))
+# DNA_levels <- c(100,250,500,750,1000)
+# DNA_N4800_arrayList <- vector("list", length = length(DNA_levels))
+# # reading in the names of each of the scenarios to be processed
+# DNAscenarios <- list.files(path = 'Datasets/Simulated/DNA_N4800/', pattern = "genind.DNA_", full.names = TRUE)
+# # a list that stores all the simulation scenarios after being added to the environment
+# 
+# numReps <- 1
+# 
+# scenariorepsList <- list()
+# for(i in 1:length(DNAscenarios)){
+#   # browser()
+#   currentScenario <- readRDS(DNAscenarios[[i]])
+#   scenariorepsList <- c(currentScenario,scenariorepsList)
+# }
+# 
+# 
+# 
+# # %%% Loci bootstrapping representation value replicates across scenarios----
+# # Print starting time
+# startTime <- Sys.time()
+# print(paste0('%%% RUNTIME START: ', startTime))
+# for (i in 1:length(DNA_levels)) {
+#   for (j in 1:length(scenariorepsList)){
+#     # browser()
+#     combinedArray[,,j] <- gm_resamp_array_function(scenariorepsList[[j]], DNA_levels[i], numReps)
+#   }
+#   DNA_N4800_arrayList[[i]] <- combinedArray
+#   combinedArray <- array(dim = c(4800,4,6*5*1))
+# }
+# # Print ending time and total runtime
+# endTime <- Sys.time()
+# print(paste0('%%% RUNTIME END: ', endTime))
+# cat(paste0('\n', '%%% TOTAL RUNTIME: ', endTime-startTime))
+# 
+# saveRDS(DNA_N4800_arrayList, "DNA_N4800_arrayList.Rdata")
+# 
+# 
+# # # %%% Prediction outputs ----
+# # # empty list with length of 5 that will contain the outputs of the predict analysis
+# DNA_4800_predict_results <- vector("list", 5)
+# # prints out the prediction width results and the fit for each array with the same number of loci
+# for (i in 1:length(DNA_levels)) {
+#   DNA_4800_predict_results[[i]] <- analyze_resampling_array(DNA_N4800_arrayList[[i]])
+# }
+# print(DNA_4800_predict_results)
+# 
+# # declare object that will store the names for the columns
+# predict_outputs <- c("fit", "lower", "upper", "piWidth")
+# # this matrix will store the pi values and pi widths
+# # %%% Create an empty matrix to store the results ----
+# DNA_4800_matrix <- matrix(nrow = length(DNA_levels), ncol = length(predict_outputs))
+# # Set column names for 'results_Matrix'
+# colnames(DNA_4800_matrix) <- predict_outputs
+# # Set row names for 'resutls_Matrix'
+# rownames(DNA_4800_matrix) <- DNA_levels
+# # %%% Insert list and empty matrix to the build matrix func function ----
+# DNA_4800_PI_matrix <- build_matrix_func(DNA_4800_predict_results, DNA_4800_matrix)
+# # write csv to outputs folder
+# write.csv(DNA_4800_PI_matrix,
+#           file = 'C:/Users/gsalas/Documents/resampling_CIs/Code/Outputs/DNA_4800_PI_matrix.csv',
+#           row.names = TRUE)

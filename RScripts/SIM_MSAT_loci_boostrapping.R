@@ -582,3 +582,140 @@ cat(paste0('\n', '%%% TOTAL RUNTIME: ', endTime-startTime))
 # write.csv(DNA_4800_PI_matrix,
 #           file = 'C:/Users/gsalas/Documents/resampling_CIs/Code/Outputs/DNA_4800_PI_matrix.csv',
 #           row.names = TRUE)
+
+# ---- ALLELE CATEGORIES ----
+sim.wd <- "C:/Users/gsalas/Documents/Morton_SSRvSNP_Simulations/SimulationOutputs"
+setwd(sim.wd)
+MSAT_N1200 <- readRDS(paste0(sim.wd,"/MSAT_N1200_marker/MSAT_N1200_arrayList.Rdata"))
+MSAT_N4800 <- readRDS(paste0(sim.wd, "/MSAT_N4800_marker/MSAT_N4800_arrayList.Rdata"))
+DNA_N1200 <- readRDS(paste0(sim.wd,"/DNA_N1200_marker/DNA_N1200_arrayList.Rdata"))
+DNA_N4800 <- readRDS(paste0(sim.wd, "/DNA_N4800_marker/DNA_N4800_arrayList.Rdata"))
+MSAT_levels <- c(5, 10, 15, 20, 25)
+predict_outputs <- c("fit", "lower", "upper", "piWidth")
+
+# Linear model ----
+# pass all arrays to a dataframe using the function. define the function that takes an input 'data_array'
+analyze_resampling_array <- function(data_array) {
+  # linear model of resampling array. Extract the column named 'total' from the array.
+  # concatenate the extracted column values into the vector.
+  rareCatVector <- c(data_array[,2,]) 
+  
+  # Specify sample numbers column.
+  # Create a vector of sample numbers from 1 to the number of rows in the 'total' column 
+  gm_sampleNumbers <- 1:(nrow(data_array[,2,]))
+  # Repeat the sample numbers vector for the number of replicates
+  gm_sampleNumbers <- rep(gm_sampleNumbers, dim(data_array)[[3]])
+  
+  # Create data frame from resampling array values
+  gm_DF <- data.frame(sampleNumbers=gm_sampleNumbers, rareCatValues=rareCatVector)
+  
+  # Build and analyze linear models
+  gm_Model <- lm(sampleNumbers ~ I((rareCatValues)^3), data = gm_DF)
+  # Create a new data fram 'gm_newData with a single column 'totalValues' containing the value 0.95
+  gm_newData <- data.frame(rareCatValues=0.95)
+  # Use the linear model to predict the response for the new data frame. Specify 'interval = prediction to obtain a prediction interval
+  gm_95MSSEprediction <- predict(gm_Model, gm_newData, interval = "prediction")
+  
+  # Pass the gm_95MSSEprediction to the object storing our results 
+  # Store the predicted values and predictino interval in the object named 'result' 
+  result <- gm_95MSSEprediction
+  # Calculate the width of the prediction interval by substracting the lower limit from the upper limit
+  piWidth <- gm_95MSSEprediction[3] - gm_95MSSEprediction[2]
+  # Return a list containing the predicted values and the width of the prediction interval
+  return(list(result = result, piWidth = piWidth))
+}
+
+# Filling in matrix ----
+# Iterate through the arrays and store results in the matrix
+# Initiate loop that iterates over the indices of 'array_list'
+build_matrix_func <- function(array_list, input_matrix){
+  for (i in 1:length(array_list)) {
+    # Store results and piWidth values in the ith row of the matrix
+    input_matrix[i, ] <- c(array_list[[i]]$result, 
+                           array_list[[i]]$piWidth)
+  }
+  return(input_matrix)
+}
+
+
+#N1200
+MSAT_N1200rareCatpredictResults <-vector("list", length(MSAT_levels))
+for (i in 1:5) {
+  MSAT_N1200rareCatpredictResults[[i]] <- analyze_resampling_array(MSAT_N1200[[i]])
+}
+
+MSAT_N1200lowfreqpredictResults <-vector("list", length(MSAT_levels))
+for (i in 1:5) {
+  MSAT_N1200lowfreqpredictResults[[i]] <- analyze_resampling_array(MSAT_N1200[[i]])
+}
+
+MSAT_N1200commonpredictResults <-vector("list", length(MSAT_levels))
+for (i in 1:5) {
+  MSAT_N1200commonpredictResults[[i]] <- analyze_resampling_array(MSAT_N1200[[i]])
+}
+
+
+
+# this matrix will store the pi values and pi widths
+# %%% Create an empty matrix to store the results ----
+MSAT_N1200rareCat_matrix <- matrix(nrow = length(MSAT_levels), ncol = length(predict_outputs))
+colnames(MSAT_N1200rareCat_matrix) <- predict_outputs
+rownames(MSAT_N1200rareCat_matrix) <- MSAT_levels
+MSAT_N1200rareCat_matrix <- build_matrix_func(MSAT_N1200rareCatpredictResults, MSAT_N1200rareCat_matrix)
+write.csv(MSAT_N1200rareCat_matrix, file = paste0(sim.wd, "/MSAT_N1200_marker/MSAT_N1200rareCat_matrix.csv"))
+
+
+MSAT_N1200lowfreqCat_matrix <- matrix(nrow = length(MSAT_levels), ncol = length(predict_outputs))
+colnames(MSAT_N1200lowfreqCat_matrix) <- predict_outputs
+rownames(MSAT_N1200lowfreqCat_matrix) <- MSAT_levels
+MSAT_N1200lowfreqCat_matrix <- build_matrix_func(MSAT_N1200lowfreqpredictResults, MSAT_N1200lowfreqCat_matrix)
+write.csv(MSAT_N1200lowfreqCat_matrix, file = paste0(sim.wd, "/MSAT_N1200_marker/MSAT_N1200lowfreq_matrix.csv"))
+
+MSAT_N1200commonCat_matrix <- matrix(nrow = length(MSAT_levels), ncol = length(predict_outputs))
+colnames(MSAT_N1200commonCat_matrix) <- predict_outputs
+rownames(MSAT_N1200commonCat_matrix) <- MSAT_levels
+MSAT_N1200commonCat_matrix <- build_matrix_func(MSAT_N1200commonpredictResults, MSAT_N1200commonCat_matrix)
+write.csv(MSAT_N1200commonCat_matrix, file = paste0(sim.wd, "/MSAT_N1200_marker/MSAT_N1200common_matrix.csv"))
+
+
+
+
+MSAT_N4800rareCatpredictResults <-vector("list", length(MSAT_levels))
+for (i in 1:5) {
+  MSAT_N4800rareCatpredictResults[[i]] <- analyze_resampling_array(MSAT_N4800[[i]])
+}
+
+MSAT_N4800lowfreqpredictResults <-vector("list", length(MSAT_levels))
+for (i in 1:5) {
+  MSAT_N4800lowfreqpredictResults[[i]] <- analyze_resampling_array(MSAT_N4800[[i]])
+}
+
+MSAT_N4800commonpredictResults <-vector("list", length(MSAT_levels))
+for (i in 1:5) {
+  MSAT_N4800commonpredictResults[[i]] <- analyze_resampling_array(MSAT_N4800[[i]])
+}
+
+
+
+# this matrix will store the pi values and pi widths
+# %%% Create an empty matrix to store the results ----
+MSAT_N1200rareCat_matrix <- matrix(nrow = length(MSAT_levels), ncol = length(predict_outputs))
+colnames(MSAT_N1200rareCat_matrix) <- predict_outputs
+rownames(MSAT_N1200rareCat_matrix) <- MSAT_levels
+MSAT_N1200rareCat_matrix <- build_matrix_func(MSAT_N1200rareCatpredictResults, MSAT_N1200rareCat_matrix)
+write.csv(MSAT_N1200rareCat_matrix, file = paste0(sim.wd, "/MSAT_N1200_marker/MSAT_N1200rareCat_matrix.csv"))
+
+
+MSAT_N1200lowfreqCat_matrix <- matrix(nrow = length(MSAT_levels), ncol = length(predict_outputs))
+colnames(MSAT_N1200lowfreqCat_matrix) <- predict_outputs
+rownames(MSAT_N1200lowfreqCat_matrix) <- MSAT_levels
+MSAT_N1200lowfreqCat_matrix <- build_matrix_func(MSAT_N1200lowfreqpredictResults, MSAT_N1200lowfreqCat_matrix)
+write.csv(MSAT_N1200lowfreqCat_matrix, file = paste0(sim.wd, "/MSAT_N1200_marker/MSAT_N1200lowfreq_matrix.csv"))
+
+MSAT_N1200commonCat_matrix <- matrix(nrow = length(MSAT_levels), ncol = length(predict_outputs))
+colnames(MSAT_N1200commonCat_matrix) <- predict_outputs
+rownames(MSAT_N1200commonCat_matrix) <- MSAT_levels
+MSAT_N1200commonCat_matrix <- build_matrix_func(MSAT_N1200commonpredictResults, MSAT_N1200commonCat_matrix)
+write.csv(MSAT_N1200commonCat_matrix, file = paste0(sim.wd, "/MSAT_N1200_marker/MSAT_N1200common_matrix.csv"))
+
+

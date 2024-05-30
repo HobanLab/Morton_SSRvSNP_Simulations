@@ -1,5 +1,7 @@
 # %%% FILES/FOLDERS TO IGNORE TRACKING VIA GITHUB %%%
 
+Simulated
+
 # Simulated outputs of demo_dnaMarkerIssue folder
 SimulationOutputs/demo_dnaMarkerIssue/demo_dnaMarkerIssue.log
 SimulationOutputs/demo_dnaMarkerIssue/demo_dnaMarkerIssue/

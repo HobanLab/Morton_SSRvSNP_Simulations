@@ -43,6 +43,7 @@ of the analysis scenarios (specified above; N1200, N4800, DNA low mutation) to r
 filtration for minor allele counts. Functionally, this means removing MSAT and DNA alleles which only appear once (N1) or twice (N2) in the entire population. 
 We compare these results to no filter for minor allele count (N0). 
 
+### Loci bootstrapping
 The script [SIM_MSAT_loci_bootstrapping.R](https://github.com/HobanLab/Morton_SSRvSNP_Simulations/blob/1969d3e507b348ec041cc5cd74193dbf57af3122/RScripts/SIM_MSAT_loci_boostrapping.R) is used to generate a list of five resampling arrays for each simulated dataset, of which there are four. With these datasets, the script analyses scenarios by loci bootstrapping and for each loci bootstrap it uses linear modeling to estimate 95% MSSE value and confidence interval upper and lower bounds. The script then stores the list of array outputs as .Rdata objects in the respective marker subfolder located in the SimulationOutputs folder. 
 
 #### Linear modeling

@@ -36,12 +36,15 @@ with the following dimensions
         - **Columns 2--5**: the representation values for alleles of different frequency categories (Very common, Common, Low frequency, Rare)
 - **slices**: each array slice represents a different, independent resampling replicate. For these scenarios, the current number of resampling replicates is 5
 
-The resampling arrays generated in this script are read in at the beginning of the [buildLinearModels.R](https://github.com/HobanLab/Morton_SSRvSNP_Simulations/blob/main/RScripts/buildLinearModels.R) script.
+The resampling arrays generated in this script are read in at the beginning of the [buildLinearModels.R](https://github.com/HobanLab/Morton_SSRvSNP_Simulations/blob/main/RScripts/buildLinearModels.R) script. 
 
 This resampling script is built to run in the background of a server, with multiple clusters processing in parallel. For this reason, it uses many parallelized apply-family functions. Variable flags are used to indicate which 
 of the analysis scenarios (specified above; N1200, N4800, DNA low mutation) to run resampling analyses on. In addition, for all scenarios except the DNA low mutation scenario, we explore using different levels of 
 filtration for minor allele counts. Functionally, this means removing MSAT and DNA alleles which only appear once (N1) or twice (N2) in the entire population. 
 We compare these results to no filter for minor allele count (N0). 
+
+#### Loci bootstrapping
+The script [SIM_MSAT_loci_bootstrapping.R](https://github.com/HobanLab/Morton_SSRvSNP_Simulations/blob/1969d3e507b348ec041cc5cd74193dbf57af3122/RScripts/SIM_MSAT_loci_boostrapping.R) is used to generate a list of five resampling arrays for each simulated dataset, of which there are four. With these datasets, the script analyses scenarios by loci bootstrapping and for each loci bootstrap it uses linear modeling to estimate 95% MSSE value and confidence interval upper and lower bounds. The script then stores the list of array outputs as .Rdata objects in the respective marker subfolder located in the SimulationOutputs folder. 
 
 #### Linear modeling
 The script [buildLinearModels.R](https://github.com/HobanLab/Morton_SSRvSNP_Simulations/blob/main/RScripts/buildLinearModels.R) reads in resampling arrays and uses them to calculate the minimum samples size estimates (MSSE) 

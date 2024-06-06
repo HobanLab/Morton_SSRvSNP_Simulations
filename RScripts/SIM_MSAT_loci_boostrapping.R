@@ -583,6 +583,26 @@ cat(paste0('\n', '%%% TOTAL RUNTIME: ', endTime-startTime))
 #           file = 'C:/Users/gsalas/Documents/resampling_CIs/Code/Outputs/DNA_4800_PI_matrix.csv',
 #           row.names = TRUE)
 
+roundingMatrix <- function(input_matrix, markertype, newfile.csv){
+  colnames(input_matrix)[1] <- "Loci"
+  colnames(input_matrix)[2] <- "MSSE"
+  rounded<-round(input_matrix, digits = 1)
+  write.csv(rounded, paste0(csvwd, markertype, newfile.csv))
+}
+csvwd <- setwd('C:/Users/gsalas/Documents/Morton_SSRvSNP_Simulations/SimulationOutputs/')
+getwd()
+DNA_N1200<-read.csv(paste0(csvwd, "/DNA_N1200_marker/DNA_1200_PI_matrix.csv")) 
+DNA_N4800<-read.csv(paste0(csvwd, "/DNA_N4800_marker/DNA_4800_PI_matrix.csv")) 
+MSAT_N1200<-read.csv(paste0(csvwd, "/MSAT_N4800_marker/MSAT_4800_PI_matrix.csv"))
+MSAT_N4800<-read.csv(paste0(csvwd, "/MSAT_N4800_marker/MSAT_4800_PI_matrix.csv"))
+
+
+roundingMatrix(DNA_N1200, "/DNA_N1200_marker/", "DNA_1200_PI_matrix.csv")
+roundingMatrix(DNA_N4800, "/DNA_N4800_marker/", "DNA_4800_PI_matrix.csv")
+roundingMatrix(MSAT_N1200, "/MSAT_N1200_marker/", "MSAT_1200_PI_matrix.csv")
+roundingMatrix(MSAT_N4800, "/MSAT_N4800_marker/", "MSAT_4800_PI_matrix.csv")
+
+
 # ---- ALLELE CATEGORIES ----
 sim.wd <- "C:/Users/gsalas/Documents/Morton_SSRvSNP_Simulations/SimulationOutputs"
 setwd(sim.wd)
@@ -592,18 +612,18 @@ DNA_N1200 <- readRDS(paste0(sim.wd,"/DNA_N1200_marker/DNA_N1200_arrayList.Rdata"
 DNA_N4800 <- readRDS(paste0(sim.wd, "/DNA_N4800_marker/DNA_N4800_arrayList.Rdata"))
 MSAT_levels <- c(5, 10, 15, 20, 25)
 DNA_levels <- c(100,250,500,750,1000)
-predict_outputs <- c("fit", "lower", "upper", "piWidth")
+predict_outputs <- c("MSSE", "lower", "upper", "piWidth")
 
 # Linear model ----
 # pass all arrays to a dataframe using the function. define the function that takes an input 'data_array'
 analyze_resampling_array <- function(data_array) {
   # linear model of resampling array. Extract the column named 'total' from the array.
   # concatenate the extracted column values into the vector.
-  rareCatVector <- c(data_array[,3,]) 
+  rareCatVector <- c(data_array[,2,]) 
   
   # Specify sample numbers column.
   # Create a vector of sample numbers from 1 to the number of rows in the 'total' column 
-  gm_sampleNumbers <- 1:(nrow(data_array[,3,]))
+  gm_sampleNumbers <- 1:(nrow(data_array[,2,]))
   # Repeat the sample numbers vector for the number of replicates
   gm_sampleNumbers <- rep(gm_sampleNumbers, dim(data_array)[[3]])
   
@@ -720,7 +740,7 @@ write.csv(MSAT_N4800commonCat_matrix, file = paste0(sim.wd, "/MSAT_N4800_marker/
 
 
 # DNA N1200
-DNA_N1200rareCatpredictResults <-vector("list", length(MSAT_levels))
+DNA_N1200rareCatpredictResults <-vector("list", length(DNA_levels))
 for (i in 1:5) {
   DNA_N1200rareCatpredictResults[[i]] <- analyze_resampling_array(DNA_N1200[[i]])
 }
@@ -737,29 +757,29 @@ for (i in 1:5) {
 
 # this matrix will store the pi values and pi widths
 # %%% Create an empty matrix to store the results ----
-DNA_N1200rareCat_matrix <- matrix(nrow = length(MSAT_levels), ncol = length(predict_outputs))
+DNA_N1200rareCat_matrix <- matrix(nrow = length(DNA_levels), ncol = length(predict_outputs))
 colnames(DNA_N1200rareCat_matrix) <- predict_outputs
-rownames(DNA_N1200rareCat_matrix) <- MSAT_levels
+rownames(DNA_N1200rareCat_matrix) <- DNA_levels
 DNA_N1200rareCat_matrix <- build_matrix_func(DNA_N1200rareCatpredictResults, DNA_N1200rareCat_matrix)
 # test<-DNA_N1200rareCat_matrix
 write.csv(DNA_N1200rareCat_matrix, file = paste0(sim.wd, "/DNA_N1200_marker/DNA_N1200rareCat_matrix.csv"))
 
-DNA_N1200lowfreqCat_matrix <- matrix(nrow = length(MSAT_levels), ncol = length(predict_outputs))
+DNA_N1200lowfreqCat_matrix <- matrix(nrow = length(DNA_levels), ncol = length(predict_outputs))
 colnames(DNA_N1200lowfreqCat_matrix) <- predict_outputs
-rownames(DNA_N1200lowfreqCat_matrix) <- MSAT_levels
+rownames(DNA_N1200lowfreqCat_matrix) <- DNA_levels
 DNA_N1200lowfreqCat_matrix <- build_matrix_func(DNA_N1200lowfreqpredictResults, DNA_N1200lowfreqCat_matrix)
 write.csv(DNA_N1200lowfreqCat_matrix, file = paste0(sim.wd, "/DNA_N1200_marker/DNA_N1200lowfreq_matrix.csv"))
 
-DNA_N1200commonCat_matrix <- matrix(nrow = length(MSAT_levels), ncol = length(predict_outputs))
+DNA_N1200commonCat_matrix <- matrix(nrow = length(DNA_levels), ncol = length(predict_outputs))
 colnames(DNA_N1200commonCat_matrix) <- predict_outputs
-rownames(DNA_N1200commonCat_matrix) <- MSAT_levels
+rownames(DNA_N1200commonCat_matrix) <- DNA_levels
 DNA_N1200commonCat_matrix <- build_matrix_func(DNA_N1200commonpredictResults, DNA_N1200commonCat_matrix)
 write.csv(DNA_N1200commonCat_matrix, file = paste0(sim.wd, "/DNA_N1200_marker/DNA_N1200common_matrix.csv"))
 
 
 
 # DNA 4800
-DNA_N4800rareCatpredictResults <-vector("list", length(MSAT_levels))
+DNA_N4800rareCatpredictResults <-vector("list", length(DNA_levels))
 for (i in 1:5) {
   DNA_N4800rareCatpredictResults[[i]] <- analyze_resampling_array(DNA_N4800[[i]])
 }
@@ -776,20 +796,20 @@ for (i in 1:5) {
 
 # this matrix will store the pi values and pi widths
 # %%% Create an empty matrix to store the results ----
-DNA_N4800rareCat_matrix <- matrix(nrow = length(MSAT_levels), ncol = length(predict_outputs))
+DNA_N4800rareCat_matrix <- matrix(nrow = length(DNA_levels), ncol = length(predict_outputs))
 colnames(DNA_N4800rareCat_matrix) <- predict_outputs
-rownames(DNA_N4800rareCat_matrix) <- MSAT_levels
+rownames(DNA_N4800rareCat_matrix) <- DNA_levels
 DNA_N4800rareCat_matrix <- build_matrix_func(DNA_N4800rareCatpredictResults, DNA_N4800rareCat_matrix)
 write.csv(DNA_N4800rareCat_matrix, file = paste0(sim.wd, "/DNA_N4800_marker/DNA_N4800rareCat_matrix.csv"))
 
-DNA_N4800lowfreqCat_matrix <- matrix(nrow = length(MSAT_levels), ncol = length(predict_outputs))
+DNA_N4800lowfreqCat_matrix <- matrix(nrow = length(DNA_levels), ncol = length(predict_outputs))
 colnames(DNA_N4800lowfreqCat_matrix) <- predict_outputs
-rownames(DNA_N4800lowfreqCat_matrix) <- MSAT_levels
+rownames(DNA_N4800lowfreqCat_matrix) <- DNA_levels
 DNA_N4800lowfreqCat_matrix <- build_matrix_func(DNA_N4800lowfreqpredictResults, DNA_N4800lowfreqCat_matrix)
 write.csv(DNA_N4800lowfreqCat_matrix, file = paste0(sim.wd, "/DNA_N4800_marker/DNA_N4800lowfreq_matrix.csv"))
 
-DNA_N4800commonCat_matrix <- matrix(nrow = length(MSAT_levels), ncol = length(predict_outputs))
+DNA_N4800commonCat_matrix <- matrix(nrow = length(DNA_levels), ncol = length(predict_outputs))
 colnames(DNA_N4800commonCat_matrix) <- predict_outputs
-rownames(DNA_N4800commonCat_matrix) <- MSAT_levels
+rownames(DNA_N4800commonCat_matrix) <- DNA_levels
 DNA_N4800commonCat_matrix <- build_matrix_func(DNA_N4800commonpredictResults, DNA_N4800commonCat_matrix)
 write.csv(DNA_N4800commonCat_matrix, file = paste0(sim.wd, "/DNA_N4800_marker/DNA_N4800common_matrix.csv"))

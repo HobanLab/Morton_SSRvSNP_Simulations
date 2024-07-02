@@ -85,14 +85,14 @@ gm_resamp_array_function <- function(insert_genind, num_loci, num_reps){
 
 # Linear model ----
 # pass all arrays to a dataframe using the function. define the function that takes an input 'data_array'
-analyze_resampling_array <- function(data_array) {
+analyze_resampling_array <- function(data_array, allele_cat) {
   # linear model of resampling array. Extract the column named 'total' from the array.
   # concatenate the extracted column values into the vector.
-  totalsVector <- c(data_array[,1,]) 
+  totalsVector <- c(data_array[,allele_cat,]) 
   
   # Specify sample numbers column.
   # Create a vector of sample numbers from 1 to the number of rows in the 'total' column 
-  gm_sampleNumbers <- 1:(nrow(data_array[,1,]))
+  gm_sampleNumbers <- 1:(nrow(data_array[,allele_cat,]))
   # Repeat the sample numbers vector for the number of replicates
   gm_sampleNumbers <- rep(gm_sampleNumbers, dim(data_array)[[3]])
   
@@ -416,35 +416,35 @@ predict_outputs <- c("MSSE", "lower", "upper", "piWidth")
 
 # Linear model ----
 # pass all arrays to a dataframe using the function. define the function that takes an input 'data_array'
-analyze_resampling_array <- function(data_array) {
-  # linear model of resampling array. Extract the column named 'total' from the array.
-  # concatenate the extracted column values into the vector.
-  rareCatVector <- c(data_array[,2,]) 
-  
-  # Specify sample numbers column.
-  # Create a vector of sample numbers from 1 to the number of rows in the 'total' column 
-  gm_sampleNumbers <- 1:(nrow(data_array[,2,]))
-  # Repeat the sample numbers vector for the number of replicates
-  gm_sampleNumbers <- rep(gm_sampleNumbers, dim(data_array)[[3]])
-  
-  # Create data frame from resampling array values
-  gm_DF <- data.frame(sampleNumbers=gm_sampleNumbers, rareCatValues=rareCatVector)
-  
-  # Build and analyze linear models
-  gm_Model <- lm(sampleNumbers ~ I((rareCatValues)^3), data = gm_DF)
-  # Create a new data fram 'gm_newData with a single column 'totalValues' containing the value 0.95
-  gm_newData <- data.frame(rareCatValues=0.95)
-  # Use the linear model to predict the response for the new data frame. Specify 'interval = prediction to obtain a prediction interval
-  gm_95MSSEprediction <- predict(gm_Model, gm_newData, interval = "prediction")
-  
-  # Pass the gm_95MSSEprediction to the object storing our results 
-  # Store the predicted values and predictino interval in the object named 'result' 
-  result <- gm_95MSSEprediction
-  # Calculate the width of the prediction interval by substracting the lower limit from the upper limit
-  piWidth <- gm_95MSSEprediction[3] - gm_95MSSEprediction[2]
-  # Return a list containing the predicted values and the width of the prediction interval
-  return(list(result = result, piWidth = piWidth))
-}
+# analyze_resampling_array <- function(data_array) {
+#   # linear model of resampling array. Extract the column named 'total' from the array.
+#   # concatenate the extracted column values into the vector.
+#   rareCatVector <- c(data_array[,2,]) 
+#   
+#   # Specify sample numbers column.
+#   # Create a vector of sample numbers from 1 to the number of rows in the 'total' column 
+#   gm_sampleNumbers <- 1:(nrow(data_array[,2,]))
+#   # Repeat the sample numbers vector for the number of replicates
+#   gm_sampleNumbers <- rep(gm_sampleNumbers, dim(data_array)[[3]])
+#   
+#   # Create data frame from resampling array values
+#   gm_DF <- data.frame(sampleNumbers=gm_sampleNumbers, rareCatValues=rareCatVector)
+#   
+#   # Build and analyze linear models
+#   gm_Model <- lm(sampleNumbers ~ I((rareCatValues)^3), data = gm_DF)
+#   # Create a new data fram 'gm_newData with a single column 'totalValues' containing the value 0.95
+#   gm_newData <- data.frame(rareCatValues=0.95)
+#   # Use the linear model to predict the response for the new data frame. Specify 'interval = prediction to obtain a prediction interval
+#   gm_95MSSEprediction <- predict(gm_Model, gm_newData, interval = "prediction")
+#   
+#   # Pass the gm_95MSSEprediction to the object storing our results 
+#   # Store the predicted values and predictino interval in the object named 'result' 
+#   result <- gm_95MSSEprediction
+#   # Calculate the width of the prediction interval by substracting the lower limit from the upper limit
+#   piWidth <- gm_95MSSEprediction[3] - gm_95MSSEprediction[2]
+#   # Return a list containing the predicted values and the width of the prediction interval
+#   return(list(result = result, piWidth = piWidth))
+# }
 
 # Filling in matrix ----
 # Iterate through the arrays and store results in the matrix

@@ -289,9 +289,9 @@ MSAT_N1200 <- readRDS(paste0(sim.wd,"/MSAT_N1200_marker/MSAT_N1200_arrayList.Rda
 MSAT_N4800 <- readRDS(paste0(sim.wd, "/MSAT_N4800_marker/MSAT_N4800_arrayList.Rdata"))
 DNA_N1200 <- readRDS(paste0(sim.wd,"/DNA_N1200_marker/DNA_N1200_arrayList.Rdata"))
 DNA_N4800 <- readRDS(paste0(sim.wd, "/DNA_N4800_marker/DNA_N4800_arrayList.Rdata"))
-MSAT_levels <- c(5, 10, 15, 20, 25)
-DNA_levels <- c(100,250,500,750,1000)
-predict_outputs <- c("Loci","MSSE", "lower", "upper", "piWidth")
+MSAT_levels <- c("5 loci", "10 loci", "15 loci", "20 loci", "25 loci")
+DNA_levels <- c("100","250",500,750,1000)
+predict_outputs <- c("MSSE", "lower", "upper", "piWidth")
 # empty list with length of 5 that will contain the outputs of the predict analysis
 MSAT_N1200rareCatpredictResults <-vector("list", length(MSAT_levels))
 MSAT_N1200lowfreqpredictResults <-vector("list", length(MSAT_levels))

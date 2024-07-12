@@ -288,13 +288,13 @@ MSAT_N4800 <- readRDS(paste0(sim.wd, "/MSAT_N4800_marker/MSAT_N4800_arrayList.Rd
 DNA_N1200 <- readRDS(paste0(sim.wd,"/DNA_N1200_marker/DNA_N1200_arrayList.Rdata"))
 DNA_N4800 <- readRDS(paste0(sim.wd, "/DNA_N4800_marker/DNA_N4800_arrayList.Rdata"))
 MSAT_levels <- c("5 loci", "10 loci", "15 loci", "20 loci", "25 loci")
-DNA_levels <- c("100","250",500,750,1000)
+DNA_levels <- c("100 loci","250 loci ","500 loci","750 loci","1000 loci")
 predict_outputs <- c("MSSE", "lower", "upper", "piWidth")
 # empty list with length of 5 that will contain the outputs of the predict analysis
 MSAT_N1200rareCatpredictResults <-vector("list", length(MSAT_levels))
 MSAT_N1200lowfreqpredictResults <-vector("list", length(MSAT_levels))
 MSAT_N1200commonpredictResults <-vector("list", length(MSAT_levels))
-MSAT_N1200_predict_results <- vector("list", 5)
+MSAT_N1200_predict_results <- vector("list", length(MSAT_levels))
 MSAT_N4800rareCatpredictResults <-vector("list", length(MSAT_levels))
 MSAT_N4800lowfreqpredictResults <-vector("list", length(MSAT_levels))
 MSAT_N4800commonpredictResults <-vector("list", length(MSAT_levels))
@@ -313,7 +313,6 @@ DNA_N4800_predict_results <- vector("list", length(DNA_levels))
 MSAT_N1200rareCat_matrix <- matrix(nrow = length(MSAT_levels), ncol = length(predict_outputs))
 rownames(MSAT_N1200rareCat_matrix) <- MSAT_levels
 colnames(MSAT_N1200rareCat_matrix) <- predict_outputs
-
 
 MSAT_N1200lowfreqCat_matrix <- matrix(nrow = length(MSAT_levels), ncol = length(predict_outputs))
 colnames(MSAT_N1200lowfreqCat_matrix) <- predict_outputs
@@ -491,10 +490,10 @@ write.csv(DNA_N1200lowfreqCat_matrix, file = paste0(sim.wd, "/DNA_N1200_marker/D
 write.csv(DNA_N1200commonCat_matrix, file = paste0(sim.wd, "/DNA_N1200_marker/DNA_N1200common_matrix.csv"))
 write.csv(DNA_N1200_matrix, file = paste0(sim.wd, "/DNA_N1200_marker/DNA_N1200_matrix.csv"))
 
-write.csv(DNA_N4800rareCat_matrix, file = paste0(sim.wd, "/DNA_N4800_marker/DNA_N4800rareCat_matrix.csv"))
-write.csv(DNA_N4800lowfreqCat_matrix, file = paste0(sim.wd, "/DNA_N4800_marker/DNA_N4800lowfreq_matrix.csv"))
-write.csv(DNA_N4800commonCat_matrix, file = paste0(sim.wd, "/DNA_N4800_marker/DNA_N4800common_matrix.csv"))
-write.csv(DNA_N4800_matrix, file = paste0(sim.wd, "/DNA_N4800_marker/DNA_N4800_matrix.csv"))
+write.csv(DNA_N4800rareCat_matrix, file = paste0(sim.wd, "/DNA_N4800_marker/lociBootstrapping/DNA_N4800_Rare.csv"))
+write.csv(DNA_N4800lowfreqCat_matrix, file = paste0(sim.wd, "/DNA_N4800_marker/lociBootstrapping/DNA_N4800LowFreq.csv"))
+write.csv(DNA_N4800commonCat_matrix, file = paste0(sim.wd, "/DNA_N4800_marker/lociBootstrapping/DNA_N4800Common.csv"))
+write.csv(DNA_N4800_matrix, file = paste0(sim.wd, "/DNA_N4800_marker/lociBootstrapping/DNA_N4800_Total.csv"))
 
 
 # ROUNDING

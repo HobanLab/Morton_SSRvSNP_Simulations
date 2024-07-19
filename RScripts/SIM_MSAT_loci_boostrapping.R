@@ -7,8 +7,9 @@
 # (5-25 loci are bootstrapped at intervals of 5)
 
 library(adegenet)
-sim.wd <- 'C:/Users/gsalas/Documents/resampling_CIs/Code/'
+sim.wd <- 'C:/Users/gsalas/Documents/Morton_SSRvSNP_Simulations/Simulated/'
 setwd(sim.wd)
+
 # ---- FUNCTIONS ----
 # Building resampling array ----
 gm_resamp_array_function <- function(insert_genind, num_loci, num_reps){
@@ -129,7 +130,12 @@ build_matrix_func <- function(array_list, input_matrix){
 # declare all objects for the loop
 # this array stores a resampling array from a simulated genind object of a scenario, of which there are 5 simulated genind objects.
 # this array stores all the replicates from each scenario at a specific loci level
-combinedArray <- array(dim = c(1200, 4, 6*5*1))
+numGenind <- 5
+numSlices <- 1 # Example value, change as needed
+numScenarios <- 6 # Number of scenarios
+lociSampleSize <- 1200 # Number of samples
+
+combinedArray <- array(dim = c(1200, 4, numScenarios * numGenind * numSlices))
 MSAT_levels <- c(5, 10, 15, 20, 25)
 MSAT_N1200_arrayList <- vector("list", length = length(MSAT_levels))
 # reading in the names of each of the scenarios to be processed

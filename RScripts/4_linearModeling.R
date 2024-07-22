@@ -3,8 +3,8 @@
 # %%%%%%%%%%%%%%%%%%%%%
 
 # This script reads in resampling arrays generated for MSAT and SNP datasets (using nInd values
-# of 1200 and 4800), and builds data.frames of the parameter values used for simulations
-# (number of populations, total population size, migration rate, and marker type, MSAT or DNA).
+# of 1200 and 4800; see 3_resampling.R), and builds data.frames of the parameter values used for 
+# simulations (number of populations, total population size, migration rate, and marker type, MSAT or DNA).
 
 # Using these data.frames, 2 types of linear models are constructed: 
 # 1. One which makes the number of samples the response variable. These models are used, along with
@@ -13,14 +13,15 @@
 # 2. One which sets the Total allelic representation as the response variable. These models are used 
 #    to examine how different simulation parameters impact estimates of allelic representation.
 
-# The script is split into 3 different sections based on total population size and mutation rate: N1200 and N4800
-# (MSAT and DNA; for DNA, mutation rate of 1e-7), and then low mutation rate DNA datasets (1e-8, N1200 and N4800)
+# The script is split into 3 different sections based on total population size and mutation rate: 
+# N1200 and N4800 (MSAT and DNA; for DNA, mutation rate of 1e-7), and then low mutation rate 
+# DNA datasets (1e-8, N1200 and N4800)
 
 # Set working directory to the GitHub repo (containing scripts and fastSimcoal outputs)
 sim.wd <- '/home/akoontz/Shared/SSRvSNP_Sim/Code/'
 setwd(sim.wd)
 # Read in relevant functions
-source('RScripts/functions_SSRvSNP_Sim.R')
+source('RScripts/0_functions.R')
 # data.table::rbindlist: used below to collapse lists of data.frames into data.frames
 library(data.table)
 # Libraries for plotting

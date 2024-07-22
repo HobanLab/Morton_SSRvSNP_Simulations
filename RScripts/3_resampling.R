@@ -25,7 +25,7 @@ library(scales)
 sim.wd <- '/home/akoontz/Shared/SSRvSNP_Sim/Code/'
 setwd(sim.wd)
 # Read in relevant functions
-source('RScripts/functions_SSRvSNP_Sim.R')
+source('RScripts/0_functions.R')
 # Parallelism: specify number of cores to use
 num_cores <- detectCores() - 4
 # Specify number of resampling replicates, to use for all scenarios below
@@ -41,6 +41,9 @@ N0_Flag <- TRUE
 N1_Flag <- FALSE
 N2_Flag <- FALSE
 dnaLowMut_Flag <- FALSE
+
+# Testing loci bootstrapping
+
 
 # %%% ORIGINAL SIMULATIONS: NIND 1200 %%% ----
 # Based on flag value, analyze NIND 1200 dataset

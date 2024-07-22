@@ -21,7 +21,7 @@ library(hierfstat)
 sim.wd <- "/home/akoontz/Shared/SSRvSNP_Sim/Code/"
 setwd(sim.wd)
 # Read in relevant functions
-source("RScripts/functions_SSRvSNP_Sim.R")
+source("RScripts/0_functions.R")
 
 # ---- VARIABLES ----
 # This section specifies fsc simulation parameters as variables, for running simulations using strataG (below)

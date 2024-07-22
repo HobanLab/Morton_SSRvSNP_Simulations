@@ -32,10 +32,10 @@ library(hierfstat)
 sim.wd <- "/home/akoontz/Shared/SSRvSNP_Sim/Code/"
 setwd(sim.wd)
 # Read in relevant functions
-source("RScripts/functions_SSRvSNP_Sim.R")
+source("RScripts/0_functions.R")
 # Flags for analyzing MSAT or SNP simulations
 Flag_MSAT <- TRUE
-Flag_DNA <- FALSE
+Flag_DNA <- TRUE
 
 # %%% N1200 %%% ----
 print("%%% ANALYZING N1200 SCENARIOS %%%")

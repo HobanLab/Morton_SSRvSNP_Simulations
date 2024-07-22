@@ -131,17 +131,18 @@ build_matrix_func <- function(array_list, input_matrix){
 # this array stores a resampling array from a simulated genind object of a scenario, of which there are 5 simulated genind objects.
 # this array stores all the replicates from each scenario at a specific loci level
 numGenind <- 5
-numSlices <- 1 # Example value, change as needed
+numReps <- 2
+# numSlices <- 2 # Example value, change as needed
 numScenarios <- 6 # Number of scenarios
 lociSampleSize <- 1200 # Number of samples
 
-combinedArray <- array(dim = c(1200, 4, numScenarios * numGenind * numSlices))
+combinedArray <- array(dim = c(1200, 4, numScenarios * numGenind * numReps))
 MSAT_levels <- c(5, 10, 15, 20, 25)
 MSAT_N1200_arrayList <- vector("list", length = length(MSAT_levels))
 # reading in the names of each of the scenarios to be processed
-MSATscenarios <- list.files(path = 'Datasets/Simulated/MSAT_N1200/', pattern = "genind.MSAT_", full.names = TRUE)
+MSATscenarios <- list.files(path = 'MSAT_N1200/', pattern = "genind.MSAT_", full.names = TRUE)
 # number of replicates we want the resampling array to have
-numReps <- 1
+# numReps <- 1
 # this for loop creates a list that contains all the simulation replicates for every scenario
 scenariorepsList <- list()
 for(i in 1:length(MSATscenarios)){

@@ -131,12 +131,12 @@ build_matrix_func <- function(array_list, input_matrix){
 # this array stores a resampling array from a simulated genind object of a scenario, of which there are 5 simulated genind objects.
 # this array stores all the replicates from each scenario at a specific loci level
 numGenind <- 5
-numReps <- 2
+numReps <- 5
 # numSlices <- 2 # Example value, change as needed
 numScenarios <- 6 # Number of scenarios
 lociSampleSize <- 1200 # Number of samples
 
-combinedArray <- array(dim = c(1200, 4, numScenarios * numGenind * numReps))
+combinedArray <- array(dim = c(lociSampleSize, 4, numScenarios * numGenind * numReps))
 MSAT_levels <- c(5, 10, 15, 20, 25)
 MSAT_N1200_arrayList <- vector("list", length = length(MSAT_levels))
 # reading in the names of each of the scenarios to be processed
@@ -158,10 +158,10 @@ print(paste0('%%% RUNTIME START: ', startTime))
 for (i in 1:length(MSAT_levels)) {
   for (j in 1:length(scenariorepsList)){
     # browser()
-    combinedArray[,,j] <- gm_resamp_array_function(scenariorepsList[[j]],MSAT_levels[i], numReps)
-  }
+    combinedArray[,,(numReps*j+1-numReps):(j*numReps)] <- gm_resamp_array_function(scenariorepsList[[j]],MSAT_levels[i], numReps)
+    }
   MSAT_N1200_arrayList[[i]] <- combinedArray
-  combinedArray <- array(dim = c(1200,4,6*5*1))
+  combinedArray <- array(dim = c(lociSampleSize, 4, numScenarios * numGenind * numReps))
 }
 # Print ending time and total runtime
 endTime <- Sys.time()
@@ -172,7 +172,7 @@ saveRDS(MSAT_N1200_arrayList, "MSAT_N1200_arrayList.Rdata")
 
 # %%% MSAT N4800 %%% ----
 # declare all objects for the loop
-# this array stores the arrays of all the scenarios, of which there are 5 simulation replicates, and 1 replicate per simulation replicate
+# this array stores the allelic representation values of all 6 scenarios for which there are 5 simulation replicates (genind objects) and 1 replicate per simulation replicate
 combinedArray <- array(dim = c(4800, 4, 6*5*1))
 MSAT_levels <- c(5, 10, 15, 20, 25)
 MSAT_N4800_arrayList <- vector("list", length = length(MSAT_levels))

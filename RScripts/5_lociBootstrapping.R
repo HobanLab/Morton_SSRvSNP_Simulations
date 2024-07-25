@@ -1,6 +1,9 @@
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# %%% 03/26/2024 Simulated MSAT Loci bootstrapping %%%
-# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# %%%%%%%%%%%%%%%%%%%%%%%%%%
+# %%% LOCI BOOTSTRAPPING %%%
+# %%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# This script reads in resampling arrays generated for MSAT and SNP datasets (using nInd values
+# of 1200 and 4800; see 3_resampling.R). Then,
 
 # This script generates a list "QUAC_array_list" of 5 arrays. Each array stores 
 # representation values across replicates from each scenario based on a number of loci

@@ -406,6 +406,23 @@ makeAlleleFreqHist_genList <- function(gen.List, outDir='~/Shared/SSRvSNP_Sim/Co
 }
 
 # RESAMPLING FUNCTIONS ----
+
+# Function for loci bootstrapping. A genind object and the number of loci to subset down to
+# are provided, and an updated genind object is output
+lociSubsetting <- function(gen.obj, numLoci){
+  # Check that the numLoci argument is a whole, positive number, and not greater than the total number
+  # of loci included in the complete genetic matrix
+  if(!is.numeric(numLoci) | numLoci < 1 | numLoci > nLoc(gen.obj)){
+    stop('The numLoci argument used for loci subsetting must be a whole number greater than 0 and less
+         than the total number of loci in the genind object!')
+  }
+  # Randomly sample loci from the complete genind object, based on numLoci argument
+  sampledLoci <- sample(locNames(gen.obj), size = numLoci, replace = FALSE)
+  # Subset the genind object to include only the columns corresponding to the sampled loci, and return
+  subsetGenind <- gen.obj[, loc = sampledLoci]
+  return(subsetGenind)
+}
+
 # Ex situ sample function, which finds the level of ex situ representation of a sample of individuals.
 # It takes a genind object (containing garden and wild samples) and an integer specifying the number of 
 # rows (individuals) to draw from the matrix of wild samples. Using the sample and getAlleleCategories 
@@ -457,8 +474,32 @@ exSitu_Resample <- function(gen.obj, n_to_drop=0){
   return(representationMatrix)
 }
 
+# Wrapper for exSitu_Resample, which will generate an array of values from a single genind object. If a 
+# lociLevel argument is provided, then the genind object used will be subset to the specified level of loci
+# prior to resampling
+Resample_genind <- function(gen.obj, reps=5, lociLevel=NA, n_to_drop=0){
+  # Check that populations in the genind object are properly formatted (need to be either 'garden' or 'wild')
+  if(!('wild' %in% levels(pop(gen.obj)))){
+    stop("Error: Samples in gen.obj must belong to populations that are named either 'garden'
+         or 'wild'. Please reformat the genind object such that only these population names are used.")
+  }
+  # Check n_to_drop flag: make sure it equals 0, 1 (singletons), or 2 (doubletons)
+  stopifnot(n_to_drop %in% c(0, 1, 2))
+  # If a loci level argument is given, subset the genind object based on the number of loci specified
+  if(class(lociLevel)!="logical"){
+    gen.obj <- lociSubsetting(gen.obj, numLoci=lociLevel)
+  }
+  # Based on values of n_to_drop, remove singletons/doubletons from genind matrix
+  gen.obj@tab <- gen.obj@tab[,which(colSums(gen.obj@tab, na.rm = TRUE) > n_to_drop)]
+  # Run resampling for all replicates, using sapply and lambda function
+  resamplingArray <- sapply(1:reps, function(x) exSitu_Resample(gen.obj = gen.obj), simplify = 'array')
+  # Rename third array dimension to describe simulation scenario (captured in the genind object), and return
+  dimnames(resamplingArray)[[3]] <- rep(unlist(gen.obj@other), dim(resamplingArray)[[3]])
+  return(resamplingArray)
+}
+
 # Wrapper for exSitu_Resample, which will generate an array of values from a single genind object
-Resample_genind <- function(gen.obj, reps=5, n_to_drop=0){
+Resample_genind_OLD <- function(gen.obj, reps=5, n_to_drop=0){
   # Check that populations in the genind object are properly formatted (need to be either 'garden' or 'wild')
   if(!('wild' %in% levels(pop(gen.obj)))){
     stop("Error: Samples in gen.obj must belong to populations that are named either 'garden'
@@ -475,11 +516,36 @@ Resample_genind <- function(gen.obj, reps=5, n_to_drop=0){
   return(resamplingArray)
 }
 
+# Wrapper for Resample_genind, which will generate a list of arrays containing resampling values. Each
+# item in this list will correspond to a specified number of loci that the genind object provided is 
+# subset to; thus, length(lociLevels)=length(arrayList)
+ResampleAndBootstrap_genind <- function(gen.obj, reps=5, lociLevels, n_to_drop=0){
+  # Run resampling for each level of loci specified
+  arrayList <- 
+    lapply(lociLevels, function(x) Resample_genind(gen.obj = gen.obj, reps=reps, lociLevel=x, n_to_drop=n_to_drop))
+  # Rename items in array list, according to the number of loci that have been subset to
+  names(arrayList) <- c(paste0(as.character(lociLevels), rep(' LOCI', length(lociLevels))))
+  return(arrayList)
+}
+
 # Wrapper for Resample_genind, which will generate an array of values from a list of genind objects
 Resample_genList <- function(gen.List, reps=5, n_to_drop=0){
-  # Run resampling for all replicates, using lapply and lambda function, and return array
+  # Run resampling for all replicates, using lapply and lambda function
   resamplingArray <- lapply(gen.List, function(x) Resample_genind(gen.obj = x, reps=reps, n_to_drop=n_to_drop))
+  # Name the list items and return
+  names(arrayList) <- paste0(rep("Genind_", reps), as.character(1:reps))
   return(resamplingArray)
+}
+
+# Wrapper for ResampleAndBootstrap_genind, which will generate a list of array lists from a list of genind objects
+ResampleAndBootstrap_genList <- function(gen.List, reps=5, lociLevels, n_to_drop=0){
+  # Run resampling for all replicates, using lapply and lambda function
+  arrayList <- 
+    lapply(gen.List, function(x) ResampleAndBootstrap_genind(gen.obj = x, reps=reps, 
+                                                             lociLevels=lociLevels, n_to_drop=n_to_drop))
+  # Name the list items and return
+  names(arrayList) <- paste0(rep("Genind_", reps), as.character(1:reps))
+  return(arrayList)
 }
 
 # Parallel wrapper for exSitu_Resample, which will generate an array of values from a single genind object

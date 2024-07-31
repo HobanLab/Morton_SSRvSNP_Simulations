@@ -157,7 +157,7 @@ print(paste0('%%% RUNTIME START: ', startTime))
 for (i in 1:length(MSAT_levels)) {
   for (j in 1:length(scenariorepsList)){
     # browser()
-    combinedArray[,,j] <- gm_resamp_array_function(scenariorepsList[[j]],MSAT_levels[i], numReps)
+    combinedArray[,,(numReps*j+1-numReps):(j*numReps)] <- gm_resamp_array_function(scenariorepsList[[j]],MSAT_levels[i], numReps)
     }
   MSAT_N1200_arrayList[[i]] <- combinedArray
   combinedArray <- array(dim = c(lociSampleSize, 4, numScenarios * numGenind * numReps))

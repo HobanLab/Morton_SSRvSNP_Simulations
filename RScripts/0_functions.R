@@ -524,7 +524,7 @@ ResampleAndBootstrap_genind <- function(gen.obj, reps=5, lociLevels, n_to_drop=0
   arrayList <- 
     lapply(lociLevels, function(x) Resample_genind(gen.obj = gen.obj, reps=reps, lociLevel=x, n_to_drop=n_to_drop))
   # Rename items in array list, according to the number of loci that have been subset to
-  names(arrayList) <- c(paste0(as.character(lociLevels), rep(' LOCI', length(lociLevels))))
+  names(arrayList) <- c(paste0(as.character(lociLevels), rep('_LOCI', length(lociLevels))))
   return(arrayList)
 }
 
@@ -602,7 +602,7 @@ resample_meanValues <- function(resamplingArray){
 # is also populated with the values of simulation parameters, determined using the scenario name
 # passed to the resampling array when the array was constructed. The allValues flag indicates whether
 # or not to include categories of alleles other than 'Total'
-resample_array2dataframe <- function(resamplingArray, allValues=FALSE){
+resample_array2datatable <- function(resamplingArray, allValues=FALSE){
   # Create a vector of sample numbers. The values in this vector range from 2:total number
   # of samples (at least 2 samples are required in order for sample function to work; see above).
   # These values are repeated for the number of replicates in the resampling array (3rd dimension)
@@ -649,6 +649,68 @@ resample_array2dataframe <- function(resamplingArray, allValues=FALSE){
   # Iterate the marker type for every row in results data.frame
   resamp_DF$marker <- rep(params[[1]], nrow(resamp_DF))
   
+  # If allValues flag is FALSE, remove the allele categories other than 'Total'
+  if(allValues==FALSE){
+    resamp_DF <- resamp_DF[,-(3:6)]
+  }
+  
+  # Convert data.frame to data.table, and return
+  resamp_DT <- as.data.table(resamp_DF)
+  return(resamp_DT)
+}
+
+# From resampling array, generate a data.frame by collapsing values across replicates into vectors.
+# In addition to number of samples and the allelic representation values, the results data.frame
+# is also populated with the values of simulation parameters, determined using the scenario name
+# passed to the resampling array when the array was constructed. The allValues flag indicates whether
+# or not to include categories of alleles other than 'Total'
+resample_array2dataframe <- function(resamplingArray, allValues=FALSE){
+  # Create a vector of sample numbers. The values in this vector range from 2:total number
+  # of samples (at least 2 samples are required in order for sample function to work; see above).
+  # These values are repeated for the number of replicates in the resampling array (3rd dimension)
+  sampleNumbers <- rep(2:(nrow(resamplingArray)+1), dim(resamplingArray)[[3]])
+  # Pass sample number vector to a results data.frame, which will be the final output of the function
+  resamp_DF <- data.frame(nSamples=sampleNumbers)
+  # Loop through the array by columns (variables)
+  for(i in 1:ncol(resamplingArray)){
+    # For each, collapse the column into one long vector, and add that vector to the data.frame
+    resamp_DF <- cbind(resamp_DF, c(resamplingArray[,i,]))
+  }
+  # Rename the data.frame values according to the column names of the array
+  names(resamp_DF)[2:6] <- colnames(resamplingArray)
+
+  # %%% CAPTURE OTHER SIMULATION VARIABLES %%%
+  # This section uses the scenario name (generated using strataG, when simulations are first called)
+  # to add columns to the results data.frame containing the values of the parameters used to generate
+  # simulations. This allows us to reference these parameters as linear model variables, later on.
+
+  # Capture the scenario name, and separate it into components (marker type, number of populations,
+  # and migration rate)
+  scenName <- unique(dimnames(resamplingArray)[[3]])
+  params <- unlist(strsplit(scenName, '_'))
+  # If N4800 datasets are being processed, then "N4800" string needs to be removed from params list
+  if(nrow(resamplingArray) > 1200){
+    params <- params[-2]
+  }
+
+  # NUMBER OF POPULATIONS
+  # Using grep to find position in params that contains pop values (this changes across datasets)
+  numPops <- as.numeric(sub('pop', '', params[[grep("pop", params)]]))
+  resamp_DF$nPops <- rep(numPops, nrow(resamp_DF))
+  # TOTAL POPULATION SIZE
+  # Iterate the maximum number of samples (total population size) for every row in results data.frame
+  resamp_DF$tPopSize <- rep(max(sampleNumbers), nrow(resamp_DF))
+  # MIGRATION RATE
+  # Based on whether migration is "Low" or "High", iterate the value across data.frame rows
+  if(params[[3]] == 'migLow'){
+    resamp_DF$migRate <- rep(0.001, nrow(resamp_DF))
+  } else {
+    resamp_DF$migRate <- rep(0.01, nrow(resamp_DF))
+  }
+  # MARKER TYPE
+  # Iterate the marker type for every row in results data.frame
+  resamp_DF$marker <- rep(params[[1]], nrow(resamp_DF))
+
   # If allValues flag is FALSE, remove the allele categories other than 'Total'
   if(allValues==FALSE){
     resamp_DF <- resamp_DF[,-(3:6)]

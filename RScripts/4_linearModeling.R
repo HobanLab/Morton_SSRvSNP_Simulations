@@ -70,6 +70,8 @@ for(i in 1:nrow(N1200_MSAT_results)){
   predictPoints <- predict(N1200_MSAT_MSSEmodel, predictPoint, interval = "prediction")
   # Calculate the PI Width (upper minus lower prediction interval)
   predictPoints <- c(predictPoints, predictPoints[[3]]-predictPoints[[2]])
+  # Round the MSSE (fit) values to the next whole number of samples
+  predictPoints[[1]] <- ceiling(predictPoints[[1]])
   # Store the results into the matrix
   N1200_MSAT_results[i,] <- predictPoints
 }
@@ -85,6 +87,8 @@ for(i in 1:nrow(N1200_DNA_results)){
   predictPoints <- predict(N1200_DNA_MSSEmodel, predictPoint, interval = "prediction")
   # Calculate the PI Width (upper minus lower prediction interval)
   predictPoints <- c(predictPoints, predictPoints[[3]]-predictPoints[[2]])
+  # Round the MSSE (fit) values to the next whole number of samples
+  predictPoints[[1]] <- ceiling(predictPoints[[1]])
   # Store the results into the matrix
   N1200_DNA_results[i,] <- predictPoints
 }
@@ -186,6 +190,8 @@ for(i in 1:nrow(N4800_MSAT_results)){
   predictPoints <- predict(N4800_MSAT_MSSEmodel, predictPoint, interval = "prediction")
   # Calculate the PI Width (upper minus lower prediction interval)
   predictPoints <- c(predictPoints, predictPoints[[3]]-predictPoints[[2]])
+  # Round the MSSE (fit) values to the next whole number of samples
+  predictPoints[[1]] <- ceiling(predictPoints[[1]])
   # Store the results into the matrix
   N4800_MSAT_results[i,] <- predictPoints
 }
@@ -201,6 +207,8 @@ for(i in 1:nrow(N4800_DNA_results)){
   predictPoints <- predict(N4800_DNA_MSSEmodel, predictPoint, interval = "prediction")
   # Calculate the PI Width (upper minus lower prediction interval)
   predictPoints <- c(predictPoints, predictPoints[[3]]-predictPoints[[2]])
+  # Round the MSSE (fit) values to the next whole number of samples
+  predictPoints[[1]] <- ceiling(predictPoints[[1]])
   # Store the results into the matrix
   N4800_DNA_results[i,] <- predictPoints
 }

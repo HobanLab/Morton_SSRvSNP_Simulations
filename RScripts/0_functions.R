@@ -688,8 +688,8 @@ resample_array2dataframe <- function(resamplingArray, allValues=FALSE){
   # and migration rate)
   scenName <- unique(dimnames(resamplingArray)[[3]])
   params <- unlist(strsplit(scenName, '_'))
-  # If N4800 datasets are being processed, then "N4800" string needs to be removed from params list
-  if(nrow(resamplingArray) > 1200){
+  # If the total population size is included in the params list, remove it
+  if(length(params) > 3){
     params <- params[-2]
   }
 

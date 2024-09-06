@@ -51,14 +51,6 @@ N1_Flag <- FALSE
 N2_Flag <- FALSE
 dnaLowMut_Flag <- TRUE
 
-# Testing loci bootstrapping
-# lociSubsetting(QUAC_genind, 15)
-# 
-# N1200_MSAT_N0_resampArr_filepath <- paste0(sim.wd, 'SimulationOutputs/Test.Rdata')
-# 
-# N1200_MSAT_N0_resampArrays <- lapply(MSAT_geninds, ResampleAndBootstrap_genList, lociLevels=MSAT_lociLevels)
-# saveRDS(N1200_MSAT_N0_resampArrays, file=N1200_MSAT_N0_resampArr_filepath)
-
 # %%% ORIGINAL SIMULATIONS: NIND 1200 %%% ----
 # Based on flag value, analyze NIND 1200 dataset
 if(nInd_1200_Flag==TRUE){

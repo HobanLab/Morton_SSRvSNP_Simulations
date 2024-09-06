@@ -1,7 +1,5 @@
 # %%% FILES/FOLDERS TO IGNORE TRACKING VIA GITHUB %%%
 
-Simulated
-
 # Simulated outputs of demo_dnaMarkerIssue folder
 SimulationOutputs/demo_dnaMarkerIssue/demo_dnaMarkerIssue.log
 SimulationOutputs/demo_dnaMarkerIssue/demo_dnaMarkerIssue/
@@ -12,6 +10,9 @@ SimulationOutputs/ArchivedScenarios
 
 # Folder of log files, usually those from SenseCheck.R, which contain information about simulations
 logFiles/
+
+# Folder of archived scripts
+Archive/
 
 # Folder of strataG params and genind objects, which will be updated everytime the GenerateFSCparams.R script is run
 # Also contained in this folder are the Rdata objects storing resampling arrays

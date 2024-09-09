@@ -18,6 +18,9 @@ These steps populate the files found in the [SimulationOutputs](https://github.c
 
 The 3 scripts correspond to 3 different analyses, as summarized below: - **N1200**: These simulations use a total population size (nInd) of 1200 individuals. MSAT and DNA markers are simulated - **N4800**: These simulations use a total population size (nInd) of 4800 individuals. MSAT and DNA markers are simulated - **lowMutDNA**: These simulations use a lower mutation rate (1e-8) than what's used in the DNA simulations (both N1200 and N4800) described above (1e-7). Both N1200 and N4800 total population sizes are simulated in this script.
 
+#### Check simulations
+The script [2_senseCheck.R](https://github.com/HobanLab/Morton_SSRvSNP_Simulations/blob/main/RScripts/2_senseCheck.R) performs different checks on the genind files generated from Step #1 (running simulations using `fastSimcoal` and `strataG`). These checks test our expectations of the simulation scenarios based on biology--for instance, that average Fst values will be greater for scenarios with lower migration rates between populations. 
+
 #### Perform resampling and loci bootstrapping
 The script [3_resampleAndBootstrap.R](https://github.com/HobanLab/Morton_SSRvSNP_Simulations/blob/main/RScripts/3_resampleAndBootstrap.R) is used to summarize the allele frequency distributions of each simulation scenario (for each marker type), and then randomly sample each object to model *ex situ* conservation. The script reads in the genind files saved to disk, and then using these files, generates resampling arrays, with the following dimensions
 
@@ -39,8 +42,6 @@ The script [4_linearModeling.R](https://github.com/HobanLab/Morton_SSRvSNP_Simul
 The script [archived_SimulationsScenarios.R](https://github.com/HobanLab/Morton_SSRvSNP_Simulations/blob/main/RScripts/archived_SimulationScenarios.R) contains simulation parameters for scenarios we explored, but ultimately ended up not using. The script is kept here for documentation purposes.
 
 The script [demo_dnaMarkerIssue.R](https://github.com/HobanLab/Morton_SSRvSNP_Simulations/blob/main/RScripts/demo_dnaMarkerIssue.R) demonstrates the issue discovered when trying to simulation SNP ("DNA") markers using just `fastSimcoal`. Markers will be concatenated, such that 3 blocks of chromosomes each 500 bp long will, in the resulting genind file, result in a single locus 1,500 bp long. This motivated our usage of `strataG`.
-
-The script [SenseCheck_SimOutputs.R](https://github.com/HobanLab/Morton_SSRvSNP_Simulations/blob/main/RScripts/SenseCheck_SimOutputs.R) performs different checks on the genind files generated from the `GenerateFSCparams` scripts. These checks test our expectations of the simulation scenarios based on biology--for instance, that average Fst values will be greater for scenarios with lower migration rates between populations.
 
 ### SimulationOutputs
 This folder contains 7 subfolders: 6 containing outputs for simulations used in our analyses, as outlined below, and 1 containing the outputs for demonstrating a DNA marker concatenation issue we found using `fastSimcoal` (see above):

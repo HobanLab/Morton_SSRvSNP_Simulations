@@ -1,5 +1,4 @@
 # Overview
-
 This repository contains the code required for the Simulation component of the IMLS_GCCO marker comparison project, which is quantifying how measures of *ex situ* conservation differ between RADseq and microsatellite markers. Simulations using different marker types (microsatellites, or "MSAT", and SNP markers, or "DNA") are performed using the [`fastSimcoal2` software](http://cmpg.unibe.ch/software/fastsimcoal27/) and the [`strataG`](https://github.com/EricArcher/strataG) R package.
 
 ### RScripts
@@ -61,5 +60,4 @@ In each of these subfolders, there are directories for each of our 6 simulation 
 We are unable to keep the actual files generated from simulations (Arlequin and genind files) on this repostory, due to file size restrictions (see our `.gitignore` file for more details).
 
 ## Contact
-
 For questions about this project, open an Issue or contact [Austin Koontz](https://akoontz11.netlify.app/).

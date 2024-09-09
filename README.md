@@ -32,7 +32,7 @@ The resampling arrays generated in this script are read in at the beginning of t
 
 This resampling script is built to run in the background of a server, with multiple clusters processing in parallel. For this reason, it uses many parallelized apply-family functions. Variable flags are used to indicate which of the analysis scenarios (specified above; N1200, N4800, DNA low mutation) to run resampling analyses on. In addition, for all scenarios except the DNA low mutation scenario, we explore using different levels of filtration for minor allele counts. Functionally, this means removing MSAT and DNA alleles which only appear once (N1) or twice (N2) in the entire population. We compare these results to no filter for minor allele count (N0).
 
-#### Loci bootstrapping
+##### Loci bootstrapping
 Loci boostrapping happens simultaneously to resampling. For each level of loci that's used for the loci bootstrapping, a resampling array (of 5 simulation slices) is generated. Therefore, for each dataset (e.g. MSAT N1200, DNA N4800, etc.), the final output is a **list of resampling arrays**.
 
 #### Linear modeling

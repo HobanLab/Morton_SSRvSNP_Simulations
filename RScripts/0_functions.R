@@ -498,24 +498,6 @@ Resample_genind <- function(gen.obj, reps=5, lociLevel=NA, n_to_drop=0){
   return(resamplingArray)
 }
 
-# Wrapper for exSitu_Resample, which will generate an array of values from a single genind object
-Resample_genind_OLD <- function(gen.obj, reps=5, n_to_drop=0){
-  # Check that populations in the genind object are properly formatted (need to be either 'garden' or 'wild')
-  if(!('wild' %in% levels(pop(gen.obj)))){
-    stop("Error: Samples in gen.obj must belong to populations that are named either 'garden'
-         or 'wild'. Please reformat the genind object such that only these population names are used.")
-  }
-  # Check n_to_drop flag: make sure it equals 0, 1 (singletons), or 2 (doubletons)
-  stopifnot(n_to_drop %in% c(0, 1, 2))
-  # Based on values of n_to_drop, remove singletons/doubletons from genind matrix
-  gen.obj@tab <- gen.obj@tab[,which(colSums(gen.obj@tab, na.rm = TRUE) > n_to_drop)]
-  # Run resampling for all replicates, using sapply and lambda function
-  resamplingArray <- sapply(1:reps, function(x) exSitu_Resample(gen.obj = gen.obj), simplify = 'array')
-  # Rename third array dimension to describe simulation scenario (captured in the genind object), and return
-  dimnames(resamplingArray)[[3]] <- rep(unlist(gen.obj@other), dim(resamplingArray)[[3]])
-  return(resamplingArray)
-}
-
 # Wrapper for Resample_genind, which will generate a list of arrays containing resampling values. Each
 # item in this list will correspond to a specified number of loci that the genind object provided is 
 # subset to; thus, length(lociLevels)=length(arrayList)

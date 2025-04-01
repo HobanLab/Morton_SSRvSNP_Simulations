@@ -66,7 +66,7 @@ rownames(N1200_MSAT_results) <- names(N1200_MSAT_DF)
 # For each level of loci (rows in the results matrix)...
 for(i in 1:nrow(N1200_MSAT_results)){
   # Build a linear model and predict
-  N1200_MSAT_MSSEmodel <- lm(nSamples ~ Total, data=N1200_MSAT_DF[[i]])
+  N1200_MSAT_MSSEmodel <- lm(nSamples ~ I(Total^3), data=N1200_MSAT_DF[[i]])
   predictPoints <- predict(N1200_MSAT_MSSEmodel, predictPoint, interval = "prediction")
   # Calculate the PI Width (upper minus lower prediction interval)
   predictPoints <- c(predictPoints, predictPoints[[3]]-predictPoints[[2]])
@@ -83,7 +83,7 @@ rownames(N1200_DNA_results) <- names(N1200_DNA_DF)
 # For each level of loci (rows in the results matrix)...
 for(i in 1:nrow(N1200_DNA_results)){
   # Build a linear model and predict
-  N1200_DNA_MSSEmodel <- lm(nSamples ~ Total, data=N1200_DNA_DF[[i]])
+  N1200_DNA_MSSEmodel <- lm(nSamples ~ I(Total^3), data=N1200_DNA_DF[[i]])
   predictPoints <- predict(N1200_DNA_MSSEmodel, predictPoint, interval = "prediction")
   # Calculate the PI Width (upper minus lower prediction interval)
   predictPoints <- c(predictPoints, predictPoints[[3]]-predictPoints[[2]])
@@ -97,10 +97,10 @@ for(i in 1:nrow(N1200_DNA_results)){
 # Create dataframe combining MSAT and DNA results with highest loci level (last list item)
 N1200_DF <- rbind(N1200_MSAT_DF[[length(N1200_MSAT_DF)]],N1200_DNA_DF[[length(N1200_DNA_DF)]])
 # With markers
-N1200_marker_model <- lm(Total ~ nSamples + nPops + migRate + marker, data=N1200_DF)
+N1200_marker_model <- lm(I(Total^3) ~ nSamples + nPops + migRate + marker, data=N1200_DF)
 summary(N1200_marker_model)
 # Without markers
-N1200_noMarker_model <- lm(Total ~ nSamples + nPops + migRate, data=N1200_DF)
+N1200_noMarker_model <- lm(I(Total^3) ~ nSamples + nPops + migRate, data=N1200_DF)
 summary(N1200_noMarker_model)
 # ANOVA demonstrating the value of introducing markers (note p value and large F statistic value)
 anova(N1200_marker_model, N1200_noMarker_model)
@@ -186,7 +186,7 @@ rownames(N4800_MSAT_results) <- names(N4800_MSAT_DF)
 # For each level of loci (rows in the results matrix)...
 for(i in 1:nrow(N4800_MSAT_results)){
   # Build a linear model and predict
-  N4800_MSAT_MSSEmodel <- lm(nSamples ~ Total, data=N4800_MSAT_DF[[i]])
+  N4800_MSAT_MSSEmodel <- lm(nSamples ~ I(Total^3), data=N4800_MSAT_DF[[i]])
   predictPoints <- predict(N4800_MSAT_MSSEmodel, predictPoint, interval = "prediction")
   # Calculate the PI Width (upper minus lower prediction interval)
   predictPoints <- c(predictPoints, predictPoints[[3]]-predictPoints[[2]])
@@ -203,7 +203,7 @@ rownames(N4800_DNA_results) <- names(N4800_DNA_DF)
 # For each level of loci (rows in the results matrix)...
 for(i in 1:nrow(N4800_DNA_results)){
   # Build a linear model and predict
-  N4800_DNA_MSSEmodel <- lm(nSamples ~ Total, data=N4800_DNA_DF[[i]])
+  N4800_DNA_MSSEmodel <- lm(nSamples ~ I(Total^3), data=N4800_DNA_DF[[i]])
   predictPoints <- predict(N4800_DNA_MSSEmodel, predictPoint, interval = "prediction")
   # Calculate the PI Width (upper minus lower prediction interval)
   predictPoints <- c(predictPoints, predictPoints[[3]]-predictPoints[[2]])
@@ -217,10 +217,10 @@ for(i in 1:nrow(N4800_DNA_results)){
 # Create dataframe combining MSAT and DNA results with highest loci level (last list item)
 N4800_DF <- rbind(N4800_MSAT_DF[[length(N4800_MSAT_DF)]],N4800_DNA_DF[[length(N4800_DNA_DF)]])
 # With markers
-N4800_marker_model <- lm(Total ~ nSamples + nPops + migRate + marker, data=N4800_DF)
+N4800_marker_model <- lm(I(Total^3) ~ nSamples + nPops + migRate + marker, data=N4800_DF)
 summary(N4800_marker_model)
 # Without markers
-N4800_noMarker_model <- lm(Total ~ nSamples + nPops + migRate, data=N4800_DF)
+N4800_noMarker_model <- lm(I(Total^3) ~ nSamples + nPops + migRate, data=N4800_DF)
 summary(N4800_noMarker_model)
 # ANOVA demonstrating the value of introducing markers (note p value and large F statistic value)
 anova(N4800_marker_model, N4800_noMarker_model)
@@ -286,11 +286,11 @@ N1200_DNA_lowMut_DF <- rbindlist(N1200_DNA_lowMut_DF)
 # Declare a variable that's used as the prediction point (i.e. 95% "Total" allelic representation)
 predictPoint <- data.frame(Total=95)
 # Build model and predict
-N1200_DNA_lowMut_MSSEmodel <- lm(nSamples ~ Total, data=N1200_DNA_lowMut_DF)
+N1200_DNA_lowMut_MSSEmodel <- lm(nSamples ~ I(Total^3), data=N1200_DNA_lowMut_DF)
 predict(N1200_DNA_lowMut_MSSEmodel, predictPoint, interval = "prediction")
 
 # %%% Build linear models to capture the impact of simulation parameters
-N1200_DNA_lowMut_model <- lm(Total ~ nSamples + nPops + migRate, data=N1200_DNA_lowMut_DF)
+N1200_DNA_lowMut_model <- lm(I(Total^3) ~ nSamples + nPops + migRate, data=N1200_DNA_lowMut_DF)
 summary(N1200_DNA_lowMut_model)
 summary.aov(N1200_DNA_lowMut_model)
 
@@ -324,11 +324,11 @@ N4800_DNA_lowMut_DF <- rbindlist(N4800_DNA_lowMut_DF)
 # Declare a variable that's used as the prediction point (i.e. 95% "Total" allelic representation)
 predictPoint <- data.frame(Total=95)
 # Build model and predict
-N4800_DNA_lowMut_MSSEmodel <- lm(nSamples ~ Total, data=N4800_DNA_lowMut_DF)
+N4800_DNA_lowMut_MSSEmodel <- lm(nSamples ~ I(Total^3), data=N4800_DNA_lowMut_DF)
 predict(N4800_DNA_lowMut_MSSEmodel, predictPoint, interval = "prediction")
 
 # %%% Build linear models to capture the impact of simulation parameters
-N4800_DNA_lowMut_model <- lm(Total ~ nSamples + nPops + migRate, data=N4800_DNA_lowMut_DF)
+N4800_DNA_lowMut_model <- lm(I(Total^3) ~ nSamples + nPops + migRate, data=N4800_DNA_lowMut_DF)
 summary(N4800_DNA_lowMut_model)
 summary.aov(N4800_DNA_lowMut_model)
 

@@ -113,37 +113,43 @@ par(oma=rep(0.06,4), mar=c(1.5,4.5,3,1.5)+0.1)
 # Standard resampling curve, MSAT data
 plot(Total ~ nSamples, data=N1200_DF[which(N1200_DF$marker == "MSAT"),], 
      ylab='', xlab='', pch=16, col=alpha(plotColors[[1]], 0.01), 
-     ylim=c(0,100.5))
+     ylim=c(0,100.5), cex.axis=1.2)
 # Standard resampling curve, DNA data
 points(Total ~ nSamples, data=N1200_DF[which(N1200_DF$marker == "DNA"),],
        pch=16, col=alpha(plotColors[[2]], 0.01))
 # Horizontal line indicating 95% coverage
 abline(h=95, col="black", lty=3)
 # Legend, title, and x-axis
-legend(x=700, y=45, inset = 0.05, xpd=TRUE,
+par(cex=1.2)
+legend(x=700, y=80, inset = 0.05, xpd=TRUE,
        legend = c('MSAT', 'DNA'), col=c(plotColors[[1]],plotColors[[2]]), 
-       pch = c(20,20), cex=1.2, pt.cex = 2, bty='n', y.intersp = 0.9)
+       pch = c(20,20), pt.cex = 2, bty='n', y.intersp = 0.7)
+par(cex=1.0)
 mtext("N1200: Allelic representation across simulation parameters", line=0.7, cex=1.5)
 mtext("Number of samples", side=1, line=2.4, cex=1)
 # Boxplots
 # Migration rate
+par(cex.axis=1.2)
 boxplot(Total ~ migRate+marker, data=N1200_DF, ylab='',
         xlab = '', col=c(rep(plotColors[[1]],2),rep(plotColors[[2]],2)),
         names=rep(c('Low migration (0.001)','High migration (0.01)'),2),
-        medlwd=1)
+        medlwd=1, ylim=c(68,101))
+par(cex.axis=1)
 # Labels
 abline(v=2.5)
 mtext('MSAT', cex=1.2, side=3, line=0.08, at=1.5)
 mtext('DNA', cex=1.2, side=3, line=0.08, at=3.5)
 # Y axis label (all plots)
-mtext(text="Allelic representation (%)", side=2, line=2.5, cex=1.2, srt=90)
+mtext(text="Allelic representation (%)", side=2, line=2.7, cex=1.2, srt=90)
 # Increase bottom margin
 par(mar=c(2,4.5,3,1.5)+0.1)
 # Number of populations
+par(cex.axis=1.2)
 boxplot(Total ~ nPops+marker, data=N1200_DF, ylab='',
         xlab = '', col=c(rep(plotColors[[1]],3),rep(plotColors[[2]],3)),
         names=rep(c('1 population','4 populations','16 populations'),2),
-        medlwd=1)
+        medlwd=1, ylim=c(68,101))
+par(cex.axis=1)
 # Labels
 abline(v=3.5)
 mtext('MSAT', cex=1.2, side=3, line=0.08, at=2)
@@ -240,17 +246,21 @@ points(Total ~ nSamples, data=N4800_DF[which(N4800_DF$marker == "DNA"),],
 # Horizontal line indicating 95% coverage
 abline(h=95, col="black", lty=3)
 # Legend, title, and x-axis
-legend(x=3000, y=45, inset = 0.05, xpd=TRUE,
+par(cex=1.2)
+legend(x=3000, y=80, inset = 0.05, xpd=TRUE,
        legend = c('MSAT', 'DNA'), col=c(plotColors[[1]],plotColors[[2]]), 
-       pch = c(20,20), cex=1.2, pt.cex = 2, bty='n', y.intersp = 0.9)
+       pch = c(20,20), pt.cex = 2, bty='n', y.intersp = 0.7)
+par(cex=1.0)
 mtext("N4800: Allelic representation across simulation parameters", line=0.7, cex=1.5)
 mtext("Number of samples", side=1, line=2.4, cex=1)
 # Boxplots
 # Migration rate
+par(cex.axis=1.2)
 boxplot(Total ~ migRate+marker, data=N4800_DF, ylab='',
         xlab = '', col=c(rep(plotColors[[1]],2),rep(plotColors[[2]],2)),
         names=rep(c('Low migration (0.001)','High migration (0.01)'),2),
-        medlwd=1)
+        medlwd=1, ylim=c(68,101))
+par(cex.axis=1)
 # Labels
 abline(v=2.5)
 mtext('MSAT', cex=1.2, side=3, line=0.08, at=1.5)
@@ -260,10 +270,12 @@ mtext(text="Allelic representation (%)", side=2, line=2.5, cex=1.2, srt=90)
 # Increase bottom margin
 par(mar=c(2,4.5,3,1.5)+0.1)
 # Number of populations
+par(cex.axis=1.2)
 boxplot(Total ~ nPops+marker, data=N4800_DF, ylab='',
         xlab = '', col=c(rep(plotColors[[1]],3),rep(plotColors[[2]],3)),
         names=rep(c('1 population','4 populations','16 populations'),2),
-        medlwd=1)
+        medlwd=1, ylim=c(68,101))
+par(cex.axis=1)
 # Labels
 abline(v=3.5)
 mtext('MSAT', cex=1.2, side=3, line=0.08, at=2)
@@ -303,10 +315,12 @@ plot(Total ~ nSamples, data=N1200_DNA_lowMut_DF, ylab='Allelic representation (%
 # Title
 mtext("N1200: SNP: Low mutation (1e-8): Allelic representation across simulation parameters", line=2, cex=1.5)
 # Boxplots for migration rate and number of populations
+par(cex.axis=1.2)
 boxplot(Total ~ migRate, data=N1200_DNA_lowMut_DF, ylab='Allelic representation (%)',
         xlab = 'Migration rate', pch=16)
 boxplot(Total ~ nPops, data=N1200_DNA_lowMut_DF, ylab='Allelic representation (%)',
         xlab = 'Number of populations', pch=16)
+par(cex.axis=1)
 
 # %%% N4800 ----
 # %%% Read in resampling arrays and build results data.frames
@@ -341,7 +355,9 @@ plot(Total ~ nSamples, data=N4800_DNA_lowMut_DF, ylab='Allelic representation (%
 # Title
 mtext("N4800: SNP: Low mutation (1e-8): Allelic representation across simulation parameters", line=2, cex=1.5)
 # Boxplots for migration rate and number of populations
+par(cex.axis=1.2)
 boxplot(Total ~ migRate, data=N4800_DNA_lowMut_DF, ylab='Allelic representation (%)',
         xlab = 'Migration rate', pch=16)
 boxplot(Total ~ nPops, data=N4800_DNA_lowMut_DF, ylab='Allelic representation (%)',
         xlab = 'Number of populations', pch=16)
+par(cex.axis=1)

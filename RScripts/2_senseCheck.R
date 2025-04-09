@@ -22,6 +22,9 @@
 # (that is, number of allele counts in the total species divided by total number of individuals). 
 # Allele frequencies are NOT calculated according to the frequency strictly WITHIN a population.
 
+# NOTE: for single population scenarios, the results of "low migration" and "high migration"
+# are being averaged together (since migration rates are meaningless in single population scenarios)
+
 library(strataG)
 library(adegenet)
 library(stringr)
@@ -33,9 +36,11 @@ sim.wd <- "/home/akoontz/Shared/SSRvSNP_Sim/Code/"
 setwd(sim.wd)
 # Read in relevant functions
 source("RScripts/0_functions.R")
-# Flags for analyzing MSAT or SNP simulations
+# Flags for analyzing MSAT or SNP simulations, and low mutation scenarios
 Flag_MSAT <- TRUE
 Flag_DNA <- TRUE
+Flag_lowMut_N1200 <- TRUE
+Flag_lowMut_N4800 <- TRUE
 
 # %%% N1200 %%% ----
 print("%%% ANALYZING N1200 SCENARIOS %%%")
@@ -44,33 +49,35 @@ if(Flag_MSAT == TRUE){
   print("%%% MSAT")
   # Source the genind objects from previously run simulations, using readGeninds functions
   readGeninds_MSAT(paste0(sim.wd,"SimulationOutputs/MSAT_N1200_marker/data.MSAT/"))
-  
+
   # 1. MORE ALLELES IN SCENARIOS WITH MORE POPULATIONS ----
   print("%%% TOTAL NUMBER OF ALLELES")
   print("1 population (low and high migration)")
-  mean(sapply(MSAT_01pop_migLow.genList, function(x) ncol(x@tab)))
-  mean(sapply(MSAT_01pop_migHigh.genList, function(x) ncol(x@tab)))
+  OneLow <- mean(sapply(MSAT_01pop_migLow.genList, function(x) ncol(x@tab)))
+  OneHigh <- mean(sapply(MSAT_01pop_migHigh.genList, function(x) ncol(x@tab)))
+  mean(c(OneLow, OneHigh))
   print("4 populations (low and high migration)")
   mean(sapply(MSAT_04pop_migLow.genList, function(x) ncol(x@tab)))
   mean(sapply(MSAT_04pop_migHigh.genList, function(x) ncol(x@tab)))
   print("16 populations (low and high migration)")
   mean(sapply(MSAT_16pop_migLow.genList, function(x) ncol(x@tab)))
   mean(sapply(MSAT_16pop_migHigh.genList, function(x) ncol(x@tab)))
-  
+
   # 2. AVERAGE NUMBER OF ALLELES IN EACH FREQUENCY CATEGORY ----
   print("%%% AVERAGE PROPORTION OF ALLELES IN EACH FREQUENCY CATEGORY")
   # Note: this section reports the allele frequency proportions BEFORE garden assignment
   # (random assignment of samples to gardens happens in subsetAndResample.R)
   print("1 population (low and high migration)")
-  apply(sapply(MSAT_01pop_migLow.genList, getTotalAlleleFreqProportions), 1, mean)
-  apply(sapply(MSAT_01pop_migHigh.genList, getTotalAlleleFreqProportions), 1, mean)
+  OneLow <- apply(sapply(MSAT_01pop_migLow.genList, getTotalAlleleFreqProportions), 1, mean)
+  OneHigh <- apply(sapply(MSAT_01pop_migHigh.genList, getTotalAlleleFreqProportions), 1, mean)
+  rowMeans(cbind(OneLow, OneHigh))
   print("4 populations (low and high migration)")
   apply(sapply(MSAT_04pop_migLow.genList, getTotalAlleleFreqProportions), 1, mean)
   apply(sapply(MSAT_04pop_migHigh.genList, getTotalAlleleFreqProportions), 1, mean)
   print("16 populations (low and high migration)")
   apply(sapply(MSAT_16pop_migLow.genList, getTotalAlleleFreqProportions), 1, mean)
   apply(sapply(MSAT_16pop_migHigh.genList, getTotalAlleleFreqProportions), 1, mean)
-  
+
   # 3. HIGHER FST FOR SCENARIOS WITH LOWER MIGRATION RATES ----
   print("%%% FST")
   print("4 populations (low and high migration)")
@@ -79,19 +86,20 @@ if(Flag_MSAT == TRUE){
   print("16 populations (low and high migration)")
   sapply(MSAT_16pop_migLow.genList, function(x) mean(c(pairwise.neifst(genind2hierfstat(x))), na.rm=TRUE))
   sapply(MSAT_16pop_migHigh.genList, function(x) mean(c(pairwise.neifst(genind2hierfstat(x))), na.rm=TRUE))
-  
+
   # 4. HETEROZYGOSITY ----
   print("%%% HETEROZYGOSITY")
   print("1 population (low and high migration)")
-  sapply(MSAT_01pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
-  sapply(MSAT_01pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+  OneLow <- sapply(MSAT_01pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+  OneHigh <- sapply(MSAT_01pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+  mean(c(OneLow, OneHigh))
   print("4 populations (low and high migration)")
   sapply(MSAT_04pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
   sapply(MSAT_04pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
   print("16 populations (low and high migration)")
   sapply(MSAT_16pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
   sapply(MSAT_16pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
-  
+
   # 5. ALLELE FREQUENCY SPECTRA ----
   print("%%% ALLELE FREQUENCIES")
   # Specify the directory to save histograms to
@@ -110,52 +118,55 @@ if(Flag_DNA == TRUE){
   print("%%% DNA")
   # Source the genind objects from previously run simulations, using readGeninds functions
   readGeninds_DNA(paste0(sim.wd,"SimulationOutputs/DNA_N1200_marker/data.DNA/"))
-  
+
   # 1. MORE ALLELES IN SCENARIOS WITH MORE POPULATIONS ----
   print("%%% TOTAL NUMBER OF ALLELES")
   print("1 population (low and high migration)")
-  mean(sapply(DNA_01pop_migLow.genList, function(x) ncol(x@tab)))
-  mean(sapply(DNA_01pop_migHigh.genList, function(x) ncol(x@tab)))
+  OneLow <- mean(sapply(DNA_01pop_migLow.genList, function(x) ncol(x@tab)))
+  OneHigh <- mean(sapply(DNA_01pop_migHigh.genList, function(x) ncol(x@tab)))
+  mean(c(OneLow, OneHigh))
   print("4 populations (low and high migration)")
   mean(sapply(DNA_04pop_migLow.genList, function(x) ncol(x@tab)))
   mean(sapply(DNA_04pop_migHigh.genList, function(x) ncol(x@tab)))
   print("16 populations (low and high migration)")
   mean(sapply(DNA_16pop_migLow.genList, function(x) ncol(x@tab)))
   mean(sapply(DNA_16pop_migHigh.genList, function(x) ncol(x@tab)))
-  
+
   # 2. AVERAGE NUMBER OF ALLELES IN EACH FREQUENCY CATEGORY ----
   print("%%% AVERAGE PROPORTION OF ALLELES IN EACH FREQUENCY CATEGORY")
   print("1 population (low and high migration)")
-  apply(sapply(DNA_01pop_migLow.genList, getTotalAlleleFreqProportions), 1, mean)
-  apply(sapply(DNA_01pop_migHigh.genList, getTotalAlleleFreqProportions), 1, mean)
+  OneLow <- apply(sapply(DNA_01pop_migLow.genList, getTotalAlleleFreqProportions), 1, mean)
+  OneHigh <- apply(sapply(DNA_01pop_migHigh.genList, getTotalAlleleFreqProportions), 1, mean)
+  rowMeans(cbind(OneLow, OneHigh))
   print("4 populations (low and high migration)")
   apply(sapply(DNA_04pop_migLow.genList, getTotalAlleleFreqProportions), 1, mean)
   apply(sapply(DNA_04pop_migHigh.genList, getTotalAlleleFreqProportions), 1, mean)
   print("16 populations (low and high migration)")
   apply(sapply(DNA_16pop_migLow.genList, getTotalAlleleFreqProportions), 1, mean)
   apply(sapply(DNA_16pop_migHigh.genList, getTotalAlleleFreqProportions), 1, mean)
-  
+
   # 3. HIGHER FST FOR SCENARIOS WITH LOWER MIGRATION RATES ----
   print("%%% FST")
   print("4 populations (low and high migration)")
   sapply(DNA_04pop_migLow.genList, function(x) mean(c(pairwise.neifst(genind2hierfstat(x))), na.rm=TRUE))
   sapply(DNA_04pop_migHigh.genList, function(x) mean(c(pairwise.neifst(genind2hierfstat(x))), na.rm=TRUE))
   print("16 populations (low and high migration)")
-  sapply(DNA_16pop_migLow.genList, function(x) mean(c(pairwise.neifst(genind2hierfstat(x))), na.rm=TRUE)) 
+  sapply(DNA_16pop_migLow.genList, function(x) mean(c(pairwise.neifst(genind2hierfstat(x))), na.rm=TRUE))
   sapply(DNA_16pop_migHigh.genList, function(x) mean(c(pairwise.neifst(genind2hierfstat(x))), na.rm=TRUE))
-  
+
   # 4. HETEROZYGOSITY ----
   print("%%% HETEROZYGOSITY")
   print("1 population (low and high migration)")
-  sapply(DNA_01pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
-  sapply(DNA_01pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+  OneLow <- sapply(DNA_01pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+  OneHigh <- sapply(DNA_01pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+  mean(c(OneLow, OneHigh))
   print("4 populations (low and high migration)")
   sapply(DNA_04pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
   sapply(DNA_04pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
   print("16 populations (low and high migration)")
   sapply(DNA_16pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
   sapply(DNA_16pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
-  
+
   # 5. ALLELE FREQUENCY SPECTRA ----
   print("%%% ALLELE FREQUENCIES")
   # Specify the directory to save histograms to
@@ -176,33 +187,35 @@ if(Flag_MSAT == TRUE){
   print("%%% MSAT")
   # Source the genind objects from previously run simulations, using readGeninds functions
   readGeninds_MSAT(paste0(sim.wd,"SimulationOutputs/MSAT_N4800_marker/data.MSAT/"))
-  
+
   # 1. MORE ALLELES IN SCENARIOS WITH MORE POPULATIONS ----
   print("%%% TOTAL NUMBER OF ALLELES")
   print("1 population (low and high migration)")
-  mean(sapply(MSAT_01pop_migLow.genList, function(x) ncol(x@tab)))
-  mean(sapply(MSAT_01pop_migHigh.genList, function(x) ncol(x@tab)))
+  OneLow <- mean(sapply(MSAT_01pop_migLow.genList, function(x) ncol(x@tab)))
+  OneHigh <- mean(sapply(MSAT_01pop_migHigh.genList, function(x) ncol(x@tab)))
+  mean(c(OneLow, OneHigh))
   print("4 populations (low and high migration)")
   mean(sapply(MSAT_04pop_migLow.genList, function(x) ncol(x@tab)))
   mean(sapply(MSAT_04pop_migHigh.genList, function(x) ncol(x@tab)))
   print("16 populations (low and high migration)")
   mean(sapply(MSAT_16pop_migLow.genList, function(x) ncol(x@tab)))
   mean(sapply(MSAT_16pop_migHigh.genList, function(x) ncol(x@tab)))
-  
+
   # 2. AVERAGE NUMBER OF ALLELES IN EACH FREQUENCY CATEGORY ----
   print("%%% AVERAGE PROPORTION OF ALLELES IN EACH FREQUENCY CATEGORY")
   # Note: this section reports the allele frequency proportions BEFORE garden assignment
   # (random assignment of samples to gardens happens in subsetAndResample.R)
   print("1 population (low and high migration)")
-  apply(sapply(MSAT_01pop_migLow.genList, getTotalAlleleFreqProportions), 1, mean)
-  apply(sapply(MSAT_01pop_migHigh.genList, getTotalAlleleFreqProportions), 1, mean)
+  OneLow <- apply(sapply(MSAT_01pop_migLow.genList, getTotalAlleleFreqProportions), 1, mean)
+  OneHigh <- apply(sapply(MSAT_01pop_migHigh.genList, getTotalAlleleFreqProportions), 1, mean)
+  rowMeans(cbind(OneLow, OneHigh))
   print("4 populations (low and high migration)")
   apply(sapply(MSAT_04pop_migLow.genList, getTotalAlleleFreqProportions), 1, mean)
   apply(sapply(MSAT_04pop_migHigh.genList, getTotalAlleleFreqProportions), 1, mean)
   print("16 populations (low and high migration)")
   apply(sapply(MSAT_16pop_migLow.genList, getTotalAlleleFreqProportions), 1, mean)
   apply(sapply(MSAT_16pop_migHigh.genList, getTotalAlleleFreqProportions), 1, mean)
-  
+
   # 3. HIGHER FST FOR SCENARIOS WITH LOWER MIGRATION RATES ----
   print("%%% FST")
   print("4 populations (low and high migration)")
@@ -211,19 +224,20 @@ if(Flag_MSAT == TRUE){
   print("16 populations (low and high migration)")
   sapply(MSAT_16pop_migLow.genList, function(x) mean(c(pairwise.neifst(genind2hierfstat(x))), na.rm=TRUE))
   sapply(MSAT_16pop_migHigh.genList, function(x) mean(c(pairwise.neifst(genind2hierfstat(x))), na.rm=TRUE))
-  
+
   # 4. HETEROZYGOSITY ----
   print("%%% HETEROZYGOSITY")
   print("1 population (low and high migration)")
-  sapply(MSAT_01pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
-  sapply(MSAT_01pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+  OneLow <- sapply(MSAT_01pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+  OneHigh <- sapply(MSAT_01pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+  mean(c(OneLow, OneHigh))
   print("4 populations (low and high migration)")
   sapply(MSAT_04pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
   sapply(MSAT_04pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
   print("16 populations (low and high migration)")
   sapply(MSAT_16pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
   sapply(MSAT_16pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
-  
+
   # 5. ALLELE FREQUENCY SPECTRA ----
   print("%%% ALLELE FREQUENCIES")
   # Specify the directory to save histograms to
@@ -242,52 +256,55 @@ if(Flag_DNA == TRUE){
   print("%%% DNA")
   # Source the genind objects from previously run simulations, using readGeninds functions
   readGeninds_DNA(paste0(sim.wd,"SimulationOutputs/DNA_N4800_marker/data.DNA/"))
-  
+
   # 1. MORE ALLELES IN SCENARIOS WITH MORE POPULATIONS ----
   print("%%% TOTAL NUMBER OF ALLELES")
   print("1 population (low and high migration)")
-  mean(sapply(DNA_01pop_migLow.genList, function(x) ncol(x@tab)))
-  mean(sapply(DNA_01pop_migHigh.genList, function(x) ncol(x@tab)))
+  OneLow <- mean(sapply(DNA_01pop_migLow.genList, function(x) ncol(x@tab)))
+  OneHigh <- mean(sapply(DNA_01pop_migHigh.genList, function(x) ncol(x@tab)))
+  mean(c(OneLow, OneHigh))
   print("4 populations (low and high migration)")
   mean(sapply(DNA_04pop_migLow.genList, function(x) ncol(x@tab)))
   mean(sapply(DNA_04pop_migHigh.genList, function(x) ncol(x@tab)))
   print("16 populations (low and high migration)")
   mean(sapply(DNA_16pop_migLow.genList, function(x) ncol(x@tab)))
   mean(sapply(DNA_16pop_migHigh.genList, function(x) ncol(x@tab)))
-  
+
   # 2. AVERAGE NUMBER OF ALLELES IN EACH FREQUENCY CATEGORY ----
   print("%%% AVERAGE PROPORTION OF ALLELES IN EACH FREQUENCY CATEGORY")
   print("1 population (low and high migration)")
-  apply(sapply(DNA_01pop_migLow.genList, getTotalAlleleFreqProportions), 1, mean)
-  apply(sapply(DNA_01pop_migHigh.genList, getTotalAlleleFreqProportions), 1, mean)
+  OneLow <- apply(sapply(DNA_01pop_migLow.genList, getTotalAlleleFreqProportions), 1, mean)
+  OneHigh <- apply(sapply(DNA_01pop_migHigh.genList, getTotalAlleleFreqProportions), 1, mean)
+  rowMeans(cbind(OneLow, OneHigh))
   print("4 populations (low and high migration)")
   apply(sapply(DNA_04pop_migLow.genList, getTotalAlleleFreqProportions), 1, mean)
   apply(sapply(DNA_04pop_migHigh.genList, getTotalAlleleFreqProportions), 1, mean)
   print("16 populations (low and high migration)")
   apply(sapply(DNA_16pop_migLow.genList, getTotalAlleleFreqProportions), 1, mean)
   apply(sapply(DNA_16pop_migHigh.genList, getTotalAlleleFreqProportions), 1, mean)
-  
+
   # 3. HIGHER FST FOR SCENARIOS WITH LOWER MIGRATION RATES ----
   print("%%% FST")
   print("4 populations (low and high migration)")
   sapply(DNA_04pop_migLow.genList, function(x) mean(c(pairwise.neifst(genind2hierfstat(x))), na.rm=TRUE))
   sapply(DNA_04pop_migHigh.genList, function(x) mean(c(pairwise.neifst(genind2hierfstat(x))), na.rm=TRUE))
   print("16 populations (low and high migration)")
-  sapply(DNA_16pop_migLow.genList, function(x) mean(c(pairwise.neifst(genind2hierfstat(x))), na.rm=TRUE)) 
+  sapply(DNA_16pop_migLow.genList, function(x) mean(c(pairwise.neifst(genind2hierfstat(x))), na.rm=TRUE))
   sapply(DNA_16pop_migHigh.genList, function(x) mean(c(pairwise.neifst(genind2hierfstat(x))), na.rm=TRUE))
-  
+
   # 4. HETEROZYGOSITY ----
   print("%%% HETEROZYGOSITY")
   print("1 population (low and high migration)")
-  sapply(DNA_01pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
-  sapply(DNA_01pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+  OneLow <- sapply(DNA_01pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+  OneHigh <- sapply(DNA_01pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+  mean(c(OneLow, OneHigh))
   print("4 populations (low and high migration)")
   sapply(DNA_04pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
   sapply(DNA_04pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
   print("16 populations (low and high migration)")
   sapply(DNA_16pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
   sapply(DNA_16pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
-  
+
   # 5. ALLELE FREQUENCY SPECTRA ----
   print("%%% ALLELE FREQUENCIES")
   # Specify the directory to save histograms to
@@ -299,4 +316,144 @@ if(Flag_DNA == TRUE){
   makeAlleleFreqHist_genList(DNA_04pop_migHigh.genList, outDir = histDir)
   makeAlleleFreqHist_genList(DNA_16pop_migLow.genList, outDir = histDir)
   makeAlleleFreqHist_genList(DNA_16pop_migHigh.genList, outDir = histDir)
+}
+
+# %%% DNA LOW MUTATION %%% ----
+print("%%% ANALYZING DNA LOW MUTATION SCENARIOS %%%")
+# %%% Low Mutation N1200 ----
+if(Flag_lowMut_N1200 == TRUE){
+  print("%%% N1200 Low Mutation")
+  # Source the genind objects from previously run simulations, using readGeninds functions
+  readGeninds_DNA(paste0(sim.wd,"SimulationOutputs/DNA_N1200_lowMut/data.DNA/"), prefix = 'DNA_lowMut')
+  
+  # 1. MORE ALLELES IN SCENARIOS WITH MORE POPULATIONS ----
+  print("%%% TOTAL NUMBER OF ALLELES")
+  print("1 population (low and high migration)")
+  OneLow <- mean(sapply(DNA_lowMut_01pop_migLow.genList, function(x) ncol(x@tab)))
+  OneHigh <- mean(sapply(DNA_lowMut_01pop_migHigh.genList, function(x) ncol(x@tab)))
+  mean(c(OneLow, OneHigh))
+  print("4 populations (low and high migration)")
+  mean(sapply(DNA_lowMut_04pop_migLow.genList, function(x) ncol(x@tab)))
+  mean(sapply(DNA_lowMut_04pop_migHigh.genList, function(x) ncol(x@tab)))
+  print("16 populations (low and high migration)")
+  mean(sapply(DNA_lowMut_16pop_migLow.genList, function(x) ncol(x@tab)))
+  mean(sapply(DNA_lowMut_16pop_migHigh.genList, function(x) ncol(x@tab)))
+  
+  # 2. AVERAGE NUMBER OF ALLELES IN EACH FREQUENCY CATEGORY ----
+  print("%%% AVERAGE PROPORTION OF ALLELES IN EACH FREQUENCY CATEGORY")
+  # Note: this section reports the allele frequency proportions BEFORE garden assignment
+  # (random assignment of samples to gardens happens in subsetAndResample.R)
+  print("1 population (low and high migration)")
+  OneLow <- apply(sapply(DNA_lowMut_01pop_migLow.genList, getTotalAlleleFreqProportions), 1, mean)
+  OneHigh <- apply(sapply(DNA_lowMut_01pop_migHigh.genList, getTotalAlleleFreqProportions), 1, mean)
+  rowMeans(cbind(OneLow, OneHigh))
+  print("4 populations (low and high migration)")
+  apply(sapply(DNA_lowMut_04pop_migLow.genList, getTotalAlleleFreqProportions), 1, mean)
+  apply(sapply(DNA_lowMut_04pop_migHigh.genList, getTotalAlleleFreqProportions), 1, mean)
+  print("16 populations (low and high migration)")
+  apply(sapply(DNA_lowMut_16pop_migLow.genList, getTotalAlleleFreqProportions), 1, mean)
+  apply(sapply(DNA_lowMut_16pop_migHigh.genList, getTotalAlleleFreqProportions), 1, mean)
+  
+  # 3. HIGHER FST FOR SCENARIOS WITH LOWER MIGRATION RATES ----
+  print("%%% FST")
+  print("4 populations (low and high migration)")
+  sapply(DNA_lowMut_04pop_migLow.genList, function(x) mean(c(pairwise.neifst(genind2hierfstat(x))), na.rm=TRUE))
+  sapply(DNA_lowMut_04pop_migHigh.genList, function(x) mean(c(pairwise.neifst(genind2hierfstat(x))), na.rm=TRUE))
+  print("16 populations (low and high migration)")
+  sapply(DNA_lowMut_16pop_migLow.genList, function(x) mean(c(pairwise.neifst(genind2hierfstat(x))), na.rm=TRUE))
+  sapply(DNA_lowMut_16pop_migHigh.genList, function(x) mean(c(pairwise.neifst(genind2hierfstat(x))), na.rm=TRUE))
+
+  # 4. HETEROZYGOSITY ----
+  print("%%% HETEROZYGOSITY")
+  print("1 population (low and high migration)")
+  OneLow <- sapply(DNA_lowMut_01pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+  OneHigh <- sapply(DNA_lowMut_01pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+  mean(c(OneLow, OneHigh))
+  print("4 populations (low and high migration)")
+  sapply(DNA_lowMut_04pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+  sapply(DNA_lowMut_04pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+  print("16 populations (low and high migration)")
+  sapply(DNA_lowMut_16pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+  sapply(DNA_lowMut_16pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+  
+  # 5. ALLELE FREQUENCY SPECTRA ----
+  print("%%% ALLELE FREQUENCIES")
+  # Specify the directory to save histograms to
+  histDir <- "/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/SimulationSummaries_20240305/N4800/MSAT/"
+  # Generate histograms of each simulation replicate in each genind list, and save to a png file in the directory
+  makeAlleleFreqHist_genList(DNA_lowMut_01pop_migLow.genList, outDir = histDir)
+  makeAlleleFreqHist_genList(DNA_lowMut_01pop_migHigh.genList, outDir = histDir)
+  makeAlleleFreqHist_genList(DNA_lowMut_04pop_migLow.genList, outDir = histDir)
+  makeAlleleFreqHist_genList(DNA_lowMut_04pop_migHigh.genList, outDir = histDir)
+  makeAlleleFreqHist_genList(DNA_lowMut_16pop_migLow.genList, outDir = histDir)
+  makeAlleleFreqHist_genList(DNA_lowMut_16pop_migHigh.genList, outDir = histDir)
+}
+
+# %%% Low Mutation N4800 ----
+if(Flag_lowMut_N4800 == TRUE){
+  print("%%% N4800 Low Mutation")
+  # Source the genind objects from previously run simulations, using readGeninds functions
+  readGeninds_DNA(paste0(sim.wd,"SimulationOutputs/DNA_N4800_lowMut/data.DNA/"), prefix = 'DNA_lowMut')
+  
+  # 1. MORE ALLELES IN SCENARIOS WITH MORE POPULATIONS ----
+  print("%%% TOTAL NUMBER OF ALLELES")
+  print("1 population (low and high migration)")
+  OneLow <- mean(sapply(DNA_lowMut_01pop_migLow.genList, function(x) ncol(x@tab)))
+  OneHigh <- mean(sapply(DNA_lowMut_01pop_migHigh.genList, function(x) ncol(x@tab)))
+  mean(c(OneLow, OneHigh))
+  print("4 populations (low and high migration)")
+  mean(sapply(DNA_lowMut_04pop_migLow.genList, function(x) ncol(x@tab)))
+  mean(sapply(DNA_lowMut_04pop_migHigh.genList, function(x) ncol(x@tab)))
+  print("16 populations (low and high migration)")
+  mean(sapply(DNA_lowMut_16pop_migLow.genList, function(x) ncol(x@tab)))
+  mean(sapply(DNA_lowMut_16pop_migHigh.genList, function(x) ncol(x@tab)))
+  
+  # 2. AVERAGE NUMBER OF ALLELES IN EACH FREQUENCY CATEGORY ----
+  print("%%% AVERAGE PROPORTION OF ALLELES IN EACH FREQUENCY CATEGORY")
+  # Note: this section reports the allele frequency proportions BEFORE garden assignment
+  # (random assignment of samples to gardens happens in subsetAndResample.R)
+  print("1 population (low and high migration)")
+  OneLow <- apply(sapply(DNA_lowMut_01pop_migLow.genList, getTotalAlleleFreqProportions), 1, mean)
+  OneHigh <- apply(sapply(DNA_lowMut_01pop_migHigh.genList, getTotalAlleleFreqProportions), 1, mean)
+  rowMeans(cbind(OneLow, OneHigh))
+  print("4 populations (low and high migration)")
+  apply(sapply(DNA_lowMut_04pop_migLow.genList, getTotalAlleleFreqProportions), 1, mean)
+  apply(sapply(DNA_lowMut_04pop_migHigh.genList, getTotalAlleleFreqProportions), 1, mean)
+  print("16 populations (low and high migration)")
+  apply(sapply(DNA_lowMut_16pop_migLow.genList, getTotalAlleleFreqProportions), 1, mean)
+  apply(sapply(DNA_lowMut_16pop_migHigh.genList, getTotalAlleleFreqProportions), 1, mean)
+
+  # 3. HIGHER FST FOR SCENARIOS WITH LOWER MIGRATION RATES ----
+  print("%%% FST")
+  print("4 populations (low and high migration)")
+  sapply(DNA_lowMut_04pop_migLow.genList, function(x) mean(c(pairwise.neifst(genind2hierfstat(x))), na.rm=TRUE))
+  sapply(DNA_lowMut_04pop_migHigh.genList, function(x) mean(c(pairwise.neifst(genind2hierfstat(x))), na.rm=TRUE))
+  print("16 populations (low and high migration)")
+  sapply(DNA_lowMut_16pop_migLow.genList, function(x) mean(c(pairwise.neifst(genind2hierfstat(x))), na.rm=TRUE))
+  sapply(DNA_lowMut_16pop_migHigh.genList, function(x) mean(c(pairwise.neifst(genind2hierfstat(x))), na.rm=TRUE))
+  
+  # 4. HETEROZYGOSITY ----
+  print("%%% HETEROZYGOSITY")
+  print("1 population (low and high migration)")
+  OneLow <- sapply(DNA_lowMut_01pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+  OneHigh <- sapply(DNA_lowMut_01pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+  mean(c(OneLow, OneHigh))
+  print("4 populations (low and high migration)")
+  sapply(DNA_lowMut_04pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+  sapply(DNA_lowMut_04pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+  print("16 populations (low and high migration)")
+  sapply(DNA_lowMut_16pop_migLow.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+  sapply(DNA_lowMut_16pop_migHigh.genList, function(x) mean(c(Hs(x)), na.rm=TRUE))
+  
+  # 5. ALLELE FREQUENCY SPECTRA ----
+  print("%%% ALLELE FREQUENCIES")
+  # Specify the directory to save histograms to
+  histDir <- "/home/akoontz/Documents/SSRvSNP/Simulations/Documentation/Images/SimulationSummaries_20240305/N4800/MSAT/"
+  # Generate histograms of each simulation replicate in each genind list, and save to a png file in the directory
+  makeAlleleFreqHist_genList(DNA_lowMut_01pop_migLow.genList, outDir = histDir)
+  makeAlleleFreqHist_genList(DNA_lowMut_01pop_migHigh.genList, outDir = histDir)
+  makeAlleleFreqHist_genList(DNA_lowMut_04pop_migLow.genList, outDir = histDir)
+  makeAlleleFreqHist_genList(DNA_lowMut_04pop_migHigh.genList, outDir = histDir)
+  makeAlleleFreqHist_genList(DNA_lowMut_16pop_migLow.genList, outDir = histDir)
+  makeAlleleFreqHist_genList(DNA_lowMut_16pop_migHigh.genList, outDir = histDir)
 }

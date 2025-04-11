@@ -27,7 +27,7 @@ source('RScripts/0_functions.R')
 # data.table::rbindlist: used below to collapse lists of data.frames into data.frames
 library(data.table)
 # Libraries for plotting
-library(RColorBrewer) ; library(scales)
+library(RColorBrewer) ; library(scales) ; library(report)
 
 # %%% NIND = 1200 %%% ----
 # %%% Read in resampling arrays and build results dataframes ----
@@ -74,6 +74,8 @@ for(i in 1:nrow(N1200_MSAT_results)){
   predictPoints[[1]] <- ceiling(predictPoints[[1]])
   # Store the results into the matrix
   N1200_MSAT_results[i,] <- predictPoints
+  # For models using maximal number of loci, print a model summary for the Supplement
+  if(i == nrow(N1200_MSAT_results)) {print(summary(N1200_MSAT_MSSEmodel))}
 }
 # %%% DNA
 # Create table to capture the MSSE ("fit"), lower PI, upper PI, and PI width, for both markers
@@ -91,6 +93,8 @@ for(i in 1:nrow(N1200_DNA_results)){
   predictPoints[[1]] <- ceiling(predictPoints[[1]])
   # Store the results into the matrix
   N1200_DNA_results[i,] <- predictPoints
+  # For models using maximal number of loci, print a model summary for the Supplement
+  if(i == nrow(N1200_DNA_results)) {print(summary(N1200_DNA_MSSEmodel))}
 }
 
 # %%% Build linear models to capture the impact of simulation parameters ----
@@ -113,7 +117,7 @@ par(oma=rep(0.06,4), mar=c(1.5,4.5,3,1.5)+0.1)
 # Standard resampling curve, MSAT data
 plot(Total ~ nSamples, data=N1200_DF[which(N1200_DF$marker == "MSAT"),], 
      ylab='', xlab='', pch=16, col=alpha(plotColors[[1]], 0.01), 
-     ylim=c(0,100.5), cex.axis=1.2)
+     ylim=c(30,100.5), cex.axis=1.2)
 # Standard resampling curve, DNA data
 points(Total ~ nSamples, data=N1200_DF[which(N1200_DF$marker == "DNA"),],
        pch=16, col=alpha(plotColors[[2]], 0.01))
@@ -121,7 +125,7 @@ points(Total ~ nSamples, data=N1200_DF[which(N1200_DF$marker == "DNA"),],
 abline(h=95, col="black", lty=3)
 # Legend, title, and x-axis
 par(cex=1.2)
-legend(x=700, y=80, inset = 0.05, xpd=TRUE,
+legend(x=700, y=86, inset = 0.05, xpd=TRUE,
        legend = c('MSAT', 'DNA'), col=c(plotColors[[1]],plotColors[[2]]), 
        pch = c(20,20), pt.cex = 2, bty='n', y.intersp = 0.7)
 par(cex=1.0)
@@ -200,6 +204,8 @@ for(i in 1:nrow(N4800_MSAT_results)){
   predictPoints[[1]] <- ceiling(predictPoints[[1]])
   # Store the results into the matrix
   N4800_MSAT_results[i,] <- predictPoints
+  # For models using maximal number of loci, print a model summary for the Supplement
+  if(i == nrow(N4800_MSAT_results)) {print(summary(N4800_MSAT_MSSEmodel))}
 }
 # %%% DNA
 # Create table to capture the MSSE ("fit"), lower PI, upper PI, and PI width, for both markers
@@ -217,6 +223,8 @@ for(i in 1:nrow(N4800_DNA_results)){
   predictPoints[[1]] <- ceiling(predictPoints[[1]])
   # Store the results into the matrix
   N4800_DNA_results[i,] <- predictPoints
+  # For models using maximal number of loci, print a model summary for the Supplement
+  if(i == nrow(N4800_DNA_results)) {print(summary(N4800_DNA_MSSEmodel))}
 }
 
 # %%% Build linear models to capture the impact of simulation parameters ----
@@ -237,9 +245,11 @@ plotColors <- c(magma(n=12)[[8]],magma(n=12)[[11]])
 layout(matrix(c(1,1,2,2,3,3), nrow=3, byrow=TRUE))
 par(oma=rep(0.06,4), mar=c(1.5,4.5,3,1.5)+0.1)
 # Standard resampling curve, MSAT data
+par(cex.axis=1.3)
 plot(Total ~ nSamples, data=N4800_DF[which(N4800_DF$marker == "MSAT"),], 
      ylab='', xlab='', pch=16, col=alpha(plotColors[[1]], 0.01), 
-     ylim=c(0,100.5))
+     ylim=c(26,100.5))
+par(cex.axis=1)
 # Standard resampling curve, DNA data
 points(Total ~ nSamples, data=N4800_DF[which(N4800_DF$marker == "DNA"),],
        pch=16, col=alpha(plotColors[[2]], 0.01))
@@ -247,7 +257,7 @@ points(Total ~ nSamples, data=N4800_DF[which(N4800_DF$marker == "DNA"),],
 abline(h=95, col="black", lty=3)
 # Legend, title, and x-axis
 par(cex=1.2)
-legend(x=3000, y=80, inset = 0.05, xpd=TRUE,
+legend(x=3000, y=86, inset = 0.05, xpd=TRUE,
        legend = c('MSAT', 'DNA'), col=c(plotColors[[1]],plotColors[[2]]), 
        pch = c(20,20), pt.cex = 2, bty='n', y.intersp = 0.7)
 par(cex=1.0)
@@ -300,6 +310,7 @@ predictPoint <- data.frame(Total=95)
 # Build model and predict
 N1200_DNA_lowMut_MSSEmodel <- lm(nSamples ~ I(Total^3), data=N1200_DNA_lowMut_DF)
 predict(N1200_DNA_lowMut_MSSEmodel, predictPoint, interval = "prediction")
+summary(N1200_DNA_lowMut_MSSEmodel)
 
 # %%% Build linear models to capture the impact of simulation parameters
 N1200_DNA_lowMut_model <- lm(I(Total^3) ~ nSamples + nPops + migRate, data=N1200_DNA_lowMut_DF)
@@ -340,6 +351,7 @@ predictPoint <- data.frame(Total=95)
 # Build model and predict
 N4800_DNA_lowMut_MSSEmodel <- lm(nSamples ~ I(Total^3), data=N4800_DNA_lowMut_DF)
 predict(N4800_DNA_lowMut_MSSEmodel, predictPoint, interval = "prediction")
+summary(N4800_DNA_lowMut_MSSEmodel)
 
 # %%% Build linear models to capture the impact of simulation parameters
 N4800_DNA_lowMut_model <- lm(I(Total^3) ~ nSamples + nPops + migRate, data=N4800_DNA_lowMut_DF)

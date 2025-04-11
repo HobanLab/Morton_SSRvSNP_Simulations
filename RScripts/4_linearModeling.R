@@ -117,7 +117,7 @@ par(oma=rep(0.06,4), mar=c(1.5,4.5,3,1.5)+0.1)
 # Standard resampling curve, MSAT data
 plot(Total ~ nSamples, data=N1200_DF[which(N1200_DF$marker == "MSAT"),], 
      ylab='', xlab='', pch=16, col=alpha(plotColors[[1]], 0.01), 
-     ylim=c(30,100.5), cex.axis=1.6)
+     ylim=c(30,100.5), cex.axis=1.9)
 # Standard resampling curve, DNA data
 points(Total ~ nSamples, data=N1200_DF[which(N1200_DF$marker == "DNA"),],
        pch=16, col=alpha(plotColors[[2]], 0.01))
@@ -247,7 +247,7 @@ par(oma=rep(0.06,4), mar=c(1.5,4.5,3,1.5)+0.1)
 # Standard resampling curve, MSAT data
 plot(Total ~ nSamples, data=N4800_DF[which(N4800_DF$marker == "MSAT"),], 
      ylab='', xlab='', pch=16, col=alpha(plotColors[[1]], 0.01), 
-     ylim=c(26,100.5), cex.axis=1.6)
+     ylim=c(26,100.5), cex.axis=1.9)
 # Standard resampling curve, DNA data
 points(Total ~ nSamples, data=N4800_DF[which(N4800_DF$marker == "DNA"),],
        pch=16, col=alpha(plotColors[[2]], 0.01))

@@ -28,6 +28,9 @@ source('RScripts/0_functions.R')
 library(data.table)
 # Libraries for plotting
 library(RColorBrewer) ; library(scales) ; library(report)
+# Specify directory to save graph outputs to
+imageOutDir <- 
+  '/home/akoontz/Documents//SSRvSNP_Simulations/Documentation/Images/MS_Revisions_20250409/'
 
 # %%% NIND = 1200 %%% ----
 # %%% Read in resampling arrays and build results dataframes ----
@@ -110,6 +113,9 @@ summary(N1200_noMarker_model)
 anova(N1200_marker_model, N1200_noMarker_model)
 
 # %%% Plotting model results ----
+# Call pdf command, to save plots to disk
+pdf(file = paste0(imageOutDir, "Fig2_N1200_resampCurves.pdf"), width = 9, height = 7.5, onefile=TRUE)
+# Specify colors
 plotColors <- c(magma(n=12)[[8]],magma(n=12)[[11]])
 # Use layout to generate multiple plots in a single window
 layout(matrix(c(1,1,2,2,3,3), nrow=3, byrow=TRUE))
@@ -117,14 +123,14 @@ par(oma=rep(0.06,4), mar=c(1.5,4.5,3,1.5)+0.1)
 # Standard resampling curve, MSAT data
 plot(Total ~ nSamples, data=N1200_DF[which(N1200_DF$marker == "MSAT"),], 
      ylab='', xlab='', pch=16, col=alpha(plotColors[[1]], 0.01), 
-     ylim=c(30,100.5), cex.axis=1.9)
+     ylim=c(30,100.5), cex.axis=1.2)
 # Standard resampling curve, DNA data
 points(Total ~ nSamples, data=N1200_DF[which(N1200_DF$marker == "DNA"),],
        pch=16, col=alpha(plotColors[[2]], 0.01))
 # Horizontal line indicating 95% coverage
 abline(h=95, col="black", lty=3)
 # Legend, title, and x-axis
-par(cex=1.2)
+par(cex=1.3)
 legend(x=700, y=86, inset = 0.05, xpd=TRUE,
        legend = c('MSAT', 'DNA'), col=c(plotColors[[1]],plotColors[[2]]), 
        pch = c(20,20), pt.cex = 2, bty='n', y.intersp = 0.7)
@@ -133,31 +139,28 @@ mtext("N1200: Allelic representation across simulation parameters", line=0.7, ce
 mtext("Number of samples", side=1, line=2.4, cex=1)
 # Boxplots
 # Migration rate
-par(cex.axis=1.2)
 boxplot(Total ~ migRate+marker, data=N1200_DF, ylab='',
         xlab = '', col=c(rep(plotColors[[1]],2),rep(plotColors[[2]],2)),
         names=rep(c('Low migration (0.001)','High migration (0.01)'),2),
         medlwd=1, ylim=c(68,101))
-par(cex.axis=1)
 # Labels
 abline(v=2.5)
 mtext('MSAT', cex=1.2, side=3, line=0.08, at=1.5)
 mtext('DNA', cex=1.2, side=3, line=0.08, at=3.5)
 # Y axis label (all plots)
-mtext(text="Allelic representation (%)", side=2, line=2.7, cex=1.2, srt=90)
+mtext(text="Allelic representation (%)", side=2, line=2.7, cex=1.4, srt=90)
 # Increase bottom margin
 par(mar=c(2,4.5,3,1.5)+0.1)
 # Number of populations
-par(cex.axis=1.2)
 boxplot(Total ~ nPops+marker, data=N1200_DF, ylab='',
         xlab = '', col=c(rep(plotColors[[1]],3),rep(plotColors[[2]],3)),
         names=rep(c('1 population','4 populations','16 populations'),2),
         medlwd=1, ylim=c(68,101))
-par(cex.axis=1)
 # Labels
 abline(v=3.5)
 mtext('MSAT', cex=1.2, side=3, line=0.08, at=2)
 mtext('DNA', cex=1.2, side=3, line=0.08, at=5)
+dev.off() # Turn off plotting device
 
 # %%% NIND = 4800 %%% ----
 # %%% Read in resampling arrays and build results dataframes ----
@@ -240,6 +243,9 @@ summary(N4800_noMarker_model)
 anova(N4800_marker_model, N4800_noMarker_model)
 
 # %%% Plotting model results ----
+# Call pdf command, to save plots to disk
+pdf(file = paste0(imageOutDir, "Fig3_N4800_resampCurves.pdf"), width = 9, height = 7.5, onefile=TRUE)
+# Specify colors
 plotColors <- c(magma(n=12)[[8]],magma(n=12)[[11]])
 # Use layout to generate multiple plots in a single window
 layout(matrix(c(1,1,2,2,3,3), nrow=3, byrow=TRUE))
@@ -247,14 +253,14 @@ par(oma=rep(0.06,4), mar=c(1.5,4.5,3,1.5)+0.1)
 # Standard resampling curve, MSAT data
 plot(Total ~ nSamples, data=N4800_DF[which(N4800_DF$marker == "MSAT"),], 
      ylab='', xlab='', pch=16, col=alpha(plotColors[[1]], 0.01), 
-     ylim=c(26,100.5), cex.axis=1.9)
+     ylim=c(26,100.5), cex.axis=1.2)
 # Standard resampling curve, DNA data
 points(Total ~ nSamples, data=N4800_DF[which(N4800_DF$marker == "DNA"),],
        pch=16, col=alpha(plotColors[[2]], 0.01))
 # Horizontal line indicating 95% coverage
 abline(h=95, col="black", lty=3)
 # Legend, title, and x-axis
-par(cex=1.2)
+par(cex=1.3)
 legend(x=3000, y=86, inset = 0.05, xpd=TRUE,
        legend = c('MSAT', 'DNA'), col=c(plotColors[[1]],plotColors[[2]]), 
        pch = c(20,20), pt.cex = 2, bty='n', y.intersp = 0.7)
@@ -263,12 +269,10 @@ mtext("N4800: Allelic representation across simulation parameters", line=0.7, ce
 mtext("Number of samples", side=1, line=2.4, cex=1)
 # Boxplots
 # Migration rate
-par(cex.axis=1.2)
 boxplot(Total ~ migRate+marker, data=N4800_DF, ylab='',
         xlab = '', col=c(rep(plotColors[[1]],2),rep(plotColors[[2]],2)),
         names=rep(c('Low migration (0.001)','High migration (0.01)'),2),
         medlwd=1, ylim=c(68,101))
-par(cex.axis=1)
 # Labels
 abline(v=2.5)
 mtext('MSAT', cex=1.2, side=3, line=0.08, at=1.5)
@@ -278,16 +282,15 @@ mtext(text="Allelic representation (%)", side=2, line=2.5, cex=1.2, srt=90)
 # Increase bottom margin
 par(mar=c(2,4.5,3,1.5)+0.1)
 # Number of populations
-par(cex.axis=1.2)
 boxplot(Total ~ nPops+marker, data=N4800_DF, ylab='',
         xlab = '', col=c(rep(plotColors[[1]],3),rep(plotColors[[2]],3)),
         names=rep(c('1 population','4 populations','16 populations'),2),
         medlwd=1, ylim=c(68,101))
-par(cex.axis=1)
 # Labels
 abline(v=3.5)
 mtext('MSAT', cex=1.2, side=3, line=0.08, at=2)
 mtext('DNA', cex=1.2, side=3, line=0.08, at=5)
+dev.off() # Turn off plotting device
 
 # %%% DNA: LOW MUTATION RATE (1E-8) %%% ----
 # %%% N1200 ----

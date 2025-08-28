@@ -40,9 +40,11 @@ for (i in 1:(dim(final_quercus_results)[3])){
   # Create data.frame from resampling array values
   quercus14_DF <- data.frame(sampleNumbers=quercus14_sampleNumbers, totalValues=quercus14_genDiv)
   # Build linear models, then calculate the 95% MSSE using predict
-  quercus14_Model <- lm(sampleNumbers ~ I((totalValues)^3), data = quercus14_DF)
+  quercus14_Model <- lm(log(sampleNumbers) ~ totalValues, data = quercus14_DF)
   quercus14_newData <- data.frame(totalValues=0.95)
-  quercus14_95MSSEprediction <- predict(quercus14_Model, quercus14_newData, interval = "prediction")
+  quercus14_95MSSEprediction_log <- predict(quercus14_Model, quercus14_newData, interval = "prediction")
+  # Back-transform predcitions
+  quercus14_95MSSEprediction <- exp(quercus14_95MSSEprediction_log)
   # Round the MSSE fit value to the next highest value; round PI values to 1 decimal place
   quercus14_95MSSEprediction[[1]] <- ceiling(quercus14_95MSSEprediction[[1]])
   quercus14_95MSSEprediction[2:3] <- round(quercus14_95MSSEprediction[2:3], digits = 1) 

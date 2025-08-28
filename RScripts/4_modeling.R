@@ -71,12 +71,15 @@ rownames(N1200_MSAT_results) <- names(N1200_MSAT_DF)
 # For each level of loci (rows in the results matrix)...
 for(i in 1:nrow(N1200_MSAT_results)){
   # Build a model and predict
-  N1200_MSAT_MSSEmodel <- lm(nSamples ~ I(Total^3), data=N1200_MSAT_DF[[i]])
-  N1200_MSAT_predictPoints <- predict(N1200_MSAT_MSSEmodel, predictPoint, interval = "prediction")
+  N1200_MSAT_MSSEmodel <- lm(log(nSamples) ~ Total, data=N1200_MSAT_DF[[i]])
+  N1200_MSAT_predictPoints_log <- predict(N1200_MSAT_MSSEmodel, predictPoint, interval = "prediction")
+  # Back-transform predictions
+  N1200_MSAT_predictPoints <- exp(N1200_MSAT_predictPoints_log)
   # Calculate the PI Width (upper minus lower prediction interval)
   N1200_MSAT_predictPoints <- 
     c(N1200_MSAT_predictPoints, N1200_MSAT_predictPoints[[3]]-N1200_MSAT_predictPoints[[2]])
-  # Round the MSSE (fit) values to the next whole number of samples
+  # Round results to a single decimal place, and round MSSE (fit) values to next whole number of samples
+  N1200_MSAT_predictPoints <- round(N1200_MSAT_predictPoints, 1)
   N1200_MSAT_predictPoints[[1]] <- ceiling(N1200_MSAT_predictPoints[[1]])
   # Store the results into the matrix
   N1200_MSAT_results[i,] <- N1200_MSAT_predictPoints
@@ -91,12 +94,15 @@ rownames(N1200_DNA_results) <- names(N1200_DNA_DF)
 # For each level of loci (rows in the results matrix)...
 for(i in 1:nrow(N1200_DNA_results)){
   # Build a model and predict
-  N1200_DNA_MSSEmodel <- lm(nSamples ~ I(Total^3), data=N1200_DNA_DF[[i]])
-  N1200_DNA_predictPoints <- predict(N1200_DNA_MSSEmodel, predictPoint, interval = "prediction")
+  N1200_DNA_MSSEmodel <- lm(log(nSamples) ~ Total, data=N1200_DNA_DF[[i]])
+  N1200_DNA_predictPoints_log <- predict(N1200_DNA_MSSEmodel, predictPoint, interval = "prediction")
+  # Back-transform predictions
+  N1200_DNA_predictPoints <- exp(N1200_DNA_predictPoints_log)
   # Calculate the PI Width (upper minus lower prediction interval)
   N1200_DNA_predictPoints <- 
     c(N1200_DNA_predictPoints, N1200_DNA_predictPoints[[3]]-N1200_DNA_predictPoints[[2]])
-  # Round the MSSE (fit) values to the next whole number of samples
+  # Round results to a single decimal place, and round MSSE (fit) values to next whole number of samples
+  N1200_DNA_predictPoints <- round(N1200_DNA_predictPoints, 1)
   N1200_DNA_predictPoints[[1]] <- ceiling(N1200_DNA_predictPoints[[1]])
   # Store the results into the matrix
   N1200_DNA_results[i,] <- N1200_DNA_predictPoints
@@ -106,10 +112,10 @@ for(i in 1:nrow(N1200_DNA_results)){
 
 # %%% Build models to capture the impact of simulation parameters ----
 # With markers
-N1200_marker_model <- lm(I(Total^3) ~ nSamples + nPops + migRate + marker, data=N1200_DF)
+N1200_marker_model <- lm(Total ~ log(nSamples) + nPops + migRate + marker, data=N1200_DF)
 summary(N1200_marker_model)
 # Without markers
-N1200_noMarker_model <- lm(I(Total^3) ~ nSamples + nPops + migRate, data=N1200_DF)
+N1200_noMarker_model <- lm(Total ~ log(nSamples) + nPops + migRate, data=N1200_DF)
 summary(N1200_noMarker_model)
 # ANOVA demonstrating the value of introducing markers (note p value and large F statistic value)
 anova(N1200_marker_model, N1200_noMarker_model)
@@ -203,14 +209,17 @@ rownames(N4800_MSAT_results) <- names(N4800_MSAT_DF)
 # For each level of loci (rows in the results matrix)...
 for(i in 1:nrow(N4800_MSAT_results)){
   # Build a model and predict
-  N4800_MSAT_MSSEmodel <- lm(nSamples ~ I(Total^3), data=N4800_MSAT_DF[[i]])
-  predictPoints <- predict(N4800_MSAT_MSSEmodel, predictPoint, interval = "prediction")
+  N4800_MSAT_MSSEmodel <- lm(log(nSamples) ~ Total, data=N4800_MSAT_DF[[i]])
+  N4800_MSAT_predictPoints_log <- predict(N4800_MSAT_MSSEmodel, predictPoint, interval = "prediction")
+  # Back-transform predictions
+  N4800_MSAT_predictPoints <- exp(N4800_MSAT_predictPoints_log)
   # Calculate the PI Width (upper minus lower prediction interval)
-  predictPoints <- c(predictPoints, predictPoints[[3]]-predictPoints[[2]])
-  # Round the MSSE (fit) values to the next whole number of samples
-  predictPoints[[1]] <- ceiling(predictPoints[[1]])
+  N4800_MSAT_predictPoints <- c(N4800_MSAT_predictPoints, N4800_MSAT_predictPoints[[3]]-N4800_MSAT_predictPoints[[2]])
+  # Round results to a single decimal place, and round MSSE (fit) values to next whole number of samples
+  N4800_MSAT_predictPoints <- round(N4800_MSAT_predictPoints, 1)
+  N4800_MSAT_predictPoints[[1]] <- ceiling(N4800_MSAT_predictPoints[[1]])
   # Store the results into the matrix
-  N4800_MSAT_results[i,] <- predictPoints
+  N4800_MSAT_results[i,] <- N4800_MSAT_predictPoints
   # For models using maximal number of loci, print a model summary for the Supplement
   if(i == nrow(N4800_MSAT_results)) {print(summary(N4800_MSAT_MSSEmodel))}
 }
@@ -222,24 +231,27 @@ rownames(N4800_DNA_results) <- names(N4800_DNA_DF)
 # For each level of loci (rows in the results matrix)...
 for(i in 1:nrow(N4800_DNA_results)){
   # Build a model and predict
-  N4800_DNA_MSSEmodel <- lm(nSamples ~ I(Total^3), data=N4800_DNA_DF[[i]])
-  predictPoints <- predict(N4800_DNA_MSSEmodel, predictPoint, interval = "prediction")
+  N4800_DNA_MSSEmodel <- lm(log(nSamples) ~ Total, data=N4800_DNA_DF[[i]])
+  N4800_DNA_predictPoints_log <- predict(N4800_DNA_MSSEmodel, predictPoint, interval = "prediction")
+  # Back-transform predictions
+  N4800_DNA_predictPoints <- exp(N4800_DNA_predictPoints_log)
   # Calculate the PI Width (upper minus lower prediction interval)
-  predictPoints <- c(predictPoints, predictPoints[[3]]-predictPoints[[2]])
-  # Round the MSSE (fit) values to the next whole number of samples
-  predictPoints[[1]] <- ceiling(predictPoints[[1]])
+  N4800_DNA_predictPoints <- c(N4800_DNA_predictPoints, N4800_DNA_predictPoints[[3]]-N4800_DNA_predictPoints[[2]])
+  # Round results to a single decimal place, and round MSSE (fit) values to next whole number of samples
+  N4800_DNA_predictPoints <- round(N4800_DNA_predictPoints, 1)
+  N4800_DNA_predictPoints[[1]] <- ceiling(N4800_DNA_predictPoints[[1]])
   # Store the results into the matrix
-  N4800_DNA_results[i,] <- predictPoints
+  N4800_DNA_results[i,] <- N4800_DNA_predictPoints
   # For models using maximal number of loci, print a model summary for the Supplement
   if(i == nrow(N4800_DNA_results)) {print(summary(N4800_DNA_MSSEmodel))}
 }
 
 # %%% Build models to capture the impact of simulation parameters ----
 # With markers
-N4800_marker_model <- lm(I(Total^3) ~ nSamples + nPops + migRate + marker, data=N4800_DF)
+N4800_marker_model <- lm(Total ~ log(nSamples) + nPops + migRate + marker, data=N4800_DF)
 summary(N4800_marker_model)
 # Without markers
-N4800_noMarker_model <- lm(I(Total^3) ~ nSamples + nPops + migRate, data=N4800_DF)
+N4800_noMarker_model <- lm(Total ~ log(nSamples) + nPops + migRate, data=N4800_DF)
 summary(N4800_noMarker_model)
 # ANOVA demonstrating the value of introducing markers (note p value and large F statistic value)
 anova(N4800_marker_model, N4800_noMarker_model)
@@ -311,12 +323,17 @@ N1200_DNA_lowMut_DF <- rbindlist(N1200_DNA_lowMut_DF)
 # Declare a variable that's used as the prediction point (i.e. 95% "Total" allelic representation)
 predictPoint <- data.frame(Total=95)
 # Build model and predict
-N1200_DNA_lowMut_MSSEmodel <- lm(nSamples ~ I(Total^3), data=N1200_DNA_lowMut_DF)
-predict(N1200_DNA_lowMut_MSSEmodel, predictPoint, interval = "prediction")
+N1200_DNA_lowMut_MSSEmodel <- lm(log(nSamples) ~ Total, data=N1200_DNA_lowMut_DF)
+N1200_DNA_lowMut_predictPoints_log <- predict(N1200_DNA_lowMut_MSSEmodel, predictPoint, interval = "prediction")
+# Back-transform predictions
+N1200_DNA_lowMut_predictPoints <- exp(N1200_DNA_lowMut_predictPoints_log)
+# Round results to a single decimal place, and round MSSE (fit) values to next whole number of samples
+N1200_DNA_lowMut_predictPoints <- round(N1200_DNA_lowMut_predictPoints, 1)
+N1200_DNA_lowMut_predictPoints[[1]] <- ceiling(N1200_DNA_lowMut_predictPoints[[1]])
 summary(N1200_DNA_lowMut_MSSEmodel)
 
 # %%% Build models to capture the impact of simulation parameters
-N1200_DNA_lowMut_model <- lm(I(Total^3) ~ nSamples + nPops + migRate, data=N1200_DNA_lowMut_DF)
+N1200_DNA_lowMut_model <- lm(Total ~ log(nSamples) + nPops + migRate, data=N1200_DNA_lowMut_DF)
 summary(N1200_DNA_lowMut_model)
 summary.aov(N1200_DNA_lowMut_model)
 
@@ -352,12 +369,17 @@ N4800_DNA_lowMut_DF <- rbindlist(N4800_DNA_lowMut_DF)
 # Declare a variable that's used as the prediction point (i.e. 95% "Total" allelic representation)
 predictPoint <- data.frame(Total=95)
 # Build model and predict
-N4800_DNA_lowMut_MSSEmodel <- lm(nSamples ~ I(Total^3), data=N4800_DNA_lowMut_DF)
-predict(N4800_DNA_lowMut_MSSEmodel, predictPoint, interval = "prediction")
+N4800_DNA_lowMut_MSSEmodel <- lm(log(nSamples) ~ Total, data=N4800_DNA_lowMut_DF)
+N4800_DNA_lowMut_predictPoints_log <- predict(N4800_DNA_lowMut_MSSEmodel, predictPoint, interval = "prediction")
+# Back-transform predictions
+N4800_DNA_lowMut_predictPoints <- exp(N4800_DNA_lowMut_predictPoints_log)
+# Round results to a single decimal place, and round MSSE (fit) values to next whole number of samples
+N4800_DNA_lowMut_predictPoints <- round(N4800_DNA_lowMut_predictPoints, 1)
+N4800_DNA_lowMut_predictPoints[[1]] <- ceiling(N4800_DNA_lowMut_predictPoints[[1]])
 summary(N4800_DNA_lowMut_MSSEmodel)
 
 # %%% Build models to capture the impact of simulation parameters
-N4800_DNA_lowMut_model <- lm(I(Total^3) ~ nSamples + nPops + migRate, data=N4800_DNA_lowMut_DF)
+N4800_DNA_lowMut_model <- lm(Total ~ log(nSamples) + nPops + migRate, data=N4800_DNA_lowMut_DF)
 summary(N4800_DNA_lowMut_model)
 summary.aov(N4800_DNA_lowMut_model)
 
